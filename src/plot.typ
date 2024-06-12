@@ -200,6 +200,8 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
+  // TODO: Assert cetz min version here!
+
   // Create plot context object
   let make-ctx(x, y, size) = {
     assert(x != none, message: "X axis does not exist")
@@ -469,8 +471,25 @@
   if legend != none {
     let items = data.filter(d => "label" in d and d.label != none)
     if items.len() > 0 {
-      plot-legend.draw-legend(ctx, legend-style,
-        items, size, "plot", legend, legend-anchor)
+      let legend-style = styles.resolve(ctx.style,
+        base: plot-legend.default-style, merge: legend-style, root: "legend")
+
+      plot-legend.add-legend-anchors(legend-style, "plot", size)
+      plot-legend.legend(legend, anchor: legend-anchor, {
+        for item in items {
+          let preview = if "plot-legend-preview" in item {
+            _ => {(item.plot-legend-preview)(item) }
+          } else {
+            auto
+          }
+
+          plot-legend.item(item.label, preview,
+            mark: item.at("mark", default: none),
+            mark-size: item.at("mark-size", default: none),
+            mark-style: item.at("mark-style", default: none),
+            ..item.style)
+        }
+      }, ..legend-style)
     }
   }
 
