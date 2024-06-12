@@ -9,7 +9,7 @@ authors = [
   "fenjalien <https://github.com/fenjalien>"
 ]
 categories = [ "visualization" ]
-license = "GPL-3.0-or-later"
+license = "LGPL-3.0-or-later"
 description = "Plotting module for CeTZ."
 keywords = [ "plot", "chart" ]
 exclude = [ "/gallery/*", "manual.pdf", "manual.typ" ]
