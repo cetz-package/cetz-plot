@@ -12,6 +12,7 @@
 #import "/src/plot/bar.typ": add-bar
 #import "/src/plot/errorbar.typ": add-errorbar
 #import "/src/plot/mark.typ"
+#import plot-legend: add-legend
 
 #let default-colors = (blue, red, green, yellow, black)
 
@@ -261,6 +262,8 @@
   // Create axes for data & annotations
   let axis-dict = (:)
   for d in data + annotations {
+    if "axes" not in d { continue }
+
     for (i, name) in d.axes.enumerate() {
       if not name in axis-dict {
         axis-dict.insert(name, axes.axis(
@@ -304,6 +307,8 @@
 
   // Prepare styles
   for i in range(data.len()) {
+    if "style" not in data.at(i) { continue }
+
     let style-base = plot-style
     if type(style-base) == function {
       style-base = (style-base)(i)
@@ -346,6 +351,8 @@
 
     // Prepare
     for i in range(data.len()) {
+      if "axes" not in data.at(i) { continue }
+
       let (x, y) = data.at(i).axes.map(name => axis-dict.at(name))
       let plot-ctx = make-ctx(x, y, size)
 
@@ -370,6 +377,8 @@
     // Fill
     if fill-below {
       for d in data {
+        if "axes" not in d { continue }
+
         let (x, y) = d.axes.map(name => axis-dict.at(name))
         let plot-ctx = make-ctx(x, y, size)
 
@@ -420,6 +429,8 @@
 
     // Stroke + Mark data
     for d in data {
+      if "axes" not in d { continue }
+
       let (x, y) = d.axes.map(name => axis-dict.at(name))
       let plot-ctx = make-ctx(x, y, size)
 
@@ -487,7 +498,7 @@
             mark: item.at("mark", default: none),
             mark-size: item.at("mark-size", default: none),
             mark-style: item.at("mark-style", default: none),
-            ..item.style)
+            ..item.at("style", default: (:)))
         }
       }, ..legend-style)
     }

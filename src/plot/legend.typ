@@ -203,3 +203,30 @@
               "items.north-east", fill: style.fill, stroke: style.stroke, radius: style.radius)
   })
 })
+
+/// Function for manually adding a legend item from within
+/// a plot environment
+///
+/// - label (content): Legend label
+/// - preview (auto,function): Legend preview function of the format `() => elements`.
+///     The preview canvas bounds are between (0,0) and (1,1).
+///     If set to `auto`, a straight line is drawn.
+///
+/// ```example
+/// add-legend([Custom item], preview _ => {
+///   draw.rect((0,0), (1,1)) // Draw a rect as preview
+/// })
+/// ```
+#let add-legend(label, preview: auto) = {
+  assert(preview == auto or type(preview) == function,
+    message: "Expected auto or function, got " + repr(type(preview)))
+
+  return ((
+    type: "legend-item",
+    label: label,
+    style: (:),
+    axes: ("x", "y"),
+  ) + if preview != auto {
+    (plot-legend-preview: _ => { preview() })
+  },)
+}
