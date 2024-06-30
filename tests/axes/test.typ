@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto)
-#import "/src/lib.typ": *
-#import "/src/cetz.typ": *
 #import "/tests/helper.typ": *
+#import cetz: draw
+#import cetz-plot: axes
 
 // Schoolbook Axis Styling
 #test-case({
@@ -55,5 +55,15 @@
         {$#{d}pi$}
       }
     )),
+    left: axes.axis(min: -1, max: 1, ticks: (step: none, minor-step: none)))
+})
+
+// #10 - Minor ticks on reversed axis
+#test-case({
+  import draw: *
+
+  axes.scientific(size: (6, 1),
+    bottom: axes.axis(min: 5, max: -5,
+      ticks: (step: 5, minor-step: 1)),
     left: axes.axis(min: -1, max: 1, ticks: (step: none, minor-step: none)))
 })

@@ -343,6 +343,7 @@
     if "minor-step" in ticks and ticks.minor-step != none {
       assert(ticks.minor-step >= 0,
              message: "Axis minor tick step must be positive")
+      if axis.min > axis.max { ticks.minor-step *= -1 }
 
       let s = 1 / ticks.minor-step
 
