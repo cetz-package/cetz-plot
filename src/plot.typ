@@ -277,6 +277,7 @@
         axis.min = util.min(axis.min, ..domain)
         axis.max = util.max(axis.max, ..domain)
       }
+      // axis.mode = if (axis.mode == none){"lin"}else{axis.mode}
 
       axis-dict.at(name) = axis
     }

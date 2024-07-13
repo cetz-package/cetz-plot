@@ -7,7 +7,8 @@
 /// - low (vector): Lower clip-window coordinate
 /// - high (vector): Upper clip-window coordinate
 /// -> array List of line-strips representing the paths insides the clip-window
-#let clipped-paths(points, low, high, fill: false) = {
+#let clipped-paths(points, low, high, fill: false, (log-x, log-y)) = {
+
   let (min-x, max-x) = (calc.min(low.at(0), high.at(0)),
                         calc.max(low.at(0), high.at(0)))
   let (min-y, max-y) = (calc.min(low.at(1), high.at(1)),
@@ -103,6 +104,13 @@
     path.push(clamped-pt(prev))
   }
 
+  // points = points.map(it=>{
+  //   (
+  //     if (log-x=="log") {calc.log(calc.max(it.first(),0.0000001))} else {it.first()},
+  //     if (log-y=="log") {calc.log(calc.max(it.last(),0.0000001))} else {it.last()},
+  //   )
+  // })
+
   for i in range(1, points.len()) {
     let prev = points.at(i - 1)
     let pt = points.at(i)
@@ -176,8 +184,8 @@
 /// - low (vector): Lower clip-window coordinate
 /// - high (vector): Upper clip-window coordinate
 /// -> array List of stroke paths
-#let compute-stroke-paths(points, low, high) = {
-  clipped-paths(points, low, high, fill: false)
+#let compute-stroke-paths(points, low, high, (log-x, log-y)) = {
+  clipped-paths(points, low, high, fill: false, (log-x, log-y))
 }
 
 /// Compute clipped fill path
@@ -186,8 +194,8 @@
 /// - low (vector): Lower clip-window coordinate
 /// - high (vector): Upper clip-window coordinate
 /// -> array List of fill paths
-#let compute-fill-paths(points, low, high) = {
-  clipped-paths(points, low, high, fill: true)
+#let compute-fill-paths(points, low, high, (log-x, log-y)) = {
+  clipped-paths(points, low, high, fill: true, (log-x, log-y))
 }
 
 /// Return points of a sampled catmull-rom through the
@@ -306,6 +314,9 @@
     // Configure axis orientation
     axis.horizontal = get-axis-option(name, "horizontal",
       get-default-axis-horizontal(name))
+
+    // Configure log mode
+    axis.mode = get-axis-option(name, "mode", "lin")
 
     // Configure ticks
     axis.ticks.list = get-axis-option(name, "ticks", ())

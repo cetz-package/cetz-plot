@@ -228,8 +228,9 @@
 #let axis(min: -1, max: 1, label: none,
           ticks: (step: auto, minor-step: none,
                   unit: none, decimals: 2, grid: false,
-                  format: "float")) = (
-  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false,
+                  format: "float"),
+          mode: auto) = (
+  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false, mode: mode,
 )
 
 // Format a tick value
@@ -480,10 +481,11 @@
     size.at(1) -= y.inset.sum()
 
     size = (rel: size, to: origin)
-    draw.set-viewport(origin, size,
-      bounds: (x.max - x.min,
-               y.max - y.min,
-               0))
+    draw.set-viewport(
+      origin, 
+      size,
+      bounds: (x.max - x.min, y.max - y.min,0),
+    )
     draw.translate((-x.min, -y.min))
     body
   })
@@ -499,6 +501,9 @@
 // - dir (vector): Normalized grid direction vector along the grid axis
 // - style (style): Axis style
 #let draw-grid-lines(ctx, axis, ticks, low, high, dir, style) = {
+
+  // TODO: Account for log mode
+
   let offset = (0,0)
   if axis.inset != none {
     let (inset-low, inset-high) = axis.inset.map(v => util.resolve-number(ctx, v))
@@ -629,6 +634,7 @@
     }
 
     // Draw grid
+    // TODO: Account for log mode
     group(name: "grid", ctx => {
       let axes = (
         ("bottom", (0,0), (0,h), (+w,0), x-ticks,  bottom),
@@ -644,6 +650,7 @@
 
         if not is-mirror {
           on-layer(style.grid-layer, {
+            // TODO: Account for log mode
             draw-grid-lines(ctx, axis, ticks, start, end, direction, style)
           })
         }
@@ -676,9 +683,13 @@
           end = vector.add(end, padding)
         }
 
+        // TODO: Account for log mode
         let (data-start, data-end) = _inset-axis-points(ctx, style, axis, start, end)
 
+        // TODO: Account for log mode
         let path = _draw-axis-line(start, end, axis, is-horizontal, style)
+
+
         on-layer(style.axis-layer, {
           group(name: "axis", {
             if draw-unset or axis != none {

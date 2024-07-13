@@ -85,9 +85,27 @@
 #let _prepare(self, ctx) = {
   let (x, y) = (ctx.x, ctx.y)
 
+  if "data" in self {
+    self.data = self.data.map( ((px, py))=>{
+      (
+        if x.mode == "log" {calc.log(calc.max(px, 0), base: 10)} else {px},
+        if y.mode == "log" {calc.log(calc.max(py, 0), base: 10)} else {py}
+      )
+    })
+  }
+
+  if "line-data" in self {
+    self.line-data = self.line-data.map( ((px, py))=>{
+      (
+        if x.mode == "log" {calc.log(calc.max(px, 0), base: 10)} else {px},
+        if y.mode == "log" {calc.log(calc.max(py, 0), base: 10)} else {py}
+      )
+    })
+  }
+
   // Generate stroke paths
   self.stroke-paths = util.compute-stroke-paths(self.line-data,
-    (x.min, y.min), (x.max, y.max))
+    (x.min, y.min), (x.max, y.max), (x.mode, y.mode))
 
   // Compute fill paths if filling is requested
   self.hypograph = self.at("hypograph", default: false)
@@ -95,7 +113,7 @@
   self.fill = self.at("fill", default: false)
   if self.hypograph or self.epigraph or self.fill {
     self.fill-paths = util.compute-fill-paths(self.line-data,
-      (x.min, y.min), (x.max, y.max))
+      (x.min, y.min), (x.max, y.max), (x.mode, y.mode))
   }
 
   return self
