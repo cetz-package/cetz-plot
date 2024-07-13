@@ -1,3 +1,5 @@
+
+
 #set page(width: auto, height: auto)
 
 #import "/tests/helper.typ": *
@@ -12,11 +14,12 @@
     size: (9, 6), 
     axis-style: "scientific", 
     y-mode: "log",
+    y-format: "sci",
     x-min: 0.00001, x-max: 10,
-    y-min: -10, y-max: 10,
+    y-min: 0, y-max: 1,
     {
       plot.add(domain: (0.00001, 10), x => {calc.pow(10, x)}, mark: "o")
-      plot.add(domain: (0.00001, 10), x => x, samples: 100)
+      plot.add(domain: (0.00001, 10), x => {x+1}, samples: 100)
     }
   )
 }))

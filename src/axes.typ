@@ -234,7 +234,7 @@
 )
 
 // Format a tick value
-#let format-tick-value(value, tic-options) = {
+#let format-tick-value(value, tic-options, mode) = {
   // Without it we get negative zero in conversion
   // to content! Typst has negative zero floats.
   if value == 0 { value = 0 }
@@ -304,6 +304,71 @@
   return (v - min) / dt
 }
 
+
+#let compute-logarithmic-ticks(axis, style, add-zero: true) = {
+  let (min, max) = (axis.min, axis.max)
+  let dt = max - min; if (dt == 0) { dt = 1 }
+  let ticks = axis.ticks
+  let ferr = util.float-epsilon
+  let tick-limit = style.tick-limit
+  let minor-tick-limit = style.minor-tick-limit
+
+  let l = ()
+  if ticks != none {
+    let major-tick-values = ()
+    if "step" in ticks and ticks.step != none {
+      assert(ticks.step >= 0,
+             message: "Axis tick step must be positive and non 0.")
+      if axis.min > axis.max { ticks.step *= -1 }
+
+      let s = 1 / ticks.step
+
+      let num-ticks = int(max * s + 1.5)  - int(min * s)
+      assert(num-ticks <= tick-limit,
+             message: "Number of major ticks exceeds limit " + str(tick-limit))
+
+      let n = range(int(min * s), int(max * s + 1.5))
+      for t in n {
+        let v = (t / s - min) / dt
+        if t / s == 0 and not add-zero { continue }
+
+        if v >= 0 - ferr and v <= 1 + ferr {
+          l.push((v, format-tick-value(calc.pow(10, t / s), ticks, axis.mode), true))
+          major-tick-values.push(v)
+        }
+      }
+    }
+
+    if "minor-step" in ticks and ticks.minor-step != none {
+      assert(ticks.minor-step >= 0,
+             message: "Axis minor tick step must be positive")
+      if axis.min > axis.max { ticks.minor-step *= -1 }
+
+      let s = 1 / ticks.minor-step
+
+      let num-ticks = int(max * s + 1.5) - int(min * s)
+      assert(num-ticks <= minor-tick-limit,
+             message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
+
+      let n = range(int(min * s), int(max * s + 1.5))
+      for t in n {
+        let v = (t / s - min) / dt
+        if v in major-tick-values {
+          // Prefer major ticks over minor ticks
+          continue
+        }
+
+        if v != none and v >= 0 and v <= 1 + ferr {
+          l.push((v, none, false))
+        }
+      }
+    }
+
+  }
+
+  return l
+}
+
 // Compute list of linear ticks for axis
 //
 // - axis (axis): Axis
@@ -335,7 +400,7 @@
         if t / s == 0 and not add-zero { continue }
 
         if v >= 0 - ferr and v <= 1 + ferr {
-          l.push((v, format-tick-value(t / s, ticks), true))
+          l.push((v, format-tick-value(t / s, ticks, axis.mode), true))
           major-tick-values.push(v)
         }
       }
@@ -420,7 +485,8 @@
     return step
   }
 
-  if axis == none or axis.ticks == none { return () }
+  if axis == none { return () }
+  if axis.ticks == none { return () }
   if axis.ticks.step == auto {
     axis.ticks.step = find-max-n-ticks(axis, n: style.auto-tick-count)
   }
@@ -432,7 +498,11 @@
     }
   }
 
-  let ticks = compute-linear-ticks(axis, style, add-zero: add-zero)
+  let ticks = if axis.mode == "lin" {
+    compute-linear-ticks(axis, style, add-zero: add-zero)
+    } else {
+      compute-logarithmic-ticks(axis, style, add-zero: add-zero)
+    }
   ticks += fixed-ticks(axis)
   return ticks
 }
