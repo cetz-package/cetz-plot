@@ -18,18 +18,18 @@
     y-format: "log",
     y-tick-step: 1,
     y-minor-tick-step: 1,
-    y-min: 0, y-max: 4,
+    y-min: 0, y-max: 3,
     
-    x-mode: "log",
+    x-mode: "lin",
     x-grid: "both",
-    x-format: "log",
+    // x-format: "log",
     x-tick-step: 1,
     x-minor-tick-step: 1,
-    x-min: 0.00001, x-max: 4,
+    x-min: 0.00001, x-max: 10,
     
     {
       plot.add(domain: (0.00001, 10), x => {calc.pow(10, x)}, mark: "o")
-      plot.add(domain: (0.00001, 10), x => {x}, samples: 100)
+      plot.add(domain: (0.00001, 10), x => {1+x})
     }
   )
 }))
