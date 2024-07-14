@@ -306,15 +306,15 @@
 
 
 #let compute-logarithmic-ticks(axis, style, add-zero: true) = {
+  let ferr = util.float-epsilon
   let (min, max) = (axis.min, axis.max)
   let dt = max - min; if (dt == 0) { dt = 1 }
   let ticks = axis.ticks
-  let ferr = util.float-epsilon
   let tick-limit = style.tick-limit
   let minor-tick-limit = style.minor-tick-limit
 
   let l = ()
-  if ticks != none {
+  if (ticks != none) {
     let major-tick-values = ()
     if "step" in ticks and ticks.step != none {
       assert(ticks.step >= 0,
@@ -333,39 +333,33 @@
         if t / s == 0 and not add-zero { continue }
 
         if v >= 0 - ferr and v <= 1 + ferr {
-          l.push((v, format-tick-value(calc.pow(10, t / s), ticks, axis.mode), true))
+          l.push((
+            v, 
+            format-tick-value(calc.pow(10, t / s), ticks, axis.mode), 
+            true
+          ))
           major-tick-values.push(v)
         }
-      }
-    }
 
-    if "minor-step" in ticks and ticks.minor-step != none {
-      assert(ticks.minor-step >= 0,
-             message: "Axis minor tick step must be positive")
-      if axis.min > axis.max { ticks.minor-step *= -1 }
+        if "minor-step" in ticks and ticks.minor-step != none {
+          assert(ticks.minor-step >= 0,
+                message: "Axis minor tick step must be positive")
+          if axis.min > axis.max { ticks.minor-step *= -1 }
 
-      let s = 1 / ticks.minor-step
+          let n-minor = range(1, 10)
 
-      let num-ticks = int(max * s + 1.5) - int(min * s)
-      assert(num-ticks <= minor-tick-limit,
-             message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
+          for t-minor in n-minor {
+            let place = t + calc.log(t-minor, base: 10)
+            if ( place > axis.max){ continue }
+            let v = (place / s - min) / dt
+            l.push((v, none, false))
+          }
 
-      let n = range(int(min * s), int(max * s + 1.5))
-      for t in n {
-        let v = (t / s - min) / dt
-        if v in major-tick-values {
-          // Prefer major ticks over minor ticks
-          continue
-        }
-
-        if v != none and v >= 0 and v <= 1 + ferr {
-          l.push((v, none, false))
         }
       }
     }
-
   }
-
+  
   return l
 }
 
