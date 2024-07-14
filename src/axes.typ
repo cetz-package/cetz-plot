@@ -349,9 +349,16 @@
           let n-minor = range(1, 10)
 
           for t-minor in n-minor {
+            
             let place = t + calc.log(t-minor, base: 10)
+
             if ( place > axis.max){ continue }
             let v = (place / s - min) / dt
+
+            if v in major-tick-values {
+              // Prefer major ticks over minor ticks
+              continue
+            }
             l.push((v, none, false))
           }
 
