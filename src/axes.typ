@@ -456,7 +456,7 @@
       let (v, label) = (none, none)
       if type(t) in (float, int) {
         v = t
-        label = format-tick-value(t, axis.ticks)
+        label = format-tick-value(t, axis.ticks, axis.mode)
       } else {
         (v, label) = t
       }
@@ -508,10 +508,10 @@
     }
   }
 
-  let ticks = if axis.mode == "lin" {
-    compute-linear-ticks(axis, style, add-zero: add-zero)
-    } else {
+  let ticks = if axis.mode == "log" {
       compute-logarithmic-ticks(axis, style, add-zero: add-zero)
+    } else {
+      compute-linear-ticks(axis, style, add-zero: add-zero)
     }
   ticks += fixed-ticks(axis)
   return ticks
