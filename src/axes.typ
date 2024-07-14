@@ -247,6 +247,13 @@
     $#round(value, digits)$
   }
 
+  let format-log(value, base: 10) = {
+    let exponent = if value != 0 {
+      calc.log(calc.abs(value), base: base)
+    } else {0}
+    return $#base^#exponent$
+  }
+
   let format-sci(value, digits) = {
     let exponent = if value != 0 {
       calc.floor(calc.log(calc.abs(value), base: 10))
@@ -278,6 +285,8 @@
       value = (format)(value)
     } else if format == "sci" {
       value = format-sci(value, tic-options.at("decimals", default: 2))
+    } else if format == "log" {
+      value = format-log(value, base: tic-options.at("base", default: 10))
     } else {
       value = format-float(value, tic-options.at("decimals", default: 2))
     }
@@ -349,7 +358,7 @@
           let n-minor = range(1, 10)
 
           for t-minor in n-minor {
-            
+
             let place = t + calc.log(t-minor, base: 10)
 
             if ( place > axis.max){ continue }
