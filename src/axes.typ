@@ -1,4 +1,4 @@
-#import "/src/cetz.typ": util, draw, vector, styles, process, drawable, path-util
+#import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
 
 #let typst-content = content
 
@@ -462,31 +462,80 @@
   return axis
 }
 
+// Transform a single vector along a x, y and z axis
+//
+// - size (vector): Coordinate system size
+// - x-axis (axis): X axis
+// - y-axis (axis): Y axis
+// - z-axis (axis): Z axis
+// - vec (vector): Input vector to transform
+// -> vector
+#let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
+  let (ox, oy, ..) = (0, 0, 0)
+  ox += x-axis.inset.at(0)
+  oy += y-axis.inset.at(0)
+
+  let (sx, sy) = size
+  sx -= x-axis.inset.sum()
+  sy -= y-axis.inset.sum()
+
+  let x-range = x-axis.max - x-axis.min
+  let y-range = y-axis.max - y-axis.min
+  let z-range = 0 //z-axis.max - z-axis.min
+
+  let fx = sx / x-range
+  let fy = sy / y-range
+  let fz = 0 //sz / z-range
+
+  let x-low = calc.min(x-axis.min, x-axis.max)
+  let x-high = calc.max(x-axis.min, x-axis.max)
+  let y-low = calc.min(y-axis.min, y-axis.max)
+  let y-high = calc.max(y-axis.min, y-axis.max)
+  //let z-low = calc.min(z-axis.min, z-axis.max)
+  //let z-hihg = calc.max(z-axis.min, z-axis.max)
+
+  let (x, y, ..) = vec
+
+  if x < x-low or x > x-high or y < y-low or x > x-high {
+    return none
+  }
+
+  return (
+    (x - x-axis.min) * fx + ox,
+    (y - y-axis.min) * fy + oy,
+    0) //(z - z-axis.min) * fz + oz)
+}
+
 // Draw inside viewport coordinates of two axes
 //
 // - size (vector): Axis canvas size (relative to origin)
-// - origin (coordinates): Axis Canvas origin
 // - x (axis): Horizontal axis
 // - y (axis): Vertical axis
+// - z (axis): Z axis
 // - name (string,none): Group name
-#let axis-viewport(size, x, y, origin: (0, 0), name: none, body) = {
-  draw.group(name: name, ctx => {
-    let origin = origin
-    let size = size
+#let axis-viewport(size, x, y, z, body, name: none) = {
+  draw.group(name: name, (ctx => {
+    let transform = ctx.transform
 
-    origin.at(0) += x.inset.at(0)
-    size.at(0) -= x.inset.sum()
-    origin.at(1) += y.inset.at(0)
-    size.at(1) -= y.inset.sum()
+    ctx.transform = matrix.ident()
+    let (ctx, drawables, bounds) = process.many(ctx, util.resolve-body(ctx, body))
 
-    size = (rel: size, to: origin)
-    draw.set-viewport(origin, size,
-      bounds: (x.max - x.min,
-               y.max - y.min,
-               0))
-    draw.translate((-x.min, -y.min))
-    body
-  })
+    ctx.transform = transform
+
+    drawables = drawables.map(d => {
+      d.segments = d.segments.map(((kind, ..pts)) => {
+        (kind, ..pts.map(pt => {
+          transform-vec(size, x, y, none, pt)
+        }))
+      })
+      return d
+    })
+
+    return (
+      ctx: ctx,
+      drawables: drawable.apply-transform(ctx.transform, drawables)
+    )
+  },))
 }
 
 // Draw grid lines for the ticks of an axis
@@ -512,7 +561,7 @@
       let offset = vector.add(vector.scale(dir, distance), offset)
       let start = vector.add(low, offset)
       let end = vector.add(high, offset)
-        
+
       // Draw a major line
       if is-major and (kind == 1 or kind == 3) {
         draw.line(start, end, stroke: style.grid.stroke)

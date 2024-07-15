@@ -237,7 +237,7 @@
     }
 
     // Setup the viewport
-    axes.axis-viewport(size, x, y, body, name: name)
+    axes.axis-viewport(size, x, y, none, body, name: name)
   }
 
   let data = ()
@@ -433,11 +433,14 @@
         if "plot-stroke" in d {
           (d.plot-stroke)(d, plot-ctx)
         }
-        if "mark" in d and d.mark != none {
+      })
+
+      if "mark" in d and d.mark != none {
+        draw.group({
           draw.set-style(..d.style, ..d.mark-style)
           mark.draw-mark(d.data, x, y, d.mark, d.mark-size, size)
-        }
-      })
+        })
+      }
     }
 
     // Foreground Annotations
@@ -456,14 +459,15 @@
       let (x, y) = a.axes.map(name => axis-dict.at(name))
       let plot-ctx = make-ctx(x, y, size)
 
-      data-viewport(a, x, y, size, {
-        let (ax, ay) = a.position
-        if ax == "min" {ax = x.min} else if ax == "max" {ax = x.max}
-        if ay == "min" {ay = y.min} else if ay == "max" {ay = y.max}
-        draw.anchor("default", (0,0))
-        draw.anchor(a.name, (ax, ay))
-      }, name: "anchors")
-      draw.copy-anchors("anchors", filter: (a.name,))
+      let pt = a.position.enumerate().map(((i, v)) => {
+        if v == "min" { return axis-dict.at(a.axes.at(i)).min }
+        if v == "max" { return axis-dict.at(a.axes.at(i)).max }
+        return v
+      })
+      pt = axes.transform-vec(size, x, y, none, pt)
+      if pt != none {
+        draw.anchor(a.name, pt)
+      }
     }
   })
 
