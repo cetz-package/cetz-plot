@@ -1,10 +1,10 @@
 #import "/src/cetz.typ": draw
+#import "/src/axes.typ"
 
 // Draw mark at point with size
 #let draw-mark-shape(pt, size, mark, style) = {
-  let (sx, sy) = if type(size) != array {
-    (size, size)
-  } else { size }
+  let sx = size
+  let sy = size
 
   let bl(pt) = (rel: (-sx/2, -sy/2), to: pt)
   let br(pt) = (rel: (sx/2, -sy/2), to: pt)
@@ -35,17 +35,11 @@
 }
 
 #let draw-mark(pts, x, y, mark, mark-size, plot-size) = {
-  // Scale marks back to canvas scaling
-  let (sx, sy) = plot-size
-  sx = (x.max - x.min) / sx
-  sy = (y.max - y.min) / sy
-  sx *= mark-size
-  sy *= mark-size
+  let pts = pts.map(pt => {
+    axes.transform-vec(plot-size, x, y, none, pt)
+  }).filter(pt => pt != none)
 
   for pt in pts {
-    let (px, py, ..) = pt
-    if px >= x.min and px <= x.max and py >= y.min and py <= y.max {
-      draw-mark-shape(pt, (sx, sy), mark, (:))
-    }
+    draw-mark-shape(pt, mark-size, mark, (:))
   }
 }

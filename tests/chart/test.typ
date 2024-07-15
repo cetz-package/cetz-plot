@@ -43,7 +43,7 @@
   chart.barchart(mode: "basic",
                  size: (9, auto),
                  data0)
-}))
+})
 
 #test-case({
   chart.barchart(mode: "basic",
@@ -54,7 +54,7 @@
                  x-label: [x],
                  y-label: [y],
                  data1)
-}))
+})
 
 #test-case({
   chart.barchart(mode: "clustered",
@@ -62,7 +62,7 @@
                  label-key: 0,
                  value-key: (..range(1, 5)),
                  data2)
-}))
+})
 
 #test-case({
   chart.barchart(mode: "stacked",
@@ -71,7 +71,7 @@
                  value-key: (..range(1, 5)),
                  bar-style: palette.blue,
                  data2)
-}))
+})
 
 #test-case({
   chart.barchart(mode: "stacked100",
@@ -80,7 +80,7 @@
                  value-key: (..range(1, 5)),
                  bar-style: palette.blue,
                  data2)
-}))
+})
 
 #test-case({
   chart.columnchart(mode: "basic",
