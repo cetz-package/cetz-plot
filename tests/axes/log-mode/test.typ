@@ -15,12 +15,12 @@
     axis-style: "scientific", 
     y-mode: "log",
     // y-format: "sci",
-    x-min: 0, x-max: 2,
-    y-min: 0, y-max: 10,
+    x-min: 0, x-max: 10,
+    y-min: 0, y-max: 10000,
     // y-min: 0,
     {
-      plot.add(domain: (0, 2), x => {calc.pow(10, x)})
-      plot.add(domain: (0, 2), x => {x+1}, samples: 100)
+      plot.add(domain: (0, 10), x => {calc.pow(10, x)})
+      plot.add(domain: (0, 10), x => {x+1}, samples: 100)
     }
   )
 }))

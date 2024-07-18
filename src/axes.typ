@@ -502,9 +502,9 @@
   }
 
   let ticks = if axis.mode == "log" {
-    compute-linear-ticks(axis, style, add-zero: add-zero)
-  } else {
     compute-logarithmic-ticks(axis, style, add-zero: add-zero)
+  } else {
+    compute-linear-ticks(axis, style, add-zero: add-zero)
   }
   ticks += fixed-ticks(axis)
   return ticks
@@ -545,38 +545,40 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let (ox, oy, ..) = (0, 0, 0)
-  ox += x-axis.inset.at(0)
-  oy += y-axis.inset.at(0)
+  let o = (x-axis.inset.at(0), y-axis.inset.at(0), 0)
+  let ferr = 0.0000001
 
-  let (sx, sy) = size
-  sx -= x-axis.inset.sum()
-  sy -= y-axis.inset.sum()
+  let (x,y,..) = (x-axis, y-axis,).enumerate().map(((dim, axis)) => {
 
-  let x-range = x-axis.max - x-axis.min
-  let y-range = y-axis.max - y-axis.min
-  let z-range = 0 //z-axis.max - z-axis.min
+    let val = vec.at(dim)
+    let range = axis.max - axis.min
 
-  let fx = sx / x-range
-  let fy = sy / y-range
-  let fz = 0 //sz / z-range
+    let low = calc.min(axis.min, axis.max)
+    let high = calc.max(axis.min, axis.max)
 
-  let x-low = calc.min(x-axis.min, x-axis.max)
-  let x-high = calc.max(x-axis.min, x-axis.max)
-  let y-low = calc.min(y-axis.min, y-axis.max)
-  let y-high = calc.max(y-axis.min, y-axis.max)
-  //let z-low = calc.min(z-axis.min, z-axis.max)
-  //let z-hihg = calc.max(z-axis.min, z-axis.max)
+    if (val < low or val > high) {return none}
 
-  let (x, y, ..) = vec
 
-  if x < x-low or x > x-high or y < y-low or x > x-high {
-    return none
-  }
+    val = if (axis.mode == "log"){
+      calc.log(calc.max(val - axis.min, ferr))
+      range = calc.log(calc.max(range, ferr))
+    } else {
+      val - axis.min
+    }
+    
+    // if (val < 0 or val > 10){return}
+
+    val /= range
+    val *= size.at(dim)
+
+    return val
+  })
+
+  if (none in (x,y,)){return ()}
 
   return (
-    (x - x-axis.min) * fx + ox,
-    (y - y-axis.min) * fy + oy,
+    x + o.at(0),
+    y + o.at(1),
     0) //(z - z-axis.min) * fz + oz)
 }
 
