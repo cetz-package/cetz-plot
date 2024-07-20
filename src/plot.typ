@@ -12,6 +12,7 @@
 #import "/src/plot/bar.typ": add-bar
 #import "/src/plot/errorbar.typ": add-errorbar
 #import "/src/plot/mark.typ"
+#import "/src/plot/formats.typ"
 #import plot-legend: add-legend
 
 #let default-colors = (blue, red, green, yellow, black)

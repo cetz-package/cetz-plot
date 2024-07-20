@@ -23,6 +23,7 @@
     )
   ),
   radius: 0,
+  scale: 100%,
 )
 
 // Map position to legend group anchor
@@ -116,6 +117,9 @@
     ctx.style, merge: style.named(), base: default-style, root: "legend")
   assert(style.orientation in (ttb, ltr),
     message: "Unsupported legend orientation.")
+
+  // Scaling
+  draw.scale(style.scale)
 
   // Position
   let position = if position == auto {
