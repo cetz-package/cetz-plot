@@ -31,6 +31,26 @@
 
 #set page(numbering: "1/1", header: align(right)[CeTZ-Plot])
 
+= Introduction
+
+CeTZ-Plot is a simple plotting library for use with CeTZ.
+
+= Usage
+
+This is the minimal starting point:
+#pad(left: 1em)[```typ
+#import "@preview/cetz:0.2.2"
+#import "@preview/cetz-plot:0.1.0"
+#cetz.canvas({
+  import cetz.draw: *
+  import cetz-plot: *
+  ...
+})
+```]
+Note that plot functions are imported inside the scope of the `canvas` block.
+All following example code is expected to be inside a `canvas` block, with the `plot`
+module imported into the namespace.
+
 = Plot
 
 #doc-style.parse-show-module("/src/plot.typ")
