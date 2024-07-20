@@ -40,6 +40,15 @@
 
 /// Fraction tick formatter
 ///
+/// ```example
+/// plot.plot(size: (5,1),
+///           x-format: plot.formats.fraction,
+///           x-tick-step: 1/5,
+///           y-tick-step: none, {
+///   plot.add(calc.sin, domain: (-1, 1))
+/// })
+/// ```
+///
 /// - value (number): Value to format
 /// - denom (auto, int): Denominator for result fractions. If set to `auto`,
 ///   a hardcoded fraction table is used for finding fractions with a
@@ -53,8 +62,10 @@
 /// Multiple of tick formatter
 ///
 /// ```example
-/// plot.plot(x-format: plot.formats.multiple-of,
-///           x-tick-step: calc.pi/4, {
+/// plot.plot(size: (5,1),
+///           x-format: plot.formats.multiple-of,
+///           x-tick-step: calc.pi/4,
+///           y-tick-step: none, {
 ///   plot.add(calc.sin, domain: (-calc.pi, 1.5 * calc.pi))
 /// })
 /// ```
@@ -93,6 +104,15 @@
 }
 
 /// Scientific notation tick formatter
+///
+/// ```example
+/// plot.plot(size: (5,1),
+///           x-format: plot.formats.sci,
+///           x-tick-step: 1e3,
+///           y-tick-step: none, {
+///   plot.add(x => x, domain: (-2e3, 2e3))
+/// })
+/// ```
 ///
 /// - value (number): Value to format
 /// - digits (int): Number of digits for rouding the factor
