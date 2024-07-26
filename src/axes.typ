@@ -570,11 +570,9 @@
     } else {n}
 
     let range = transform-func(axis.max) - transform-func(axis.min)
-    let low = transform-func(calc.min(axis.min, axis.max))
-    let high = transform-func(calc.max(axis.min, axis.max))
 
     let f = s / range
-    (transform-func(vec.at(dim) - low) * f + o,)
+    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
   }
 
   return (x, y, 0)
