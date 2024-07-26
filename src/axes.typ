@@ -377,14 +377,18 @@
 //
 // - axis (axis): Axis
 #let compute-logarithmic-ticks(axis, style, add-zero: true) = {
-  let (min, max) = (axis.min, axis.max)
+  let ferr = util.float-epsilon
+  let (min, max) = (
+    calc.log(calc.max(axis.min, ferr), base: axis.base), 
+    calc.log(calc.max(axis.max, ferr), base: axis.base)
+  )
   let dt = max - min; if (dt == 0) { dt = 1 }
   let ticks = axis.ticks
-  let ferr = util.float-epsilon
+
   let tick-limit = style.tick-limit
   let minor-tick-limit = style.minor-tick-limit
-
   let l = ()
+
   if ticks != none {
     let major-tick-values = ()
     if "step" in ticks and ticks.step != none {
@@ -398,13 +402,17 @@
       assert(num-ticks <= tick-limit,
              message: "Number of major ticks exceeds limit " + str(tick-limit))
 
-      let n = range(int(min * s), int(max * s + 1.5))
+      let n = range(
+        int(min * s),
+        int(max * s + 1.5)
+      )
+
       for t in n {
         let v = (t / s - min) / dt
         if t / s == 0 and not add-zero { continue }
 
         if v >= 0 - ferr and v <= 1 + ferr {
-          l.push((v, format-tick-value(t / s, ticks), true))
+          l.push((v, format-tick-value( calc.pow(axis.base, t / s), ticks), true))
           major-tick-values.push(v)
         }
       }
@@ -421,8 +429,9 @@
       assert(num-ticks <= minor-tick-limit,
              message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
 
-      let n = range(int(min * s), int(max * s + 1.5))
+      let n = range(int(min * s)-1, int(max * s + 1.5)+1)
       for t in n {
+        let base = t / s
         let v = (t / s - min) / dt
         if v in major-tick-values {
           // Prefer major ticks over minor ticks
@@ -434,8 +443,8 @@
         }
       }
     }
-
   }
+  
 
   return l
 }
@@ -549,8 +558,7 @@
   let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
 
     let transform-func(n) = if (axis.mode == "log") {
-      // TODO: Support different bases
-      calc.log(n)
+      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
     } else {n}
 
     let s = size.at(dim) - axis.inset.sum()
