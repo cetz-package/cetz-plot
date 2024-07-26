@@ -423,24 +423,29 @@
              message: "Axis minor tick step must be positive")
       if axis.min > axis.max { ticks.minor-step *= -1 }
 
-      let s = 1 / ticks.minor-step
+      let s = 1 / ticks.step
 
-      let num-ticks = int(max * s + 1.5) - int(min * s)
-      assert(num-ticks <= minor-tick-limit,
-             message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
+      // let num-ticks = int(max * s + 1.5) - int(min * s)
+      // assert(num-ticks <= minor-tick-limit,
+      //        message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
 
-      let n = range(int(min * s)-1, int(max * s + 1.5)+1)
+      let n = range(int(min * s), int(max * s + 1.5))
       for t in n {
-        let base = t / s
-        let v = (t / s - min) / dt
-        if v in major-tick-values {
-          // Prefer major ticks over minor ticks
-          continue
-        }
 
-        if v != none and v >= 0 and v <= 1 + ferr {
-          l.push((v, none, false))
+        for vv in range(1, axis.base) {
+
+          let v = ( (calc.log(vv, base: axis.base) + t)/ s - min) / dt
+          if v in major-tick-values {
+            // Prefer major ticks over minor ticks
+            continue
+          }
+
+          if v != none and v >= 0 and v <= 1 + ferr {
+            l.push((v, none, false))
+          }
+
         }
+        
       }
     }
   }
