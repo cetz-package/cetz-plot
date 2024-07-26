@@ -562,15 +562,17 @@
 
   let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
 
+    let s = size.at(dim) - axis.inset.sum()
+    let o = axis.inset.at(0)
+    let range = axis.max - axis.min
+
     let transform-func(n) = if (axis.mode == "log") {
       calc.log(calc.max(n, util.float-epsilon), base: axis.base)
     } else {n}
 
-    let s = size.at(dim) - axis.inset.sum()
-    let o = axis.inset.at(0)
-    let range = axis.max - axis.min
-    let low = calc.min(axis.min, axis.max)
-    let high = calc.max(axis.min, axis.max)
+    let low = transform-func(calc.min(axis.min, axis.max))
+    let high = transform-func(calc.max(axis.min, axis.max))
+
     let f = s / transform-func(range)
     (transform-func(vec.at(dim) - low) * f + o,)
   }
