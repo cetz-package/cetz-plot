@@ -547,13 +547,19 @@
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
 
   let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
+
+    let transform-func(n) = if (axis.mode == "log") {
+      // TODO: Support different bases
+      calc.log(n)
+    } else {n}
+
     let s = size.at(dim) - axis.inset.sum()
     let o = axis.inset.at(0)
     let range = axis.max - axis.min
     let low = calc.min(axis.min, axis.max)
     let high = calc.max(axis.min, axis.max)
-    let f = s / range
-    ((vec.at(dim) - low) * f + o,)
+    let f = s / transform-func(range)
+    (transform-func(vec.at(dim) - low) * f + o,)
   }
 
   return (x, y, 0)
