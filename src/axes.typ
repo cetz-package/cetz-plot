@@ -557,24 +557,8 @@
     let high = calc.max(axis.min, axis.max)
 
     if (val < low or val > high) {return none}
-
-
-    val = if (axis.mode == "log"){
-      calc.log(calc.max(val - axis.min, ferr))
-      range = calc.log(calc.max(range, ferr))
-    } else {
-      val - axis.min
-    }
-    
-    // if (val < 0 or val > 10){return}
-
-    val /= range
-    val *= size.at(dim)
-
-    return val
   })
 
-  if (none in (x,y,)){return ()}
 
   return (
     x + o.at(0),
@@ -599,11 +583,16 @@
     ctx.transform = transform
 
     drawables = drawables.map(d => {
-      d.segments = d.segments.map(((kind, ..pts)) => {
-        (kind, ..pts.map(pt => {
-          transform-vec(size, x, y, none, pt)
-        }))
-      })
+      if "segments" in d {
+        d.segments = d.segments.map(((kind, ..pts)) => {
+          (kind, ..pts.map(pt => {
+            transform-vec(size, x, y, none, pt)
+          }))
+        })
+      }
+      if "pos" in d {
+        d.pos = transform-vec(size, x, y, none, d.pos)
+      }
       return d
     })
 

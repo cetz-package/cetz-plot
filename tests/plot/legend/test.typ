@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto)
-#import "/src/lib.typ": *
-#import "/src/cetz.typ": *
 #import "/tests/helper.typ": *
+#import cetz: draw
+#import cetz-plot: plot
 
 #let dom = (domain: (0, 2 * calc.pi))
 #let fn(x, offset: 0) = {calc.sin(x) + offset}
@@ -9,7 +9,6 @@
 #for pos in ("north", "south", "west", "east",
              "north-east", "north-west",
              "south-east", "south-west",) {
-  pos = "legend." + pos
   test-case({
     import draw: *
 
@@ -26,7 +25,6 @@
 #for pos in ("inner-north", "inner-south", "inner-west", "inner-east",
              "inner-north-east", "inner-north-west",
              "inner-south-east", "inner-south-west",) {
-  pos = "legend." + pos
   test-case({
     import draw: *
 
@@ -117,7 +115,7 @@
   import draw: *
 
   set-style(legend: (item: (preview: (width: .4), spacing: .7),
-    orientation: ltr, default-position: "legend.north"))
+    orientation: ltr, default-position: "north"))
 
   plot.plot(size: (4, 2),
     x-tick-step: none,
@@ -136,7 +134,7 @@
     padding: .1,
     stroke: black,
     fill: white,
-    orientation: ltr, default-position: "legend.north"))
+    orientation: ltr, default-position: "north"))
 
   plot.plot(size: (4, 2),
     x-tick-step: none,
@@ -163,4 +161,17 @@
       plot.add(samples: 10, ..dom, fn.with(offset: .1), mark: "x", fill: true, label: $ f_2(x) $)
       plot.add(samples: 10, ..dom, fn.with(offset: .2), mark: "|", style: (stroke: none), label: $ f_3(x) $)
     })
+})
+
+#test-case({
+  plot.plot(size: (4,2), x-tick-step: none, y-tick-step: none, {
+    plot.add(domain: (0,1), x => x)
+    plot.add-legend([Custom 1])
+    plot.add-legend([Custom 2], preview: () => {
+      import draw: *
+      set-style(stroke: blue)
+      line((0,0), (1,1))
+      line((0,1), (1,0))
+    })
+  })
 })
