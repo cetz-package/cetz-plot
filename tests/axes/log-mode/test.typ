@@ -14,10 +14,12 @@
     size: (9, 6), 
     axis-style: "scientific", 
     y-mode: "log", y-base: 10,
-    x-mode: "lin",
+    x-mode: "log",
+    x-format: "sci",
     y-format: "sci",
-    x-min: 1, x-max: 10,
-    y-min: 1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 1,
+    x-min: 1, x-max: 10, x-tick-step: 1, x-minor-tick-step: 1,
+    y-min: 1, y-max: 10, y-tick-step: 1, y-minor-tick-step: 1,
+    x-grid: "both",
     y-grid: "both",
     {
       // plot.add(domain: (0, 10), x => {calc.pow(10, x)})
