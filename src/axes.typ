@@ -432,9 +432,9 @@
       let n = range(int(min * s), int(max * s + 1.5))
       for t in n {
 
-        for vv in range(1, axis.base) {
+        for vv in range(1, int(axis.base / ticks.minor-step)) {
 
-          let v = ( (calc.log(vv, base: axis.base) + t)/ s - min) / dt
+          let v = ( (calc.log(vv * ticks.minor-step, base: axis.base) + t)/ s - min) / dt
           if v in major-tick-values {
             // Prefer major ticks over minor ticks
             continue
