@@ -496,10 +496,6 @@
 
   let (x, y, ..) = vec
 
-  if x < x-low or x > x-high or y < y-low or x > x-high {
-    return none
-  }
-
   return (
     (x - x-axis.min) * fx + ox,
     (y - y-axis.min) * fy + oy,
@@ -523,11 +519,16 @@
     ctx.transform = transform
 
     drawables = drawables.map(d => {
-      d.segments = d.segments.map(((kind, ..pts)) => {
-        (kind, ..pts.map(pt => {
-          transform-vec(size, x, y, none, pt)
-        }))
-      })
+      if "segments" in d {
+        d.segments = d.segments.map(((kind, ..pts)) => {
+          (kind, ..pts.map(pt => {
+            transform-vec(size, x, y, none, pt)
+          }))
+        })
+      }
+      if "pos" in d {
+        d.pos = transform-vec(size, x, y, none, d.pos)
+      }
       return d
     })
 
