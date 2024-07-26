@@ -545,25 +545,18 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let o = (x-axis.inset.at(0), y-axis.inset.at(0), 0)
-  let ferr = 0.0000001
 
-  let (x,y,..) = (x-axis, y-axis,).enumerate().map(((dim, axis)) => {
-
-    let val = vec.at(dim)
+  let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
+    let s = size.at(dim) - axis.inset.sum()
+    let o = axis.inset.at(0)
     let range = axis.max - axis.min
-
     let low = calc.min(axis.min, axis.max)
     let high = calc.max(axis.min, axis.max)
+    let f = s / range
+    ((vec.at(dim) - low) * f + o,)
+  }
 
-    if (val < low or val > high) {return none}
-  })
-
-
-  return (
-    x + o.at(0),
-    y + o.at(1),
-    0) //(z - z-axis.min) * fz + oz)
+  return (x, y, 0)
 }
 
 // Draw inside viewport coordinates of two axes
