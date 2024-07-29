@@ -9,35 +9,22 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let (ox, oy, ..) = (0, 0, 0)
-  ox += x-axis.inset.at(0)
-  oy += y-axis.inset.at(0)
+    let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
 
-  let (sx, sy) = size
-  sx -= x-axis.inset.sum()
-  sy -= y-axis.inset.sum()
+    let s = size.at(dim) - axis.inset.sum()
+    let o = axis.inset.at(0)
 
-  let x-range = x-axis.max - x-axis.min
-  let y-range = y-axis.max - y-axis.min
-  let z-range = 0 //z-axis.max - z-axis.min
+    let transform-func(n) = if (axis.mode == "log") {
+      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
+    } else {n}
 
-  let fx = sx / x-range
-  let fy = sy / y-range
-  let fz = 0 //sz / z-range
+    let range = transform-func(axis.max) - transform-func(axis.min)
 
-  let x-low = calc.min(x-axis.min, x-axis.max)
-  let x-high = calc.max(x-axis.min, x-axis.max)
-  let y-low = calc.min(y-axis.min, y-axis.max)
-  let y-high = calc.max(y-axis.min, y-axis.max)
-  //let z-low = calc.min(z-axis.min, z-axis.max)
-  //let z-hihg = calc.max(z-axis.min, z-axis.max)
+    let f = s / range
+    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
+  }
 
-  let (x, y, ..) = vec
-
-  return (
-    (x - x-axis.min) * fx + ox,
-    (y - y-axis.min) * fy + oy,
-    0) //(z - z-axis.min) * fz + oz)
+  return (x, y, 0)
 }
 
 // Draw inside viewport coordinates of two axes
