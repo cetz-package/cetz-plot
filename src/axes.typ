@@ -152,5 +152,4 @@
 
 #import "axes/grid.typ": draw-grid-lines
 #import "axes/ticks.typ": place-ticks-on-line
-#import "axes/presets/scientific.typ": scientific
-#import "axes/presets/school-book.typ": school-book
+#import "axes/preset.typ": scientific, scientific-polar, school-book

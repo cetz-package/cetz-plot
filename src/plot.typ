@@ -256,7 +256,7 @@
     } else { data.push(cmd) }
   }
 
-  assert(axis-style in (none, "scientific", "scientific-auto", "school-book", "left"),
+  assert(axis-style in (none, "scientific", "scientific-auto", "scientific-polar","school-book", "left"),
     message: "Invalid plot style")
 
   // Create axes for data & annotations
@@ -425,6 +425,15 @@
         size: size,
         axis-dict.x,
         axis-dict.y,)
+    } else if axis-style == "scientific-polar" {
+      axes.scientific-polar(
+        size: size,
+        draw-unset: false,
+        bottom: axis-dict.at("x", default: none),
+        top: axis-dict.at("x2", default: auto),
+        left: axis-dict.at("y", default: none),
+        right: axis-dict.at("y2", default: auto),
+      )
     }
 
     // Stroke + Mark data
