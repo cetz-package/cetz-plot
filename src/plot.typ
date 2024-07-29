@@ -303,7 +303,7 @@
   }
 
   // Set axis options
-  axis-dict = plot-util.setup-axes(ctx, axis-dict, options.named(), size)
+  axis-dict = axes.setup-axes(ctx, axis-dict, options.named(), size)
 
   // Prepare styles
   for i in range(data.len()) {
