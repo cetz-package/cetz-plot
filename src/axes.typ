@@ -426,21 +426,13 @@
       if axis.min > axis.max { ticks.minor-step *= -1 }
 
       let s = 1 / ticks.step
-
-      // let num-ticks = int(max * s + 1.5) - int(min * s)
-      // assert(num-ticks <= minor-tick-limit,
-      //        message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
-
       let n = range(int(min * s), int(max * s + 1.5))
-      for t in n {
 
+      for t in n {
         for vv in range(1, int(axis.base / ticks.minor-step)) {
 
           let v = ( (calc.log(vv * ticks.minor-step, base: axis.base) + t)/ s - min) / dt
-          if v in major-tick-values {
-            // Prefer major ticks over minor ticks
-            continue
-          }
+          if v in major-tick-values {continue}
 
           if v != none and v >= 0 and v <= 1 + ferr {
             l.push((v, none, false))
@@ -452,7 +444,6 @@
     }
   }
   
-
   return l
 }
 
