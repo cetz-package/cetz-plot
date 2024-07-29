@@ -52,7 +52,6 @@
       size: (16, 6), 
       axis-style: "scientific", 
       x-format: none, x-label: none,
-      // y-format: "sci",
       x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
       y-label: [Magnitude ($upright(d B)$)],
@@ -73,7 +72,6 @@
     plot.plot(
       size: (16, 6), 
       axis-style: "scientific", 
-      // y-format: "sci",
       x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
       x-label: [Frequency ($upright(r a d)\/s$)],
@@ -96,8 +94,6 @@
     size: (9, 6), 
     axis-style: "scientific", 
     y-mode: "log", y-base: 10,
-    // x-mode: "log",
-    // x-format: "sci",
     y-format: "sci",
     x-min: -0.5, x-max: 4.5, x-tick-step: 1,
     y-min: 0.1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 1,
@@ -120,8 +116,6 @@
     size: (9, 6), 
     axis-style: "scientific", 
     y-mode: "log", y-base: 100,
-    // x-mode: "log",
-    // x-format: "sci",
     y-format: "sci",
     x-min: -0.5, x-max: 4.5, x-tick-step: 1,
     y-min: 0.1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 10,
@@ -133,6 +127,14 @@
         style: (stroke: none),
         mark: "o"
       )
+      plot.annotate({
+          rect((0, 1), (calc.pi, 10), fill: rgb(50,50,200,50))
+          content((2, 3), [Annotation])
+      })
+      plot.annotate({
+          rect((0, 1000), (calc.pi, 10000), fill: rgb(50,50,200,50))
+          content((2, 3000), [Annotation])
+      })
     }
   )
 }))
@@ -145,8 +147,6 @@
     size: (9, 6), 
     axis-style: "scientific", 
     y-mode: "log", y-base: 10,
-    // x-mode: "log",
-    // x-format: "sci",
     y-format: "sci",
     x-min: -0.5, x-max: 2.5, x-tick-step: 1,
     y-min: 0.1, y-max: 15000, y-tick-step: 1, y-minor-tick-step: 1,
