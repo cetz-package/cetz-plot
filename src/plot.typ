@@ -117,6 +117,11 @@
 /// #show-parameter-block("unit", ("none", "content"), default: "none", [
 ///   Suffix to append to all tick labels.
 /// ])
+/// #show-parameter-block("mode", ("none", "string"), default: "none", [
+///   The scaling function of the axis. Takes `lin` (default) for linear scaling,
+///   and `log` for logarithmic scaling.])
+/// #show-parameter-block("base", ("none", "number"), default: "none", [
+///   The base to be used when labeling axis ticks in logarithmic scaling])
 /// #show-parameter-block("grid", ("bool", "string"), default: "false", [
 ///   If `true` or `"major"`, show grid lines for all major ticks. If set
 ///   to `"minor"`, show grid lines for minor ticks only.
