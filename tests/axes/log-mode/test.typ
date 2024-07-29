@@ -21,13 +21,20 @@
     x-grid: "both",
     y-grid: "both",
     {
-      plot.add(domain: (0, 10), x => {calc.pow(10, x)})
+      plot.add(
+        domain: (0, 10), 
+        x => {calc.pow(10, x)},
+        samples: 100, 
+        line: "raw",
+        label: $y=10^x$
+      )
       plot.add(
         domain: (1, 10), 
         x => {x}, 
         samples: 100, 
         line: "raw",
-        // epigraph: true,
+        hypograph: true,
+        label: $y=x$
       )
     }
   )
