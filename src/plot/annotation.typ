@@ -1,5 +1,5 @@
-#import "/src/cetz.typ": draw, process, util, matrix
-
+#import "/src/cetz.typ"
+#import cetz: draw, process, util, matrix
 #import "util.typ"
 #import "sample.typ"
 
@@ -41,7 +41,7 @@
     axes: axes,
     resize: resize,
     background: background,
-    padding: util.as-padding-dict(padding),
+    padding: cetz.util.as-padding-dict(padding),
   ),)
 }
 
