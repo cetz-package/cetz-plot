@@ -1,4 +1,5 @@
 #import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
+#import "/src/plot/formats.typ"
 
 #let typst-content = content
 
@@ -250,27 +251,6 @@
     $#round(value, digits)$
   }
 
-  let format-sci(value, digits) = {
-    let exponent = if value != 0 {
-      calc.floor(calc.log(calc.abs(value), base: 10))
-    } else {
-      0
-    }
-
-    let ee = calc.pow(10, calc.abs(exponent + 1))
-    if exponent > 0 {
-      value = value / ee * 10
-    } else if exponent < 0 {
-      value = value * ee * 10
-    }
-
-    value = round(value, digits)
-    if exponent <= -1 or exponent >= 1 {
-      return $#value times 10^#exponent$
-    }
-    return $#value$
-  }
-
   if type(value) != typst-content {
     let format = tic-options.at("format", default: "float")
     if format == none {
@@ -280,8 +260,7 @@
     } else if type(format) == function {
       value = (format)(value)
     } else if format == "sci" {
-      // Todo: Handle logarithmic including arbitrary base
-      value = format-sci(value, tic-options.at("decimals", default: 2))
+      value = formats.sci(value, digits: tic-options.at("decimals", default: 2))
     } else {
       value = format-float(value, tic-options.at("decimals", default: 2))
     }
@@ -381,7 +360,7 @@
 #let compute-logarithmic-ticks(axis, style, add-zero: true) = {
   let ferr = util.float-epsilon
   let (min, max) = (
-    calc.log(calc.max(axis.min, ferr), base: axis.base), 
+    calc.log(calc.max(axis.min, ferr), base: axis.base),
     calc.log(calc.max(axis.max, ferr), base: axis.base)
   )
   let dt = max - min; if (dt == 0) { dt = 1 }
@@ -439,11 +418,11 @@
           }
 
         }
-        
+
       }
     }
   }
-  
+
   return l
 }
 
