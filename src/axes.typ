@@ -225,6 +225,8 @@
 //     - unit (content): Tick label suffix
 //     - decimals (int): Tick float decimal length
 // - label (content): Axis label
+// - mode (string): Axis scaling function. Takes `lin` or `log`
+// - base (number): Base for tick labels when logarithmically scaled.
 #let axis(min: -1, max: 1, label: none,
           ticks: (step: auto, minor-step: none,
                   unit: none, decimals: 2, grid: false,
