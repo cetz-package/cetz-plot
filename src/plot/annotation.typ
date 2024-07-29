@@ -42,7 +42,6 @@
     resize: resize,
     background: background,
     padding: cetz.util.as-padding-dict(padding),
-    // padding: none,
   ),)
 }
 
