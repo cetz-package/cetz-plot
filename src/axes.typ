@@ -1,6 +1,7 @@
 #import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
 #import "axes/style.typ":  _prepare-style, _get-axis-style
 #import "axes/preset.typ"
+#import "axes/formats.typ"
 
 // Construct Axis Object
 //
