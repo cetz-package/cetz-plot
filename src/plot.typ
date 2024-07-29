@@ -31,7 +31,6 @@
 /// axis styles to draw, see its parameter `axis-style:`.
 ///
 /// #example(```
-/// import cetz.plot
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1), (2,.5), (4,3)))
 /// })
@@ -58,10 +57,10 @@
 ///   This can be useful to force one axis to grow or shrink with another one.
 ///   You can only "lock" two axes of different orientations.
 ///   #example(```
-///   cetz.plot.plot(size: (2,1), x-tick-step: 1, y-tick-step: 1,
-///                  x-equal: "y",
+///   plot.plot(size: (2,1), x-tick-step: 1, y-tick-step: 1,
+///             x-equal: "y",
 ///   {
-///     cetz.plot.add(domain: (0, 2 * calc.pi),
+///     plot.add(domain: (0, 2 * calc.pi),
 ///       t => (calc.cos(t), calc.sin(t)))
 ///   })
 ///   ```)
@@ -83,13 +82,13 @@
 ///   setting custom tick mark labels per mark.
 ///
 ///   #example(```
-///   cetz.plot.plot(x-tick-step: none, y-tick-step: none,
-///                  x-min: 0, x-max: 4,
-///                  x-ticks: (1, 2, 3),
-///                  y-min: 1, y-max: 2,
-///                  y-ticks: ((1, [One]), (2, [Two])),
+///   plot.plot(x-tick-step: none, y-tick-step: none,
+///             x-min: 0, x-max: 4,
+///             x-ticks: (1, 2, 3),
+///             y-min: 1, y-max: 2,
+///             y-ticks: ((1, [One]), (2, [Two])),
 ///   {
-///     cetz.plot.add(((0,0),))
+///     plot.add(((0,0),))
 ///   })
 ///   ```)
 ///
@@ -102,11 +101,11 @@
 ///
 ///   #example(```
 ///   let formatter(v) = if v != 0 {$ #{v/calc.pi} pi $} else {$ 0 $}
-///   cetz.plot.plot(x-tick-step: calc.pi, y-tick-step: none,
+///   plot.plot(x-tick-step: calc.pi, y-tick-step: none,
 ///             x-min: 0, x-max: 2 * calc.pi,
 ///             x-format: formatter,
 ///   {
-///     cetz.plot.add(((0,0),))
+///     plot.add(((0,0),))
 ///   })
 ///   ```)
 /// ])
@@ -128,11 +127,11 @@
 ///   The value `"both"` enables grid lines for both, major- and minor ticks.
 ///
 ///   #example(```
-///   cetz.plot.plot(x-tick-step: 1, y-tick-step: 1,
-///                  y-minor-tick-step: .2,
-///                  x-min: 0, x-max: 2, x-grid: true,
-///                  y-min: 0, y-max: 2, y-grid: "both", {
-///     cetz.plot.add(((0,0),))
+///   plot.plot(x-tick-step: 1, y-tick-step: 1,
+///             y-minor-tick-step: .2,
+///             x-min: 0, x-max: 2, x-grid: true,
+///             y-min: 0, y-max: 2, y-grid: "both", {
+///     plot.add(((0,0),))
 ///   })
 ///   ```)
 /// ])
@@ -162,7 +161,7 @@
 ///   let data = cetz.plot.add(((-1,-1), (1,1),), mark: "o")
 ///
 ///   for name in (none, "school-book", "left", "scientific") {
-///     cetz.plot.plot(axis-style: name, ..opts, data, name: "plot")
+///     plot.plot(axis-style: name, ..opts, data, name: "plot")
 ///     content(((0,-1), "-|", "plot.south"), repr(name))
 ///     set-origin((3.5,0))
 ///   }
@@ -188,7 +187,7 @@
 ///   ])
 /// - fill-below (bool): If true, the filled shape of plots is drawn _below_ axes.
 /// - name (string): The plots element name to be used when referring to anchors
-/// - legend (none, auto, coordinate): The position the legend will be drawn at. See @plot-legends for information about legends. If set to `<auto>`, the legend's "default-placement" styling will be used. If set to a `<coordinate>`, it will be taken as relative to the plot's origin.
+/// - legend (none, auto, coordinate): The position the legend will be drawn at. See plot-legends for information about legends. If set to `<auto>`, the legend's "default-placement" styling will be used. If set to a `<coordinate>`, it will be taken as relative to the plot's origin.
 /// - legend-anchor (auto, string): Anchor of the legend group to use as its origin.
 ///   If set to `auto` and `lengend` is one of the predefined legend anchors, the
 ///   opposite anchor to `legend` gets used.
