@@ -426,7 +426,7 @@
       if axis.min > axis.max { ticks.minor-step *= -1 }
 
       let s = 1 / ticks.step
-      let n = range(int(min * s), int(max * s + 1.5))
+      let n = range(int(min * s)-1, int(max * s + 1.5)+1)
 
       for t in n {
         for vv in range(1, int(axis.base / ticks.minor-step)) {
