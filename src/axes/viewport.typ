@@ -9,19 +9,36 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
 
-    let s = size.at(dim) - axis.inset.sum()
-    let o = axis.inset.at(0)
+  let (x,y,) =  if (
+    x-axis.at("polar", default: false) or 
+    y-axis.at("polar", default: false)
+  ) {
 
-    let transform-func(n) = if (axis.mode == "log") {
-      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
-    } else {n}
+    let radius = calc.min(..size)
+    let x-norm = (vec.at(0) - x-axis.min) / (x-axis.max - x-axis.min)
+    let y-norm = (vec.at(1) - y-axis.min) / (y-axis.max - y-axis.min)
+    let theta = 2 * calc.pi * x-norm - calc.pi/2
+    let dist = (radius/2) * y-norm
+    let x = dist * calc.cos(theta)
+    let y = dist * calc.sin(theta)
 
-    let range = transform-func(axis.max) - transform-func(axis.min)
+    (radius/2 + x, radius/2 + y)
 
-    let f = s / range
-    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
+  } else {
+    for (dim, axis) in (x-axis, y-axis).enumerate() {
+      let s = size.at(dim) - axis.inset.sum()
+      let o = axis.inset.at(0)
+
+      let transform-func(n) = if (axis.mode == "log") {
+        calc.log(calc.max(n, util.float-epsilon), base: axis.base)
+      } else {n}
+
+      let range = transform-func(axis.max) - transform-func(axis.min)
+      let f = s / range
+
+      ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
+    }
   }
 
   return (x, y, 0)

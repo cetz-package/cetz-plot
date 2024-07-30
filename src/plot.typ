@@ -310,6 +310,11 @@
   // Set axis options
   axis-dict = axes.setup-axes(ctx, axis-dict, options.named(), size)
 
+  if (axis-style == "scientific-polar"){
+    axis-dict.x.polar = true
+    axis-dict.y.polar = true
+  }
+
   // Prepare styles
   for i in range(data.len()) {
     if "style" not in data.at(i) { continue }

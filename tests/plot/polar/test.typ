@@ -11,19 +11,35 @@
 
 /* Scientific Style */
 #test-case({
+
+  draw.set-style(
+    axes: (tick: (label: (position: "south"))),
+    legend: (stroke: none, achor: "west")
+  )
+
   plot.plot(
-    size: (5,5),
+    size: (16,9),
     axis-style: "scientific-polar",
 
-    x-tick-step: calc.pi / 8,
+    x-tick-step: calc.pi / 4,
     x-minor-tick-step: calc.pi / 16,
     x-grid: "both",
+    x-min: 0, x-max: 2 * calc.pi,
 
-    y-min: 0, y-max: 1,
+    y-min: -1, y-max: 1,
     y-tick-step: 0.5,
     y-minor-tick-step: 0.125,
     y-grid: "both",
+
+    legend: "east",
     {
-      plot.add((t)=>0.5*(calc.sin(t)+1), domain: (0, 2*calc.pi), line: "raw")
+      plot.add(
+        calc.sin,
+        domain: (0, 2* calc.pi), 
+        line: "raw",
+        samples: 100,
+        // fill: true,
+        label: $sin(x)$
+      )
     })
 })

@@ -39,8 +39,11 @@
     for (distance, label, is-major) in ticks {
       let theta = distance * calc.pi * 2
       draw.line(
-        (0,0), 
-        (radius * calc.cos(theta), radius * calc.sin(theta)), 
+        (radius / 2, radius / 2), 
+        (
+          radius * (calc.cos(theta) + 1) / 2,
+          radius * (calc.sin(theta) + 1) / 2
+        ), 
         stroke: if is-major and (kind == 1 or kind == 3) {
           style.grid.stroke
         } else if not is-major and kind >= 2 {
@@ -51,16 +54,67 @@
   } else {  
     for (distance, label, is-major) in ticks {
       circle( 
-        (0,0), 
-        radius: distance * radius, 
+        (radius / 2, radius / 2), 
+        radius: distance * radius / 2, 
         stroke: if is-major and (kind == 1 or kind == 3) {
           style.grid.stroke
-        } else if not is-major and kind >= 2 {
+        } else if not is-major and (kind >= 2) {
           style.minor-grid.stroke
         }
       )
     }
   }
+}
+
+#let _draw-polar-axis-line(center, radius, axis, is-horizontal, style) = {
+  let enabled = if axis != none and axis.show-break {
+    axis.min > 0 or axis.max < 0
+  } else { false }
+
+  if enabled {
+    // let size = if is-horizontal {
+    //   (style.break-point.width, 0)
+    // } else {
+    //   (0, style.break-point.width, 0)
+    // }
+
+    // let up = if is-horizontal {
+    //   (0, style.break-point.length)
+    // } else {
+    //   (style.break-point.length, 0)
+    // }
+
+    // let add-break(is-end) = {
+    //   let a = ()
+    //   let b = (rel: vector.scale(size, .3), update: false)
+    //   let c = (rel: vector.add(vector.scale(size, .4), vector.scale(up, -1)), update: false)
+    //   let d = (rel: vector.add(vector.scale(size, .6), vector.scale(up, +1)), update: false)
+    //   let e = (rel: vector.scale(size, .7), update: false)
+    //   let f = (rel: size)
+
+    //   let mark = if is-end {
+    //     style.at("mark", default: none)
+    //   }
+    //   draw.line(a, b, c, d, e, f, stroke: style.stroke, mark: mark)
+    // }
+
+    // draw.merge-path({
+    //   draw.move-to(start)
+    //   if axis.min > 0 {
+    //     add-break(false)
+    //     draw.line((rel: size, to: start), end, mark: style.at("mark", default: none))
+    //   } else if axis.max < 0 {
+    //     draw.line(start, (rel: vector.scale(size, -1), to: end))
+    //     add-break(true)
+    //   }
+    // }, stroke: style.stroke)
+  } else {
+    draw.circle(center, radius: radius, stroke: style.stroke, mark: style.at("mark", default: none))
+  }
+}
+
+#let place-ticks-on-radius(ticks, center, radius, style) = {
+
 }
 
 #let scientific-polar(size: (1, 1),
@@ -119,8 +173,8 @@
 
     group(name: "axes", {
       let axes = (
-        // ("angular", (0, 0), (w, 0), (0, -1), false, x-ticks,  angular,),
-        ("distal",   (0, 0), (0, h), (-1, 0), true,  y-ticks,  distal,),
+        ("angular", (radius/2, radius/2), (radius/2, radius), (0, -1), false, x-ticks,  angular),
+        ("distal",   (radius/2, radius/2), (radius, radius/2), (1, 0), true,  y-ticks,  distal,),
       )
 
       for (name, start, end, outsides, flip, ticks, axis) in axes {
@@ -134,19 +188,33 @@
           end = vector.add(end, padding)
         }
 
-        let (data-start, data-end) = _inset-axis-points(ctx, style, axis, start, end)
 
-        let path = _draw-axis-line(start, end, axis, is-horizontal, style)
-        on-layer(style.axis-layer, {
-          group(name: "axis", {
-            if draw-unset or axis != none {
-              path;
-              place-ticks-on-line(ticks, data-start, data-end, style, flip: flip, is-mirror: is-mirror)
-            }
+        if (name == "angular"){
+          let (data-start, data-end) = _inset-axis-points(ctx, style, axis, start, end)
+
+          let path = _draw-polar-axis-line(start, radius/2, axis, is-horizontal, style)
+          on-layer(style.axis-layer, {
+            group(name: "axis", {
+              if draw-unset or axis != none {
+                path;
+                place-ticks-on-radius(ticks, start, radius/2, style)
+              }
+            })
           })
+        } else {
 
-          
-        })
+          let (data-start, data-end) = _inset-axis-points(ctx, style, axis, start, end)
+
+          let path = _draw-axis-line(start, end, axis, is-horizontal, style)
+          on-layer(style.axis-layer, {
+            group(name: "axis", {
+              if draw-unset or axis != none {
+                path;
+                place-ticks-on-line(ticks, data-start, data-end, style, flip: flip, is-mirror: is-mirror)
+              }
+            })
+          })
+        }
       }
     })
   })
