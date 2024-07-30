@@ -1,74 +1,55 @@
-#import "/src/cetz.typ": draw, process, util, matrix
+#import "line.typ"
 
-#import "util.typ"
-#import "sample.typ"
-
-#let _prepare(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
-  // bin the data
-  let (min, max) = (calc.min(..self.data),calc.max(..self.data))
-  let range = max - min
-  
-  let binned = self.data.sorted().fold( (0,)*self.bins, (acc, it) => {
-    let bin =  int(self.bins * (it - min) / (max - min))
-    acc.at(bin - 1) += 1
-    return acc
-  })
-
-  self.line-data = binned.enumerate().map( ((x, y)) => {
-    (0 + y / 10, min + x)
-  })
-
-  // Generate stroke paths
-  self.stroke-paths = util.compute-stroke-paths(self.line-data,
-    (x.min, y.min), (x.max, y.max))
-
-  // Compute fill paths if filling is requested
-  self.fill = self.at("fill", default: false)
-  if self.fill {
-    self.fill-paths = util.compute-fill-paths(
-      self.line-data,
-      (x.min, y.min), 
-      (x.max, y.max)
-    )
-  }
-
-  return self
-}
-
-#let _stroke(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
-  for p in self.stroke-paths {
-    draw.line(..p, fill: none)
-  }
-}
-
-#let _fill(self, ctx) = {
-  // fill-segments-to(self.fill-paths, y.min)
+#let kernal-normal(x, stdev: 1.5) = {
+  (1/calc.sqrt(2*calc.pi*calc.pow(stdev,2))) * calc.exp( - (x*x)/(2*calc.pow(stdev,2)))
 }
 
 #let violin( 
   data,
+  x-key: 0,
+  y-key: 1,
+  side: "left", // "left", "right", "both"
   style: (:),
+  kernel: kernal-normal.with(stdev: 1.5),
+  bandwidth: 1,
+  extend: 0.5,
   axes: ("x", "y"),
-  bins: 7,
 ) = {
 
-  ((
-    type: "violin",
-    axes: axes,
-    data: data,
-    bins: bins,
-    style: style,
-    plot-prepare: _prepare,
-    plot-stroke: _stroke,
-    plot-fill: _fill,
-    plot-legend-preview: self => {
-      draw.rect((0,0), (1,1), ..self.style)
-    }
-  ),)
+  for category in data {
+    let (x, ys) = (category.at(x-key), category.at(y-key))
+    let n = ys.len()
+    let (min, max) = (calc.min(..ys), calc.max(..ys))
+    let domain = (min - (max - min)*extend, max + (max - min)*extend)
 
+    let convolve = (t, side: side)=>{
+      let val = ys.map((y)=>kernel((y - t)/bandwidth)).sum()
+      (x + (1/(n*bandwidth) * val) * if side == "left" {-1} else {1}, t)
+    }
+
+    if (side in ("left", "both")) {
+      line.add(
+        convolve.with(side: "left"),
+        domain: domain,
+        line: "raw",
+        fill-type: "shape",
+        fill: true,
+        style: style
+      )
+    }
+
+    if (side in ("right", "both")){
+      line.add(
+        convolve.with(side: "right"),
+        domain: domain,
+        line: "raw",
+        fill-type: "shape",
+        fill: true,
+        style: style
+      )
+    }
+
+
+  }
 
 }
