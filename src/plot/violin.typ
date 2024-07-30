@@ -2,7 +2,7 @@
 #import "util.typ"
 #import "sample.typ"
 
-#let kernal-normal(x, stdev: 1.5) = {
+#let kernel-normal(x, stdev: 1.5) = {
   (1/calc.sqrt(2*calc.pi*calc.pow(stdev,2))) * calc.exp( - (x*x)/(2*calc.pow(stdev,2)))
 }
 
@@ -95,8 +95,8 @@
   data,
   x-key: 0,
   y-key: 1,
-  side: "right", // "left", "right", "both"
-  kernel: kernal-normal.with(stdev: 1.5),
+  side: "right",
+  kernel: kernel-normal.with(stdev: 1.5),
   bandwidth: 1,
   extents: 0.25,
 
