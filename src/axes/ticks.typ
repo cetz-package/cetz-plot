@@ -138,6 +138,78 @@
   return l
 }
 
+// Compute list of linear ticks for axis
+//
+// - axis (axis): Axis
+#let compute-logarithmic-ticks(axis, style, add-zero: true) = {
+  let ferr = util.float-epsilon
+  let (min, max) = (
+    calc.log(calc.max(axis.min, ferr), base: axis.base), 
+    calc.log(calc.max(axis.max, ferr), base: axis.base)
+  )
+  let dt = max - min; if (dt == 0) { dt = 1 }
+  let ticks = axis.ticks
+
+  let tick-limit = style.tick-limit
+  let minor-tick-limit = style.minor-tick-limit
+  let l = ()
+
+  if ticks != none {
+    let major-tick-values = ()
+    if "step" in ticks and ticks.step != none {
+      assert(ticks.step >= 0,
+             message: "Axis tick step must be positive and non 0.")
+      if axis.min > axis.max { ticks.step *= -1 }
+
+      let s = 1 / ticks.step
+
+      let num-ticks = int(max * s + 1.5)  - int(min * s)
+      assert(num-ticks <= tick-limit,
+             message: "Number of major ticks exceeds limit " + str(tick-limit))
+
+      let n = range(
+        int(min * s),
+        int(max * s + 1.5)
+      )
+
+      for t in n {
+        let v = (t / s - min) / dt
+        if t / s == 0 and not add-zero { continue }
+
+        if v >= 0 - ferr and v <= 1 + ferr {
+          l.push((v, format-tick-value( calc.pow(axis.base, t / s), ticks), true))
+          major-tick-values.push(v)
+        }
+      }
+    }
+
+    if "minor-step" in ticks and ticks.minor-step != none {
+      assert(ticks.minor-step >= 0,
+             message: "Axis minor tick step must be positive")
+      if axis.min > axis.max { ticks.minor-step *= -1 }
+
+      let s = 1 / ticks.step
+      let n = range(int(min * s)-1, int(max * s + 1.5)+1)
+
+      for t in n {
+        for vv in range(1, int(axis.base / ticks.minor-step)) {
+
+          let v = ( (calc.log(vv * ticks.minor-step, base: axis.base) + t)/ s - min) / dt
+          if v in major-tick-values {continue}
+
+          if v != none and v >= 0 and v <= 1 + ferr {
+            l.push((v, none, false))
+          }
+
+        }
+
+      }
+    }
+  }
+
+  return l
+}
+
 // Get list of fixed axis ticks
 //
 // - axis (axis): Axis object
@@ -199,7 +271,11 @@
     }
   }
 
-  let ticks = compute-linear-ticks(axis, style, add-zero: add-zero)
+  let ticks = if axis.mode == "log" {
+    compute-logarithmic-ticks(axis, style, add-zero: add-zero)
+  } else {
+    compute-linear-ticks(axis, style, add-zero: add-zero)
+  }
   ticks += fixed-ticks(axis)
   return ticks
 }
