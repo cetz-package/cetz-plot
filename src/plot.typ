@@ -429,10 +429,8 @@
       axes.scientific-polar(
         size: size,
         draw-unset: false,
-        bottom: axis-dict.at("x", default: none),
-        top: axis-dict.at("x2", default: auto),
-        left: axis-dict.at("y", default: none),
-        right: axis-dict.at("y2", default: auto),
+        angular: axis-dict.at("x", default: none),
+        distal: axis-dict.at("y", default: none),
       )
     }
 

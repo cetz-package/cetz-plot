@@ -15,40 +15,61 @@
   padding: 0,
 ))
 
-// Draw up to four axes in an "scientific" style at origin (0, 0)
-//
-// - size (array): Size (width, height)
-// - left (axis): Left (y) axis
-// - bottom (axis): Bottom (x) axis
-// - right (axis): Right axis
-// - top (axis): Top axis
-// - name (string): Object name
-// - draw-unset (bool): Draw axes that are set to `none`
-// - ..style (any): Style
+#let _get-grid-type(axis) = {
+  let grid = axis.ticks.at("grid", default: false)
+  if grid == "major" or grid == true { return 1 }
+  if grid == "minor" { return 2 }
+  if grid == "both" { return 3 }
+  return 0
+}
+
+#let _draw-polar-grid-lines(ctx, name, axis, ticks, radius, style) = {
+
+  import draw: *
+
+  let offset = (0,0)
+  if axis.inset != none {
+    let (inset-low, inset-high) = axis.inset.map(v => util.resolve-number(ctx, v))
+    offset = inset-low
+  }
+  let kind = _get-grid-type(axis)
+  if kind == 0 {return}
+
+  if name == "angular" {
+    for (distance, label, is-major) in ticks {
+      let theta = distance * calc.pi * 2
+      draw.line(
+        (0,0), 
+        (radius * calc.cos(theta), radius * calc.sin(theta)), 
+        stroke: if is-major and (kind == 1 or kind == 3) {
+          style.grid.stroke
+        } else if not is-major and kind >= 2 {
+          style.minor-grid.stroke
+        }
+      )
+    }
+  } else {  
+    for (distance, label, is-major) in ticks {
+      circle( 
+        (0,0), 
+        radius: distance * radius, 
+        stroke: if is-major and (kind == 1 or kind == 3) {
+          style.grid.stroke
+        } else if not is-major and kind >= 2 {
+          style.minor-grid.stroke
+        }
+      )
+    }
+  }
+}
+
 #let scientific-polar(size: (1, 1),
-                left: none,
-                right: auto,
-                bottom: none,
-                top: auto,
+                angular: none,
+                distal: none,
                 draw-unset: true,
                 name: none,
                 ..style) = {
   import draw: *
-
-  if right == auto {
-    if left != none {
-      right = left; right.is-mirror = true
-    } else {
-      right = none
-    }
-  }
-  if top == auto {
-    if bottom != none {
-      top = bottom; top.is-mirror = true
-    } else {
-      top = none
-    }
-  }
 
   group(name: name, ctx => {
     let (w, h) = size
@@ -60,53 +81,46 @@
     style = _prepare-style(ctx, style)
 
     // Compute ticks
-    let x-ticks = compute-ticks(bottom, style)
-    let y-ticks = compute-ticks(left, style)
-    let x2-ticks = compute-ticks(top, style)
-    let y2-ticks = compute-ticks(right, style)
+    let x-ticks = compute-ticks(angular, style)
+    let y-ticks = compute-ticks(distal, style)
+    let radius = calc.min(w,h)
 
     // Draw frame
     if style.fill != none {
       on-layer(style.background-layer, {
-        rect((0,0), (w,h), fill: style.fill, stroke: none)
+        circle( (0,0), radius: radius, fill: style.fill, stroke: none)
+        // rect((0,0), (w,h), fill: style.fill, stroke: none)
       })
     }
 
+    let axes = (
+      ("angular", x-ticks, angular),
+      ("distal", y-ticks, distal),
+    )
+
     // Draw grid
+    // To do: render radial and angular gridlines
+    // To do: divide radius by 2!
     group(name: "grid", ctx => {
-      let axes = (
-        ("bottom", (0,0), (0,h), (+w,0), x-ticks,  bottom),
-        ("top",    (0,h), (0,0), (+w,0), x2-ticks, top),
-        ("left",   (0,0), (w,0), (0,+h), y-ticks,  left),
-        ("right",  (w,0), (0,0), (0,+h), y2-ticks, right),
-      )
-      for (name, start, end, direction, ticks, axis) in axes {
+
+      for (name, ticks, axis) in axes {
         if axis == none { continue }
-
         let style = _get-axis-style(ctx, style, name)
-        let is-mirror = axis.at("is-mirror", default: false)
 
-        if not is-mirror {
-          on-layer(style.grid-layer, {
-            draw-grid-lines(ctx, axis, ticks, start, end, direction, style)
-          })
-        }
+        on-layer(style.grid-layer, {
+          _draw-polar-grid-lines(ctx, name, axis, ticks, radius, style)
+        })
       }
+
     })
 
     // Draw axes
+    // To do: Handle label placement
+
     group(name: "axes", {
       let axes = (
-        ("bottom", (0, 0), (w, 0), (0, -1), false, x-ticks,  bottom,),
-        ("top",    (0, h), (w, h), (0, +1), true,  x2-ticks, top,),
-        ("left",   (0, 0), (0, h), (-1, 0), true,  y-ticks,  left,),
-        ("right",  (w, 0), (w, h), (+1, 0), false, y2-ticks, right,)
-      )
-      let label-placement = (
-        bottom: ("south", "north", 0deg),
-        top:    ("north", "south", 0deg),
-        left:   ("west", "south", 90deg),
-        right:  ("east", "north", 90deg),
+        // ("angular", (0, 0), (w, 0), (0, -1), false, x-ticks,  angular,),
+        ("distal",   (0, 0), (0, h), (-1, 0), true,  y-ticks,  distal,),
       )
 
       for (name, start, end, outsides, flip, ticks, axis) in axes {
@@ -131,22 +145,7 @@
             }
           })
 
-          if axis != none and axis.label != none and not is-mirror {
-            let offset = vector.scale(outsides, style.label.offset)
-            let (group-anchor, content-anchor, angle) = label-placement.at(name)
-
-            if style.label.anchor != auto {
-              content-anchor = style.label.anchor
-            }
-            if style.label.angle != auto {
-              angle = style.label.angle
-            }
-
-            content((rel: offset, to: "axis." + group-anchor),
-              [#axis.label],
-              angle: angle,
-              anchor: content-anchor)
-          }
+          
         })
       }
     })
