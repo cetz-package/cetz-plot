@@ -1,13 +1,10 @@
 #import "/src/cetz.typ": draw
-
 #import "util.typ"
 #import "sample.typ"
-
 
 #let kernal-normal(x, stdev: 1.5) = {
   (1/calc.sqrt(2*calc.pi*calc.pow(stdev,2))) * calc.exp( - (x*x)/(2*calc.pow(stdev,2)))
 }
-
 
 #let _violin-render(self, ctx, violin, filling: true) = {
   let path = range(self.samples)
@@ -33,7 +30,7 @@
     } else {
       args = arguments(..args, fill: none)
     }
-    draw.line(..args)
+    draw.line(..self.style, ..args)
   }
 }
 
@@ -72,6 +69,28 @@
   draw.rect((0,0), (1,1), ..self.style)
 }
 
+
+/// Add a violin plot
+///
+/// A violin plot is a chart that can be used to compare the distribution of continuous
+/// data between categories.
+///
+/// - data (array): Array of data items. An item is an array containing an `x` and one 
+///                 or more `y` values.
+/// - x-key (int, string): Key to use for retreiving the `x` position of the violin.
+/// - y-key (int, string): Key to use for retreiving values of points within the category.
+/// - side (string): The sides of the violin to be rendered:
+///   / left: Plot only the left side of the violin.
+///   / right: Plot only the right side of the violin.
+///   / both: Plot both sides of the violin.
+/// - kernel (function): The kernel density estimator function.
+/// - bandwidth (float): The smoothing parameter of the kernel.
+/// - extents (float): The extension of the domain, expressed as a fraction of spread.
+/// - samples (int): The number of samples of the kernel to render.
+/// - style (dictionary): Style override dictionary.
+/// - mark-style (dictionary): (unused, will eventually be used to render interquartile ranges).
+/// - axes (axes): (unstable, documentation to follow once completed).
+/// - label (none, content): The name of the category to be shown in the legend.
 #let violin( 
   data,
   x-key: 0,
@@ -110,41 +129,5 @@
     plot-fill: _plot-fill,
     plot-legend-preview: _plot-legend-preview,
   ),)
-
-  // for category in data {
-  //   let (x, ys) = (category.at(x-key), category.at(y-key))
-  //   let n = ys.len()
-  //   let (min, max) = (calc.min(..ys), calc.max(..ys))
-  //   let domain = (min - (max - min)*extend, max + (max - min)*extend)
-
-  //   let convolve = (t, side: side)=>{
-  //     let val = ys.map((y)=>kernel((y - t)/bandwidth)).sum()
-  //     (x + (1/(n*bandwidth) * val) * if side == "left" {-1} else {1}, t)
-  //   }
-
-  //   if (side in ("left", "both")) {
-  //     line.add(
-  //       convolve.with(side: "left"),
-  //       domain: domain,
-  //       line: "raw",
-  //       fill-type: "shape",
-  //       fill: true,
-  //       style: style
-  //     )
-  //   }
-
-  //   if (side in ("right", "both")){
-  //     line.add(
-  //       convolve.with(side: "right"),
-  //       domain: domain,
-  //       line: "raw",
-  //       fill-type: "shape",
-  //       fill: true,
-  //       style: style
-  //     )
-  //   }
-
-
-  // }
 
 }
