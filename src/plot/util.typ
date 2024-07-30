@@ -303,6 +303,9 @@
       axis.min -= 1; axis.max += 1
     }
 
+    axis.mode = get-axis-option(name, "mode", "lin")
+    axis.base = get-axis-option(name, "base", 10)
+
     // Configure axis orientation
     axis.horizontal = get-axis-option(name, "horizontal",
       get-default-axis-horizontal(name))

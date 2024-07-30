@@ -11,14 +11,10 @@
 
   plot.plot(
     size: (5,5),
-    x-min: 0,
-    x-max: 1,
-    y-min: 0,
-    y-max: 1,
-    x2-min: 1,
-    x2-max: 0,
-    y2-min: 1,
-    y2-max: 0,
+     x-min: 0,  x-max: 1,
+     y-min: 0,  y-max: 1,
+    x2-min: 1, x2-max: 0,
+    y2-min: 1, y2-max: 0,
     for axes in axis-options {
       plot.add(
         axes: axes,

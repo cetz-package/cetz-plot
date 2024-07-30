@@ -14,7 +14,7 @@
 
 /// Draw a column chart. A column chart is a chart that represents data with
 /// rectangular bars that grow from bottom to top, proportional to the values
-/// they represent. For examples see @columnchart-examples.
+/// they represent.
 ///
 /// = Styling
 /// *Root*: `columnchart`.

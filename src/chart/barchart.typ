@@ -14,7 +14,7 @@
 
 /// Draw a bar chart. A bar chart is a chart that represents data with
 /// rectangular bars that grow from left to right, proportional to the values
-/// they represent. For examples see @barchart-examples.
+/// they represent.
 ///
 /// = Styling
 /// *Root*: `barchart`.

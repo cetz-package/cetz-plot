@@ -1,4 +1,5 @@
 #import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
+#import "/src/plot/formats.typ"
 
 #let typst-content = content
 
@@ -225,11 +226,15 @@
 //     - unit (content): Tick label suffix
 //     - decimals (int): Tick float decimal length
 // - label (content): Axis label
+// - mode (string): Axis scaling function. Takes `lin` or `log`
+// - base (number): Base for tick labels when logarithmically scaled.
 #let axis(min: -1, max: 1, label: none,
           ticks: (step: auto, minor-step: none,
                   unit: none, decimals: 2, grid: false,
-                  format: "float")) = (
-  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false,
+                  format: "float"
+                  ),
+          mode: auto, base: auto) = (
+  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false, mode: mode, base: base
 )
 
 // Format a tick value
@@ -246,27 +251,6 @@
     $#round(value, digits)$
   }
 
-  let format-sci(value, digits) = {
-    let exponent = if value != 0 {
-      calc.floor(calc.log(calc.abs(value), base: 10))
-    } else {
-      0
-    }
-
-    let ee = calc.pow(10, calc.abs(exponent + 1))
-    if exponent > 0 {
-      value = value / ee * 10
-    } else if exponent < 0 {
-      value = value * ee * 10
-    }
-
-    value = round(value, digits)
-    if exponent <= -1 or exponent >= 1 {
-      return $#value times 10^#exponent$
-    }
-    return $#value$
-  }
-
   if type(value) != typst-content {
     let format = tic-options.at("format", default: "float")
     if format == none {
@@ -276,7 +260,7 @@
     } else if type(format) == function {
       value = (format)(value)
     } else if format == "sci" {
-      value = format-sci(value, tic-options.at("decimals", default: 2))
+      value = formats.sci(value, digits: tic-options.at("decimals", default: 2))
     } else {
       value = format-float(value, tic-options.at("decimals", default: 2))
     }
@@ -370,6 +354,78 @@
   return l
 }
 
+// Compute list of linear ticks for axis
+//
+// - axis (axis): Axis
+#let compute-logarithmic-ticks(axis, style, add-zero: true) = {
+  let ferr = util.float-epsilon
+  let (min, max) = (
+    calc.log(calc.max(axis.min, ferr), base: axis.base),
+    calc.log(calc.max(axis.max, ferr), base: axis.base)
+  )
+  let dt = max - min; if (dt == 0) { dt = 1 }
+  let ticks = axis.ticks
+
+  let tick-limit = style.tick-limit
+  let minor-tick-limit = style.minor-tick-limit
+  let l = ()
+
+  if ticks != none {
+    let major-tick-values = ()
+    if "step" in ticks and ticks.step != none {
+      assert(ticks.step >= 0,
+             message: "Axis tick step must be positive and non 0.")
+      if axis.min > axis.max { ticks.step *= -1 }
+
+      let s = 1 / ticks.step
+
+      let num-ticks = int(max * s + 1.5)  - int(min * s)
+      assert(num-ticks <= tick-limit,
+             message: "Number of major ticks exceeds limit " + str(tick-limit))
+
+      let n = range(
+        int(min * s),
+        int(max * s + 1.5)
+      )
+
+      for t in n {
+        let v = (t / s - min) / dt
+        if t / s == 0 and not add-zero { continue }
+
+        if v >= 0 - ferr and v <= 1 + ferr {
+          l.push((v, format-tick-value( calc.pow(axis.base, t / s), ticks), true))
+          major-tick-values.push(v)
+        }
+      }
+    }
+
+    if "minor-step" in ticks and ticks.minor-step != none {
+      assert(ticks.minor-step >= 0,
+             message: "Axis minor tick step must be positive")
+      if axis.min > axis.max { ticks.minor-step *= -1 }
+
+      let s = 1 / ticks.step
+      let n = range(int(min * s)-1, int(max * s + 1.5)+1)
+
+      for t in n {
+        for vv in range(1, int(axis.base / ticks.minor-step)) {
+
+          let v = ( (calc.log(vv * ticks.minor-step, base: axis.base) + t)/ s - min) / dt
+          if v in major-tick-values {continue}
+
+          if v != none and v >= 0 and v <= 1 + ferr {
+            l.push((v, none, false))
+          }
+
+        }
+
+      }
+    }
+  }
+
+  return l
+}
+
 // Get list of fixed axis ticks
 //
 // - axis (axis): Axis object
@@ -431,7 +487,11 @@
     }
   }
 
-  let ticks = compute-linear-ticks(axis, style, add-zero: add-zero)
+  let ticks = if axis.mode == "log" {
+    compute-logarithmic-ticks(axis, style, add-zero: add-zero)
+  } else {
+    compute-linear-ticks(axis, style, add-zero: add-zero)
+  }
   ticks += fixed-ticks(axis)
   return ticks
 }
@@ -471,35 +531,23 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let (ox, oy, ..) = (0, 0, 0)
-  ox += x-axis.inset.at(0)
-  oy += y-axis.inset.at(0)
 
-  let (sx, sy) = size
-  sx -= x-axis.inset.sum()
-  sy -= y-axis.inset.sum()
+  let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
 
-  let x-range = x-axis.max - x-axis.min
-  let y-range = y-axis.max - y-axis.min
-  let z-range = 0 //z-axis.max - z-axis.min
+    let s = size.at(dim) - axis.inset.sum()
+    let o = axis.inset.at(0)
 
-  let fx = sx / x-range
-  let fy = sy / y-range
-  let fz = 0 //sz / z-range
+    let transform-func(n) = if (axis.mode == "log") {
+      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
+    } else {n}
 
-  let x-low = calc.min(x-axis.min, x-axis.max)
-  let x-high = calc.max(x-axis.min, x-axis.max)
-  let y-low = calc.min(y-axis.min, y-axis.max)
-  let y-high = calc.max(y-axis.min, y-axis.max)
-  //let z-low = calc.min(z-axis.min, z-axis.max)
-  //let z-hihg = calc.max(z-axis.min, z-axis.max)
+    let range = transform-func(axis.max) - transform-func(axis.min)
 
-  let (x, y, ..) = vec
+    let f = s / range
+    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
+  }
 
-  return (
-    (x - x-axis.min) * fx + ox,
-    (y - y-axis.min) * fy + oy,
-    0) //(z - z-axis.min) * fz + oz)
+  return (x, y, 0)
 }
 
 // Draw inside viewport coordinates of two axes
