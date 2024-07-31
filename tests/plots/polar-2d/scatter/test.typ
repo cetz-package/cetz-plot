@@ -21,7 +21,15 @@
         domain: (0,2*calc.pi), 
         label: $y=x$, 
         line: "raw",
-        samples: 100
+        samples: 50
+      )
+
+      cetz.plot.add(
+        (t)=>calc.pow(calc.sin(t),2),
+        domain: (0, 2* calc.pi), 
+        line: "raw",
+        samples: 50,
+        label: $sin^2 (x)$
       )
     }
   )
