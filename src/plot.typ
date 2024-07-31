@@ -7,13 +7,19 @@
 
 // TODO: Refactor this into a better way of providing palettes
 
-#let default-colors = (blue, red, green, yellow, black)
+#let default-colors = (
+  rgb("#1982c4"),
+  rgb("#ff595e"), 
+  rgb("#ffca3a"), 
+  rgb("#8ac926"), 
+  rgb("#6a4c93")
+)
 
 #let default-plot-style(i) = {
   let color = default-colors.at(calc.rem(i, default-colors.len()))
   return (
     stroke: color,
-    fill: color.lighten(75%)
+    fill: color.transparentize(80%)
   )
 }
 

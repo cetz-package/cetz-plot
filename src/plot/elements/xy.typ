@@ -96,8 +96,10 @@
   self.epigraph = self.at("epigraph", default: false)
   self.fill = self.at("fill", default: false)
   if self.hypograph or self.epigraph or self.fill {
-    self.fill-paths = util.compute-fill-paths(self.line-data,
-      (x.min, y.min), (x.max, y.max))
+    self.fill-paths = (ctx.compute-fill-paths)(
+      self.line-data, 
+      ctx,
+    )
   }
 
   return self

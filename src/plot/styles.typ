@@ -42,8 +42,8 @@
     anchor: auto,       // Axis label anchor
     angle:  auto,       // Axis label angle
   ),
-  axis-layer: 0,
-  grid-layer: 0,
+  axis-layer: 2,
+  grid-layer: -1,
   background-layer: 0,
   padding: 0,
   tick: (
