@@ -83,7 +83,9 @@
 ///   / left: Plot only the left side of the violin.
 ///   / right: Plot only the right side of the violin.
 ///   / both: Plot both sides of the violin.
-/// - kernel (function): The kernel density estimator function.
+/// - kernel (function): The kernel density estimator function, which takes a single
+///                      `x` value relative to the center of a distribution (0) and
+///                      normalized by the bandwidth
 /// - bandwidth (float): The smoothing parameter of the kernel.
 /// - extents (float): The extension of the domain, expressed as a fraction of spread.
 /// - samples (int): The number of samples of the kernel to render.
