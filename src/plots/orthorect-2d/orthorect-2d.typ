@@ -1,4 +1,17 @@
-#import "/src/cetz.typ": draw, matrix, process, util
+#import "/src/cetz.typ": draw, matrix, process, util, drawable, styles
+#import "/src/plot/styles.typ": default-style, prepare-style, get-axis-style
+#import "/src/axes/axes.typ"
+
+#import "grid.typ"
+
+#let default-style-orthorect-2d = util.merge-dictionary(default-style, (
+  left:   (tick: (label: (anchor: "east"))),
+  bottom: (tick: (label: (anchor: "north"))),
+  right:  (tick: (label: (anchor: "west"))),
+  top:    (tick: (label: (anchor: "south"))),
+  stroke: (cap: "square"),
+  padding: 0,
+))
 
 
 #let make-ctx((x, y), size) = {
@@ -64,12 +77,12 @@
       if "segments" in d {
         d.segments = d.segments.map(((kind, ..pts)) => {
           (kind, ..pts.map(pt => {
-            transform-vec(size, (x, y, none), pt)
+            transform-vec(size, (x, y), pt)
           }))
         })
       }
       if "pos" in d {
-        d.pos = transform-vec(size, (x, y, none), d.pos)
+        d.pos = transform-vec(size, (x, y), d.pos)
       }
       return d
     })
@@ -128,14 +141,47 @@
 
     // Handle style
     let style = style.named()
-    style = styles.resolve(ctx.style, merge: style, root: "axes",
-                           base: default-style-scientific)
-    style = _prepare-style(ctx, style)
+    style = styles.resolve(
+      ctx.style, 
+      merge: style, 
+      root: "axes",
+      base: default-style-orthorect-2d
+    )
+    style = prepare-style(ctx, style)
 
     // Compute ticks
-    let x-ticks = compute-ticks(bottom, style)
-    let y-ticks = compute-ticks(left, style)
-    let x2-ticks = compute-ticks(top, style)
-    let y2-ticks = compute-ticks(right, style)
+    let x-ticks = axes.ticks.compute-ticks(bottom, style)
+    let y-ticks = axes.ticks.compute-ticks(left, style)
+    let x2-ticks = axes.ticks.compute-ticks(top, style)
+    let y2-ticks = axes.ticks.compute-ticks(right, style)
+
+    // Draw frame
+    if style.fill != none {
+      draw.on-layer(style.background-layer, {
+        draw.rect((0,0), (w,h), fill: style.fill, stroke: none)
+      })
+    }
+
+    // Draw grid
+    draw.group(name: "grid", ctx => {
+      let axes = (
+        ("bottom", (0,0), (0,h), (+w,0), x-ticks,  bottom),
+        ("top",    (0,h), (0,0), (+w,0), x2-ticks, top),
+        ("left",   (0,0), (w,0), (0,+h), y-ticks,  left),
+        ("right",  (w,0), (0,0), (0,+h), y2-ticks, right),
+      )
+      for (name, start, end, direction, ticks, axis) in axes {
+        if axis == none { continue }
+
+        let style = get-axis-style(ctx, style, name)
+        let is-mirror = axis.at("is-mirror", default: false)
+
+        if not is-mirror {
+          draw.on-layer(style.grid-layer, {
+            grid.draw-lines(ctx, axis, ticks, start, end, direction, style)
+          })
+        }
+      }
+    })
   })
 }

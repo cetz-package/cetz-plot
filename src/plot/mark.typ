@@ -1,5 +1,5 @@
 #import "/src/cetz.typ": draw
-#import "/src/axes.typ"
+#import "/src/axes/axes.typ"
 
 // Draw mark at point with size
 #let draw-mark-shape(pt, size, mark, style) = {

@@ -1,8 +1,8 @@
-#import "/src/cetz.typ": draw, util
-#import "plots/orthorect-2d.typ"
+#import "/src/cetz.typ": draw, util, styles
+#import "plots/orthorect-2d/orthorect-2d.typ"
 #import "plots/barycentric-2d.typ"
 #import "plot/legend.typ" as plot-legend
-#import "plot/axes.typ"
+#import "axes/axes.typ"
 
 // TODO: Refactor this into a better way of providing palettes
 
@@ -26,7 +26,6 @@
 
 // Consider splitting into sevaral files
 #let _handle-named-axis-args(ctx, axis-dict, options, plot-size) = {
-  import "/src/axes.typ"
 
   // Get axis option for name
   let get-axis-option(axis-name, name, default) = {
