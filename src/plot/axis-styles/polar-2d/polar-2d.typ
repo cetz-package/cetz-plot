@@ -3,14 +3,14 @@
 #import "/src/axes/axes.typ"
 
 #import "grid.typ"
-#import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line
+#import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line, place-ticks-on-radius
 #import "transforms.typ": data-viewport, axis-viewport, 
 
 #let default-style-polar-2d = util.merge-dictionary(
   default-style, 
   (
-    distal: (tick: (label: (anchor: "north-east", offset: 0.25))),
-    angular: (tick: (label: (anchor: "center", offset: 0.35))),
+    distal: (tick: (label: (anchor: "north-east", offset: -0.2))),
+    angular: (tick: (label: (anchor: "center", offset: 0.35,), length: 5pt)),
     stroke: (cap: "square"),
     padding: 0,
   )
@@ -91,21 +91,37 @@
           draw.group(name: "axis", {
             if distal != none {
               // To do: Allow finer control over placement
-              draw-axis-line(
-                "origin", 
-                (radius, radius*2), 
-                distal, 
-                false, 
-                style
+              draw.line(
+                "origin", (rel:(0, radius)), 
+                stroke: style.stroke, 
+                mark: style.at("mark", default: none)
               )
 
               place-ticks-on-line(
                 distal-ticks, 
                 (radius, radius), 
                 (radius, radius*2), 
-                style, 
-                flip: false, // not needed
-                is-mirror: false // Maybe support negative theta?
+                prepare-style(ctx, style.distal),
+              )
+            }
+          })
+      })
+
+      draw.on-layer(style.axis-layer, {
+          draw.group(name: "axis", {
+            if angular != none {
+              // To do: Allow finer control over placement
+              draw.circle(
+                "origin",
+                radius: radius,
+                stroke: style.stroke, 
+                mark: style.at("mark", default: none)
+              )
+
+              place-ticks-on-radius(
+                angular-ticks, 
+                (radius),
+                prepare-style(ctx, style.angular), 
               )
             }
           })

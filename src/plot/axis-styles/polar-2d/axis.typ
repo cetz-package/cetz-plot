@@ -108,3 +108,57 @@
     }
   }
 }
+
+#let place-ticks-on-radius(ticks, radius, style) = {
+  
+  let center = (radius,radius)
+
+  // Early exit
+  let show-label = style.tick.label.show
+  if (show-label not in (auto, true)) {return}
+
+  let def(v, d) = {
+    return if v == none or v == auto {d} else {v}
+  }
+
+  for (distance, label, is-major) in ticks {
+
+    // Early exit for overlapping tick
+    if (distance == 1){continue}
+
+    let theta = (2 * distance) * calc.pi
+    let dist = radius
+
+    let offset = style.tick.offset
+    let length = if is-major { style.tick.length } else { style.tick.minor-length }
+
+    let a = dist + offset
+    let b = a - length
+
+    draw.line(
+      (a * calc.sin(theta) + radius, a * calc.cos(theta) + radius),
+      (b * calc.sin(theta) + radius, b * calc.cos(theta) + radius),
+      stroke: style.tick.stroke
+    )
+
+    if (label != none){
+      let offset = style.tick.label.offset
+
+    //   let c = vector.sub(if length <= 0 { b } else { a },
+    //     vector.scale(norm, offset))
+
+      let c = a + offset
+
+      let angle = def(style.tick.label.angle, 0deg)
+      let anchor = def(style.tick.label.anchor, "center")
+
+      draw.content(
+        (c * calc.sin(theta) + radius, c * calc.cos(theta) + radius), 
+        [#label], 
+        angle: angle, 
+        anchor: anchor
+      )
+    }
+  }
+
+}
