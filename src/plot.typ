@@ -1,8 +1,10 @@
 #import "/src/cetz.typ": draw, util, styles
-#import "plots/orthorect-2d/orthorect-2d.typ"
-#import "plots/barycentric-2d.typ"
+
 #import "plot/legend.typ" as plot-legend
 #import "axes/axes.typ"
+
+#import "plots/orthorect-2d/orthorect-2d.typ"
+#import "plots/barycentric-2d/barycentric-2d.typ"
 
 // TODO: Refactor this into a better way of providing palettes
 
@@ -10,8 +12,10 @@
 
 #let default-plot-style(i) = {
   let color = default-colors.at(calc.rem(i, default-colors.len()))
-  return (stroke: color,
-          fill: color.lighten(75%))
+  return (
+    stroke: color,
+    fill: color.lighten(75%)
+  )
 }
 
 #let default-mark-style(i) = {

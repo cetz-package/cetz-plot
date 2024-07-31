@@ -1,8 +1,10 @@
-#import "/src/cetz.typ": draw, matrix, process, util, drawable, styles
+#import "/src/cetz.typ": draw, util, styles, vector
 #import "/src/plot/styles.typ": default-style, prepare-style, get-axis-style
 #import "/src/axes/axes.typ"
 
 #import "grid.typ"
+#import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line
+#import "transforms.typ": data-viewport, axis-viewport, 
 
 #let default-style-orthorect-2d = util.merge-dictionary(default-style, (
   left:   (tick: (label: (anchor: "east"))),
@@ -27,92 +29,6 @@
   }
 
   return (x: x, y: y, size: size, x-scale: x-scale, y-scale: y-scale)
-}
-
-// Transform a single vector along a x, y and z axis
-//
-// - size (vector): Coordinate system size
-// - x-axis (axis): X axis
-// - y-axis (axis): Y axis
-// - z-axis (axis): Z axis
-// - vec (vector): Input vector to transform
-// -> vector
-#let transform-vec(size, axes, vec) = {
-
-  let (x,y,) = for (dim, axis) in axes.enumerate() {
-
-    let s = size.at(dim) - axis.inset.sum()
-    let o = axis.inset.at(0)
-
-    let transform-func(n) = if (axis.mode == "log") {
-      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
-    } else {n}
-
-    let range = transform-func(axis.max) - transform-func(axis.min)
-
-    let f = s / range
-    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
-  }
-
-  return (x, y, 0)
-}
-
-// Draw inside viewport coordinates of two axes
-//
-// - size (vector): Axis canvas size (relative to origin)
-// - x (axis): Horizontal axis
-// - y (axis): Vertical axis
-// - z (axis): Z axis
-// - name (string,none): Group name
-#let axis-viewport(size,(x, y,), body, name: none) = {
-  draw.group(name: name, (ctx => {
-    let transform = ctx.transform
-
-    ctx.transform = matrix.ident()
-    let (ctx, drawables, bounds) = process.many(ctx, util.resolve-body(ctx, body))
-
-    ctx.transform = transform
-
-    drawables = drawables.map(d => {
-      if "segments" in d {
-        d.segments = d.segments.map(((kind, ..pts)) => {
-          (kind, ..pts.map(pt => {
-            transform-vec(size, (x, y), pt)
-          }))
-        })
-      }
-      if "pos" in d {
-        d.pos = transform-vec(size, (x, y), d.pos)
-      }
-      return d
-    })
-
-    return (
-      ctx: ctx,
-      drawables: drawable.apply-transform(ctx.transform, drawables)
-    )
-  },))
-}
-
-#let data-viewport((x, y), size, body, name: none) = {
-  if body == none or body == () { return }
-
-  assert.ne(x.horizontal, y.horizontal,
-    message: "Data must use one horizontal and one vertical axis!")
-
-  // If y is the horizontal axis, swap x and y
-  // coordinates by swapping the transformation
-  // matrix columns.
-  if y.horizontal {
-    (x, y) = (y, x)
-    body = draw.set-ctx(ctx => {
-      ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
-      return ctx
-    }) + body
-  }
-
-  // Setup the viewport
-  axis-viewport(size, (x,y), body, name: name)
 }
 
 #let draw-axes(
@@ -181,6 +97,63 @@
             grid.draw-lines(ctx, axis, ticks, start, end, direction, style)
           })
         }
+      }
+    })
+    
+    // Draw axes
+    draw.group(name: "axes", {
+      let axes = (
+        ("bottom", (0, 0), (w, 0), (0, -1), false, x-ticks,  bottom,),
+        ("top",    (0, h), (w, h), (0, +1), true,  x2-ticks, top,),
+        ("left",   (0, 0), (0, h), (-1, 0), true,  y-ticks,  left,),
+        ("right",  (w, 0), (w, h), (+1, 0), false, y2-ticks, right,)
+      )
+      let label-placement = (
+        bottom: ("south", "north", 0deg),
+        top:    ("north", "south", 0deg),
+        left:   ("west", "south", 90deg),
+        right:  ("east", "north", 90deg),
+      )
+
+      for (name, start, end, outsides, flip, ticks, axis) in axes {
+        let style = get-axis-style(ctx, style, name)
+        let is-mirror = axis == none or axis.at("is-mirror", default: false)
+        let is-horizontal = name in ("bottom", "top")
+
+        if style.padding != 0 {
+          let padding = vector.scale(outsides, style.padding)
+          start = vector.add(start, padding)
+          end = vector.add(end, padding)
+        }
+
+        let (data-start, data-end) = inset-axis-points(ctx, style, axis, start, end)
+
+        let path = draw-axis-line(start, end, axis, is-horizontal, style)
+        draw.on-layer(style.axis-layer, {
+          draw.group(name: "axis", {
+            // if draw-unset or axis != none {
+              path;
+              place-ticks-on-line(ticks, data-start, data-end, style, flip: flip, is-mirror: is-mirror)
+            // }
+          })
+
+          if axis != none and axis.label != none and not is-mirror {
+            let offset = vector.scale(outsides, style.label.offset)
+            let (group-anchor, content-anchor, angle) = label-placement.at(name)
+
+            if style.label.anchor != auto {
+              content-anchor = style.label.anchor
+            }
+            if style.label.angle != auto {
+              angle = style.label.angle
+            }
+
+            draw.content((rel: offset, to: "axis." + group-anchor),
+              [#axis.label],
+              angle: angle,
+              anchor: content-anchor)
+          }
+        })
       }
     })
   })
