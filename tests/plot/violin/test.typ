@@ -32,7 +32,6 @@
     x-min: -0.5, x-max: 2.5,
     x-tick-step: none,
     x-ticks: ( (0, [First]), (1, [Second]), (2, [Third])),
-    x-grid: "major",
 
     plot-style: (i) => {
       let color = default-colors.at(calc.rem(i, default-colors.len()))
