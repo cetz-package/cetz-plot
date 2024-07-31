@@ -7,10 +7,8 @@
 
 // Default Scientific Style
 #let default-style-scientific-polar = util.merge-dictionary(default-style-scientific, (
-  left:   (tick: (label: (anchor: "east"))),
-  bottom: (tick: (label: (anchor: "north"))),
-  right:  (tick: (label: (anchor: "west"))),
-  top:    (tick: (label: (anchor: "south"))),
+  distal: (tick: (label: (anchor: "north-east", offset: 0.25))),
+  angular: (tick: (label: (anchor: "center", offset: 0.35))),
   stroke: (cap: "square"),
   padding: 0,
 ))
@@ -39,10 +37,10 @@
     for (distance, label, is-major) in ticks {
       let theta = distance * calc.pi * 2
       draw.line(
-        (radius / 2, radius / 2), 
+        (radius, radius), 
         (
-          radius * (calc.cos(theta) + 1) / 2,
-          radius * (calc.sin(theta) + 1) / 2
+          radius * (calc.cos(theta) + 1),
+          radius * (calc.sin(theta) + 1)
         ), 
         stroke: if is-major and (kind == 1 or kind == 3) {
           style.grid.stroke
@@ -54,8 +52,8 @@
   } else {  
     for (distance, label, is-major) in ticks {
       circle( 
-        (radius / 2, radius / 2), 
-        radius: distance * radius / 2, 
+        (radius, radius), 
+        radius: distance * radius, 
         stroke: if is-major and (kind == 1 or kind == 3) {
           style.grid.stroke
         } else if not is-major and (kind >= 2) {
@@ -113,7 +111,62 @@
   }
 }
 
-#let place-ticks-on-radius(ticks, center, radius, style) = {
+#let place-ticks-on-radius(ticks, center, radius, style, flip: true) = {
+
+  // Early exit
+  let show-label = style.tick.label.show
+  if (show-label not in (auto, true)) {return}
+
+  let def(v, d) = {
+    return if v == none or v == auto {d} else {v}
+  }
+
+  for (distance, label, is-major) in ticks {
+
+    // Early exit for overlapping tick
+    if (distance == 1){continue}
+
+    let theta = (2 * distance) * calc.pi
+    let dist = radius
+
+    let offset = style.tick.offset
+    let length = if is-major { style.tick.length } else { style.tick.minor-length }
+    if flip {
+      offset *= -1
+      length *= -1
+    }
+
+    let a = dist + offset
+    let b = a + length
+
+    draw.line(
+      (a * calc.sin(theta) + radius, a * calc.cos(theta) + radius),
+      (b * calc.sin(theta) + radius, b * calc.cos(theta) + radius),
+      stroke: style.tick.stroke
+    )
+
+    if (label != none){
+      let offset = style.tick.label.offset
+      if flip {
+        offset *= -1
+        length *= -1
+      }
+    //   let c = vector.sub(if length <= 0 { b } else { a },
+    //     vector.scale(norm, offset))
+
+      let c = a - offset
+
+      let angle = def(style.tick.label.angle, 0deg)
+      let anchor = def(style.tick.label.anchor, "center")
+
+      draw.content(
+        (c * calc.sin(theta) + radius, c * calc.cos(theta) + radius), 
+        [#label], 
+        angle: angle, 
+        anchor: anchor
+      )
+    }
+  }
 
 }
 
@@ -131,18 +184,20 @@
 
     let style = style.named()
     style = styles.resolve(ctx.style, merge: style, root: "axes",
-                           base: default-style-scientific)
+                           base: default-style-scientific-polar)
     style = _prepare-style(ctx, style)
 
     // Compute ticks
     let x-ticks = compute-ticks(angular, style)
     let y-ticks = compute-ticks(distal, style)
-    let radius = calc.min(w,h)
+    let radius = calc.min(w,h) / 2
+
+    style.fill = luma(95%)
 
     // Draw frame
     if style.fill != none {
       on-layer(style.background-layer, {
-        circle( (0,0), radius: radius, fill: style.fill, stroke: none)
+        circle( (radius,radius), radius: radius, fill: style.fill, stroke: none)
         // rect((0,0), (w,h), fill: style.fill, stroke: none)
       })
     }
@@ -173,8 +228,8 @@
 
     group(name: "axes", {
       let axes = (
-        ("angular", (radius/2, radius/2), (radius/2, radius), (0, -1), false, x-ticks,  angular),
-        ("distal",   (radius/2, radius/2), (radius, radius/2), (1, 0), true,  y-ticks,  distal,),
+        ("angular", (radius, radius), (radius, radius*2), (0, -1), false, x-ticks,  angular),
+        ("distal",  (radius, radius), (radius, radius*2), (-1,0), true,  y-ticks,  distal,),
       )
 
       for (name, start, end, outsides, flip, ticks, axis) in axes {
@@ -192,12 +247,12 @@
         if (name == "angular"){
           let (data-start, data-end) = _inset-axis-points(ctx, style, axis, start, end)
 
-          let path = _draw-polar-axis-line(start, radius/2, axis, is-horizontal, style)
+          let path = _draw-polar-axis-line(start, radius, axis, is-horizontal, style)
           on-layer(style.axis-layer, {
             group(name: "axis", {
               if draw-unset or axis != none {
                 path;
-                place-ticks-on-radius(ticks, start, radius/2, style)
+                place-ticks-on-radius(ticks, start, radius, style)
               }
             })
           })

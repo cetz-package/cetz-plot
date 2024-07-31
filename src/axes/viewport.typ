@@ -18,7 +18,7 @@
     let radius = calc.min(..size)
     let x-norm = (vec.at(0) - x-axis.min) / (x-axis.max - x-axis.min)
     let y-norm = (vec.at(1) - y-axis.min) / (y-axis.max - y-axis.min)
-    let theta = 2 * calc.pi * x-norm - calc.pi/2
+    let theta = 2 * calc.pi * x-norm
     let dist = (radius/2) * y-norm
     let x = dist * calc.cos(theta)
     let y = dist * calc.sin(theta)

@@ -12,10 +12,10 @@
 /* Scientific Style */
 #test-case({
 
-  draw.set-style(
-    axes: (tick: (label: (position: "south"))),
-    legend: (stroke: none, achor: "west")
-  )
+  // draw.set-style(
+  //   axes: (tick: (label: (position: "south"))),
+  //   legend: (stroke: none, achor: "west")
+  // )
 
   plot.plot(
     size: (16,9),
@@ -25,6 +25,7 @@
     x-minor-tick-step: calc.pi / 16,
     x-grid: "both",
     x-min: 0, x-max: 2 * calc.pi,
+    x-format: plot.formats.multiple-of,
 
     y-min: -1, y-max: 1,
     y-tick-step: 0.5,
@@ -38,8 +39,16 @@
         domain: (0, 2* calc.pi), 
         line: "raw",
         samples: 100,
-        // fill: true,
         label: $sin(x)$
       )
+
+      plot.add(
+        (t)=>calc.pow(calc.sin(t),2),
+        domain: (0, 2* calc.pi), 
+        line: "raw",
+        samples: 100,
+        label: $sin^2 (x)$
+      )
+
     })
 })
