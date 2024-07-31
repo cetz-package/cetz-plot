@@ -6,14 +6,17 @@
 #import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line
 #import "transforms.typ": data-viewport, axis-viewport, 
 
-#let default-style-orthorect-2d = util.merge-dictionary(default-style, (
-  left:   (tick: (label: (anchor: "east"))),
-  bottom: (tick: (label: (anchor: "north"))),
-  right:  (tick: (label: (anchor: "west"))),
-  top:    (tick: (label: (anchor: "south"))),
-  stroke: (cap: "square"),
-  padding: 0,
-))
+#let default-style-orthorect-2d = util.merge-dictionary(
+  default-style, 
+  (
+    left:   (tick: (label: (anchor: "east"))),
+    bottom: (tick: (label: (anchor: "north"))),
+    right:  (tick: (label: (anchor: "west"))),
+    top:    (tick: (label: (anchor: "south"))),
+    stroke: (cap: "square"),
+    padding: 0,
+  )
+)
 
 
 #let make-ctx((x, y), size) = {

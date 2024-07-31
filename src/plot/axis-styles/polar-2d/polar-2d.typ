@@ -6,16 +6,17 @@
 #import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line
 #import "transforms.typ": data-viewport, axis-viewport, 
 
-#let default-style-orthorect-2d = util.merge-dictionary(default-style, (
-  left:   (tick: (label: (anchor: "east"))),
-  bottom: (tick: (label: (anchor: "north"))),
-  right:  (tick: (label: (anchor: "west"))),
-  top:    (tick: (label: (anchor: "south"))),
-  stroke: (cap: "square"),
-  padding: 0,
-))
+#let default-style-polar-2d = util.merge-dictionary(
+  default-style, 
+  (
+    distal: (tick: (label: (anchor: "north-east", offset: 0.25))),
+    angular: (tick: (label: (anchor: "center", offset: 0.35))),
+    stroke: (cap: "square"),
+    padding: 0,
+  )
+)
 
-
+// Consider refactor
 #let make-ctx((x, y), size) = {
   assert(x != none, message: "X axis does not exist")
   assert(y != none, message: "Y axis does not exist")
@@ -37,20 +38,10 @@
   name: none,
   ..style
 ) = {
-  let bottom = axis-dict.at("x", default: none)
-  let top = axis-dict.at("x2", default: auto)
-  let left = axis-dict.at("y", default: none)
-  let right = axis-dict.at("y2", default: auto)
+  let angular = axis-dict.at("x", default: none)
+  let distal = axis-dict.at("y", default: none)
 
-  if (top == auto){
-    top = bottom
-    top.is-mirror = true
-  }
-
-  if (right == auto){
-    right = bottom
-    right.is-mirror = true
-  }
+  let radius = calc.min(w,h)/2
 
   draw.group(name: name, ctx => {
     draw.anchor("origin", (0, 0))
@@ -61,15 +52,13 @@
       ctx.style, 
       merge: style, 
       root: "axes",
-      base: default-style-orthorect-2d
+      base: default-style
     )
     style = prepare-style(ctx, style)
 
     // Compute ticks
-    let x-ticks = axes.ticks.compute-ticks(bottom, style)
-    let y-ticks = axes.ticks.compute-ticks(left, style)
-    let x2-ticks = axes.ticks.compute-ticks(top, style)
-    let y2-ticks = axes.ticks.compute-ticks(right, style)
+    let angular-ticks = axes.ticks.compute-ticks(angular, style)
+    let distal-ticks = axes.ticks.compute-ticks(distal, style)
 
     // Draw frame
     if style.fill != none {
@@ -81,10 +70,8 @@
     // Draw grid
     draw.group(name: "grid", ctx => {
       let axes = (
-        ("bottom", (0,0), (0,h), (+w,0), x-ticks,  bottom),
-        ("top",    (0,h), (0,0), (+w,0), x2-ticks, top),
-        ("left",   (0,0), (w,0), (0,+h), y-ticks,  left),
-        ("right",  (w,0), (0,0), (0,+h), y2-ticks, right),
+        ("angular", (0,0), (0,h), (+w,0), angular-ticks, angular),
+        ("distal",  (0,0), (w,0), (0,+h), distal-ticks,  distal),
       )
       for (name, start, end, direction, ticks, axis) in axes {
         if axis == none { continue }
@@ -94,7 +81,7 @@
 
         if not is-mirror {
           draw.on-layer(style.grid-layer, {
-            grid.draw-lines(ctx, axis, ticks, start, end, direction, style)
+            grid.draw-lines(ctx, axis, ticks, radius, style)
           })
         }
       }
@@ -103,16 +90,12 @@
     // Draw axes
     draw.group(name: "axes", {
       let axes = (
-        ("bottom", (0, 0), (w, 0), (0, -1), false, x-ticks,  bottom,),
-        ("top",    (0, h), (w, h), (0, +1), true,  x2-ticks, top,),
-        ("left",   (0, 0), (0, h), (-1, 0), true,  y-ticks,  left,),
-        ("right",  (w, 0), (w, h), (+1, 0), false, y2-ticks, right,)
+        ("angular", (0, 0), (w, 0), (0, -1), false, angular-ticks, angular,),
+        ("distal",   (0, 0), (0, h), (-1, 0), true,  distal-ticks, distal,),
       )
       let label-placement = (
-        bottom: ("south", "north", 0deg),
-        top:    ("north", "south", 0deg),
-        left:   ("west", "south", 90deg),
-        right:  ("east", "north", 90deg),
+        angular: ("south", "north", 0deg),
+        distal:    ("north", "south", 0deg),
       )
 
       for (name, start, end, outsides, flip, ticks, axis) in axes {

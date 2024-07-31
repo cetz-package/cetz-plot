@@ -1,5 +1,6 @@
 #import "/src/cetz.typ": util, vector, draw
 
+// Refactor opporunity: 
 #let _get-grid-type(axis) = {
   let grid = axis.ticks.at("grid", default: false)
   if grid == "major" or grid == true { return 1 }
