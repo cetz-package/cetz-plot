@@ -8,24 +8,17 @@
 // - z-axis (axis): Z axis
 // - vec (vector): Input vector to transform
 // -> vector
-#let transform-vec(size, axes, vec) = {
+#let transform-vec(size, (angular, distal), vec) = {
 
-  let (x,y,) = for (dim, axis) in axes.enumerate() {
+  let radius = calc.min(..size)
+  let x-norm = (vec.at(0) - angular.min) / (angular.max - angular.min)
+  let y-norm = (vec.at(1) - distal.min) / (distal.max - distal.min)
+  let theta = 2 * calc.pi * x-norm
+  let dist = (radius/2) * y-norm
+  let x = dist * calc.cos(theta)
+  let y = dist * calc.sin(theta)
 
-    let s = size.at(dim) - axis.inset.sum()
-    let o = axis.inset.at(0)
-
-    let transform-func(n) = if (axis.mode == "log") {
-      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
-    } else {n}
-
-    let range = transform-func(axis.max) - transform-func(axis.min)
-
-    let f = s / range
-    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
-  }
-
-  return (x, y, 0)
+  (radius/2 + x, radius/2 + y)
 }
 
 // Draw inside viewport coordinates of two axes
