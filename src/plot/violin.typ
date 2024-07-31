@@ -91,7 +91,7 @@
 /// - mark-style (dictionary): (unused, will eventually be used to render interquartile ranges).
 /// - axes (axes): (unstable, documentation to follow once completed).
 /// - label (none, content): The name of the category to be shown in the legend.
-#let violin( 
+#let add-violin( 
   data,
   x-key: 0,
   y-key: 1,
