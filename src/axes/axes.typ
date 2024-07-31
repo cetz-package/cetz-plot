@@ -1,5 +1,6 @@
 #import "/src/cetz.typ": styles, util
 #import "/src/plot/styles.typ": default-style, prepare-style, get-axis-style
+#import "format.typ"
 
 // Construct Axis Object
 //

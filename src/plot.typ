@@ -1,10 +1,9 @@
 #import "/src/cetz.typ": draw, util, styles
 
 #import "plot/legend.typ" as plot-legend
+#import "plot/axis-style.typ"
 #import "axes/axes.typ"
 
-#import "plots/orthorect-2d/orthorect-2d.typ"
-#import "plots/barycentric-2d/barycentric-2d.typ"
 
 // TODO: Refactor this into a better way of providing palettes
 
@@ -238,7 +237,7 @@
 #let plot(
   body,
   size: (1,1),
-  axis-style: orthorect-2d,
+  axis-style: axis-style.orthorect-2d,
   name: none,
   plot-style: default-plot-style,
   mark-style: default-mark-style,

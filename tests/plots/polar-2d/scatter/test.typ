@@ -4,15 +4,16 @@
 #test-case({
   // cetz.draw.set-style(axes:( fill: luma(85%)))
   cetz-plot.plot(
-    axis-style: cetz-plot.axis-style.orthorect-2d,
+    axis-style: cetz-plot.axis-style.polar-2d,
     size: (5,5),
-    // x-min: 1, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
+    x-tick-step: calc.pi/2,
     // x-mode: "log",
     x-grid: "both",
-    y-min: 0, y-max: 10,
+    x-format: cetz-plot.axes.format.multiple-of,
+    // y-min: -1, y-max: 1,
     y-grid: "both",
     {
-      cetz.plot.add((x)=>x, domain: (0,10), label: $y=x$, line: "raw")
+      cetz.plot.add(calc.sin, domain: (0,2*calc.pi), label: $y=x$, line: "raw")
     }
   )
 })

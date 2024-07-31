@@ -42,7 +42,7 @@
 ///
 /// ```example
 /// plot.plot(size: (5,1),
-///           x-format: plot.formats.fraction,
+///           x-format: axes.formats.fraction,
 ///           x-tick-step: 1/5,
 ///           y-tick-step: none, {
 ///   plot.add(calc.sin, domain: (-1, 1))
@@ -63,7 +63,7 @@
 ///
 /// ```example
 /// plot.plot(size: (5,1),
-///           x-format: plot.formats.multiple-of,
+///           x-format: axes.formats.multiple-of,
 ///           x-tick-step: calc.pi/4,
 ///           y-tick-step: none, {
 ///   plot.add(calc.sin, domain: (-calc.pi, 1.5 * calc.pi))
@@ -107,7 +107,7 @@
 ///
 /// ```example
 /// plot.plot(size: (5,1),
-///           x-format: plot.formats.sci,
+///           x-format: axes.formats.sci,
 ///           x-tick-step: 1e3,
 ///           y-tick-step: none, {
 ///   plot.add(x => x, domain: (-2e3, 2e3))
