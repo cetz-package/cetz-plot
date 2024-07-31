@@ -24,7 +24,7 @@
 /// - axes (tuple): Name of the axes to use `("x", "y")` as coordinate
 ///   system for `position`. Note that both axes must be used,
 ///   as `add-anchors` does not create them on demand.
-#let add-anchor(name, position, axes: ("x", "y")) = {
+#let anchor(name, position, axes: ("x", "y")) = {
   ((
     type: "anchor",
     name: name,

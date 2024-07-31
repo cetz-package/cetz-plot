@@ -16,7 +16,7 @@
     y-min: -1, y-max: 1, y-tick-step: 0.5, y-minor-tick-step: 0.1,
     y-grid: "both",
     {
-      cetz.plot.add(
+      cetz-plot.add.xy(
         calc.sin, 
         domain: (0,2*calc.pi), 
         label: $y=x$, 
@@ -24,7 +24,7 @@
         samples: 50
       )
 
-      cetz.plot.add(
+      cetz-plot.add.xy(
         (t)=>calc.pow(calc.sin(t),2),
         domain: (0, 2* calc.pi), 
         line: "raw",

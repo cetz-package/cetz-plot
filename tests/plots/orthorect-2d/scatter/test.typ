@@ -12,7 +12,7 @@
     y-min: 0, y-max: 10,
     y-grid: "both",
     {
-      cetz.plot.add((x)=>{- 0.5*x*x + 3*x + 0.025*x*x*x }, domain: (0,10), label: $y=x$, line: "raw")
+      cetz-plot.add.xy((x)=>{- 0.5*x*x + 3*x + 0.025*x*x*x }, domain: (0,10), label: $y=x$, line: "raw")
 
     }
   )

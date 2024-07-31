@@ -1,1 +1,2 @@
-#import "elements/anchor.typ"
+#import "elements/anchor.typ": anchor
+#import "elements/xy.typ": xy
