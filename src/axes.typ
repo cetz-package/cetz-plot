@@ -1,5 +1,5 @@
 #import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
-#import "/src/plot/formats.typ"
+#import "/src/plot-old/formats.typ"
 
 #let typst-content = content
 
