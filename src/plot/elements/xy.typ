@@ -83,11 +83,13 @@
 
 // Prepare line data
 #let _prepare(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
+  let (x, y) = (ctx.axes.at(0), ctx.axes.at(1))
 
   // Generate stroke paths
-  self.stroke-paths = util.compute-stroke-paths(self.line-data,
-    (x.min, y.min), (x.max, y.max))
+  self.stroke-paths = (ctx.compute-stroke-paths)(
+    self.line-data, 
+    ctx,
+  )
 
   // Compute fill paths if filling is requested
   self.hypograph = self.at("hypograph", default: false)
@@ -103,8 +105,6 @@
 
 // Stroke line data
 #let _stroke(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
   for p in self.stroke-paths {
     draw.line(..p, fill: none)
   }
@@ -112,7 +112,7 @@
 
 // Fill line data
 #let _fill(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
+  let (x, y) = (ctx.axes.at(0), ctx.axes.at(1))
 
   if self.hypograph {
     fill-segments-to(self.fill-paths, y.min)
@@ -124,8 +124,10 @@
     if self.at("fill-type", default: "axis") == "shape" {
       fill-shape(self.fill-paths)
     } else {
-      fill-segments-to(self.fill-paths,
-        calc.max(calc.min(y.max, 0), y.min))
+      fill-segments-to(
+        self.fill-paths,
+        calc.max(calc.min(y.max, 0), y.min)
+      )
     }
   }
 }

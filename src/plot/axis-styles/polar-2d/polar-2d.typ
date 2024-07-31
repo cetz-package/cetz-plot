@@ -5,6 +5,7 @@
 #import "grid.typ"
 #import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line, place-ticks-on-radius
 #import "transforms.typ": data-viewport, axis-viewport, 
+#import "clipper.typ"
 
 #let default-style-polar-2d = util.merge-dictionary(
   default-style, 
@@ -29,7 +30,15 @@
     (x-scale, y-scale) = (y-scale, x-scale)
   }
 
-  return (x: x, y: y, size: size, x-scale: x-scale, y-scale: y-scale)
+  return (
+    axes: (x,y), 
+    size: size, 
+    x-scale: x-scale, 
+    y-scale: y-scale,
+    clip: ((x.min, y.min), (x.max, y.max)), // TODO: Change to radius
+    compute-stroke-paths: clipper.compute-stroke-paths,
+    compute-fill-paths: clipper.compute-fill-paths
+  )
 }
 
 #let draw-axes(
