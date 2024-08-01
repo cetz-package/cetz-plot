@@ -1,4 +1,5 @@
 #import "/src/cetz.typ": vector, util, draw
+#import "format.typ" as formats
 
 // Format a tick value
 #let format-tick-value(value, tic-options) = {
