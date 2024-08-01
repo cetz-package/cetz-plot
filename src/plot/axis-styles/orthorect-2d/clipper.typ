@@ -5,8 +5,10 @@
 /// - points (array): Array of vectors representing a line-strip
 /// - low (vector): Lower clip-window coordinate
 /// - high (vector): Upper clip-window coordinate
+/// - fill (bool): Return fillable shapes
+/// - generate-edge-points (bool): Generate interpolated points on clipped edges
 /// -> array List of line-strips representing the paths insides the clip-window
-#let clipped-paths-rect(points, ctx, fill: false) = {
+#let clipped-paths-rect(points, ctx, fill: false, generate-edge-points: false) = {
   let (low, high) = ctx.clip
   let (min-x, max-x) = (calc.min(low.at(0), high.at(0)),
                         calc.max(low.at(0), high.at(0)))
@@ -69,8 +71,24 @@
     let (b-index, b-dir, b-pt) = crossings.at(i)
 
     if a-dir {
-      let path = points.slice(a-index, b-index)
-      path.insert(0, a-pt)
+      let path = ()
+
+      // If we must generate edge points, take the previous crossing
+      // as source point and interpolate between that and the current one.
+      if generate-edge-points and i > 2 {
+        let (c-index, c-dir, c-pt) = crossings.at(i - 2)
+
+        let n = a-index - c-index
+        if n > 1 {
+          path += range(0, n).map(t => {
+            cetz.vector.lerp(c-pt, a-pt, t / (n - 1))
+          })
+        }
+      }
+
+      // Append the path insides the bounds
+      path.push(a-pt)
+      path += points.slice(a-index, b-index)
       path.push(b-pt)
 
       // Insert the last end point to connect
