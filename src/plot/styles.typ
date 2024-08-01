@@ -44,7 +44,7 @@
   ),
   axis-layer: 2,
   grid-layer: -1,
-  background-layer: 0,
+  background-layer: -2,
   padding: 0,
   tick: (
     fill: none,
