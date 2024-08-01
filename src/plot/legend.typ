@@ -10,16 +10,16 @@
   layer: 1,        // Legend layer
   fill: rgb(255,255,255,200), // Legend background
   stroke: black,   // Legend border
-  padding: .1,     // Legend border padding
+  padding: .125,     // Legend border padding
   offset: (0, 0),  // Legend displacement
   spacing: .1,     // Spacing between anchor and legend
   item: (
     radius: 0,
-    spacing: .05,  // Spacing between items
+    spacing: .1,  // Spacing between items
     preview: (
       width: .75,  // Preview width
       height: .3,  // Preview height
-      margin: .1   // Distance between preview and label
+      margin: .15   // Distance between preview and label
     )
   ),
   radius: 0,

@@ -58,23 +58,50 @@
   if type(types) != array {
     types = (types,)
   }
-  stack(dir: ttb, spacing: 1em,
-    // name <type>     Default: <default>
-    block(breakable: false, width: 100%, stack(dir: ltr,
-      [#text(weight: "bold", name + [:]) #types.map(tidy.styles.default.show-type).join(" or ")],
-      if show-default {
-        align(right)[
-          Default: #raw(
-            lang: "typc",
-            // Tidy gives defaults as strings but outside of tidy we pass defaults as the actual values
-            if in-tidy { default } else { repr(default) }
-          )
-        ]
-      }
-      )),
-    // text
-    block(inset: (left: .4cm), content)
+
+  block(
+    breakable: false,
+    above: 1em, below: 2em, spacing: 1em,
+    {
+      block({
+        box(heading(name, level: 4))
+        [:]
+        [#types.map(tidy.styles.default.show-type).join(" or ")]
+        h(1fr)
+        if show-default {
+            [Default: ]
+            raw(
+              lang: "typc",
+              // Tidy gives defaults as strings but outside of tidy we pass defaults as the actual values
+              if in-tidy { default } else { repr(default) }
+            )
+        }
+      })
+      block(inset: (left: .4cm), content)
+    }
   )
+
+  // block(
+  //   breakable: false, 
+  //   above: 1em, below: 2em, spacing: 1em, 
+  //   stack(
+  //     dir: ttb, spacing: 1em,
+  //     // name <type>     Default: <default>
+  //     block(breakable: false, width: 100%, stack(dir: ltr,
+  //     [#text(weight: "bold", box(heading(name, level: 4)) + [:]) #types.map(tidy.styles.default.show-type).join(" or ")],
+  //     if show-default {
+  //       align(right)[
+  //         Default: #raw(
+  //           lang: "typc",
+  //           // Tidy gives defaults as strings but outside of tidy we pass defaults as the actual values
+  //           if in-tidy { default } else { repr(default) }
+  //         )
+  //       ]
+  //     }
+  //     )),
+  //   // text
+  //   block(inset: (left: .4cm), content)
+  // ))
 }
 
 
@@ -90,7 +117,7 @@
   show-parameter-list: show-parameter-list
 )
 
-#let parse-show-module(path) = {
+#let parse-show-module(path, ..args) = {
   tidy.show-module(
     tidy.parse-module(
       read(path),
@@ -102,6 +129,7 @@
     ),
     show-outline: false,
     sort-functions: none,
-    style: style
+    style: style,
+    ..args
   )
 }
