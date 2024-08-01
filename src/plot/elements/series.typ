@@ -3,7 +3,7 @@
 
 #let _prepare(self, ctx) = {
   for (key, value) in self.body.enumerate() {
-    value.style = self.style
+    value.style = self.style + value.style
     self.body.at(key) = (value.plot-prepare)(value, ctx)
   }
   return self

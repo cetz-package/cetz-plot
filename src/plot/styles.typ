@@ -48,8 +48,8 @@
   padding: 0,
   tick: (
     fill: none,
-    stroke: black + 1pt,
-    minor-stroke: black + .5pt,
+    stroke: black + 0.75pt,
+    minor-stroke: black + .25pt,
     offset: 0,
     minor-offset: 0,
     length: .1cm,       // Tick length: Number
@@ -66,10 +66,10 @@
     length: .15cm,
   ),
   grid: (
-    stroke: (paint: gray.lighten(50%), thickness: 1pt),
+    stroke: (paint: gray.lighten(10%), thickness: .5pt),
   ),
   minor-grid: (
-    stroke: (paint: gray.lighten(50%), thickness: .5pt),
+    stroke: (paint: gray.lighten(40%), thickness: .25pt),
   ),
 )
 

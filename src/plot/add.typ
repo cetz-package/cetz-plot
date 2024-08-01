@@ -3,7 +3,7 @@
 #import "elements/series.typ": series
 
 // Continuous Continuous
-#import "elements/xy.typ": xy
+#import "elements/xy.typ": xy, hline, vline, fill-between
 #import "elements/errorbar.typ": errorbar
 
 // Categorical Continuous

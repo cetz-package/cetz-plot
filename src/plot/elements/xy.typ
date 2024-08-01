@@ -107,9 +107,11 @@
 
 // Stroke line data
 #let _stroke(self, ctx) = {
-  for p in self.stroke-paths {
-    draw.line(..p, fill: none)
-  }
+  if ("stroke" in self.style and self.style.stroke != none){
+    for p in self.stroke-paths {
+      draw.line(..p, ..self.style, fill: none)
+    }
+  } 
 }
 
 // Fill line data
@@ -298,7 +300,7 @@
 /// - axes (array): Name of the axes to use for plotting
 /// - style (style): Style to use, can be used with a palette function
 /// - label (none,content): Legend label to show for this plot.
-#let add-hline(..y,
+#let hline(..y,
                min: auto,
                max: auto,
                axes: ("x", "y"),
@@ -360,7 +362,7 @@
 ///                 plot styles are able to display a custom axis!
 /// - style (style): Style to use, can be used with a palette function
 /// - label (none,content): Legend label to show for this plot.
-#let add-vline(..x,
+#let vline(..x,
                min: auto,
                max: auto,
                axes: ("x", "y"),
@@ -432,7 +434,7 @@
 /// - axes (array): Name of the axes to use for plotting.
 /// - data-a (array,function): Data of the first plot, see @@add().
 /// - data-b (array,function): Data of the second plot, see @@add().
-#let add-fill-between(data-a,
+#let fill-between(data-a,
                       data-b,
                       domain: auto,
                       samples: 50,
@@ -470,24 +472,25 @@
   )}
 
   let prepare(self, ctx) = {
-    let (x, y) = (ctx.x, ctx.y)
+    let (x, y) = (ctx.axes.at(0), ctx.axes.at(1))
 
     // Generate stroke paths
     self.stroke-paths = (
-      a: util.compute-stroke-paths(self.line-data.a,
-        (x.min, y.min), (x.max, y.max)),
-      b: util.compute-stroke-paths(self.line-data.b,
-        (x.min, y.min), (x.max, y.max))
+      a: (ctx.compute-stroke-paths)(self.line-data.a, ctx),
+      b: (ctx.compute-stroke-paths)(self.line-data.b, ctx)
     )
 
     // Generate fill paths
-    self.fill-paths = util.compute-fill-paths(self.line-data.a + self.line-data.b.rev(),
-      (x.min, y.min), (x.max, y.max))
+    self.fill-paths = (ctx.compute-fill-paths)(
+      self.line-data.a + self.line-data.b.rev(),
+      ctx
+    )
 
     return self
   }
 
   let stroke(self, ctx) = {
+    if "stroke" not in self.style or self.style.stroke == none {return}
     for p in self.stroke-paths.a {
       draw.line(..p, fill: none)
     }

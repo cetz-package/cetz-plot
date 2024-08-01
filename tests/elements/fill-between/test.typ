@@ -27,34 +27,12 @@
     y-grid: "both",
     {
 
-      cetz-plot.add.series(
-        label: [My Plot],
-        {
-          cetz-plot.add.xy(
-            data,
-            domain: (0, 2* calc.pi), 
-            mark: "x",
-            line: "raw",
-            samples: 100,
-            label: $sin^2 (x)$
-          )
-
-          cetz-plot.add.fill-between(
-            data.map(it=>(it.at(0), it.at(1)+it.at(2))),
-            data.map(it=>(it.at(0), it.at(1)-it.at(2))),
-            style: (stroke: none),
-            label: [95% C.I]
-          )
-
-          cetz-plot.add.errorbar(
-            data,
-            y-error-key: 2,
-            whisker-size: 0.1,
-          )
-        }
-      )
-
-      
+    cetz-plot.add.fill-between(
+      data.map(it=>(it.at(0), it.at(1)+it.at(2))),
+      data.map(it=>(it.at(0), it.at(1)-it.at(2))),
+      style: (stroke: none),
+      label: [95% C.I]
+    )
 
     }
   )
