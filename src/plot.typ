@@ -4,7 +4,6 @@
 #import "plot/axis-style.typ"
 #import "axes/axes.typ"
 
-
 // TODO: Refactor this into a better way of providing palettes
 
 #let default-colors = (

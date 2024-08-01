@@ -92,11 +92,16 @@
   style.tick.label.offset = res(style.tick.label.offset)
 
   // Break points
-  // style.break-point.width = res(style.break-point.width)
-  // style.break-point.length = res(style.break-point.length)
+  if "break-point" in style {
+    style.break-point.width = res(style.break-point.width)
+    style.break-point.length = res(style.break-point.length)
+  }
+
 
   // Padding
-  // style.padding = res(style.padding)
+  if "padding" in style {
+    style.padding = res(style.padding)
+  }
 
   if "overshoot" in style {
     style.overshoot = res(style.overshoot)
