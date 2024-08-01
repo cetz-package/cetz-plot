@@ -25,7 +25,7 @@
 // Outline
 #{
   show heading: none
-  columns(2, outline(indent: true, depth: 3))
+  outline(indent: true, depth: 3)
   pagebreak(weak: true)
 }
 
@@ -63,17 +63,43 @@ You can use the following options to customize each axis of the plot. You must p
 
 #doc-style.show-parameter-block("label", ("none", "content"), default: none)[
   The axis' label. If and where the label is drawn depends on the `axis-style`.
+  #example(```
+  cetz-plot.plot(
+    size: (5,5), 
+    x-label: [My $x$-label],
+    y-label: [Intensity [$"cts"$]],
+    {
+      cetz-plot.add.xy(
+        domain: (0, 2 * calc.pi), 
+        t => (calc.cos(t), calc.sin(t))
+      )
+    }
+  )
+  ```)
 ]
 
 #doc-style.show-parameter-block("min", ("auto", "float"), default: auto)[
   Axis lower domain value. If this is set greater than than `max`, the axis' direction is swapped
+    #example(```
+  cetz-plot.plot(
+    size: (5,5), 
+    x-min: -5, x-max: 5,
+    y-min: -2,
+    {
+      cetz-plot.add.xy(
+        domain: (0, 2 * calc.pi), 
+        t => (calc.cos(t), calc.sin(t))
+      )
+    }
+  )
+  ```)
 ]
 
 #doc-style.show-parameter-block("max", ("auto", "float"), default: auto)[
   Axis upper domain value. If this is set to a lower value than `min`, the axis' direction is swapped
 ]
 
-#doc-style.show-parameter-block("equal", ("string"), default: "none")[
+#doc-style.show-parameter-block("equal", ("string"), default: none)[
   Set the axis domain to keep a fixed aspect ratio by multiplying the other axis domain by the plots aspect ratio,
   depending on the other axis orientation (see `horizontal`).
   This can be useful to force one axis to grow or shrink with another one.
@@ -173,7 +199,7 @@ You can use the following options to customize each axis of the plot. You must p
   The base to be used when labeling axis ticks in logarithmic scaling
 ]
 
-#doc-style.show-parameter-block("grid", ("bool", "string"), default: "false")[
+#doc-style.show-parameter-block("grid", ("bool", "string"), default: false)[
   If `true` or `"major"`, show grid lines for all major ticks. If set
   to `"minor"`, show grid lines for minor ticks only.
   The value `"both"` enables grid lines for both, major- and minor ticks.

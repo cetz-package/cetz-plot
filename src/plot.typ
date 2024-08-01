@@ -264,6 +264,14 @@
 ///   )
 ///   ```
 /// - axis-style (axis-style-module): TODO: Make this link to the axis-style section
+///   ```example
+///   cetz-plot.plot(
+///     size: (5,5),
+///     axis-style: cetz-plot.axis-style.polar-2d,
+///     x-grid: "both", y-grid: "both",
+///     {cetz-plot.add.xy(calc.sin, domain: (0,2*calc.pi))}
+///   )
+///   ```
 /// - name (string, none): The plots element name to be used when referring to anchors
 /// - plot-style (style,function): Styling to use for drawing plot graphs.
 ///   This style gets inherited by all plots and supports `palette` functions.
