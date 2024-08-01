@@ -98,7 +98,7 @@
     data: data,
     x-key: x-key,
     y-key: y-key,
-    y-base-key: 0,
+    y-base-key: y-base-key,
 
     x-domain: x-domain,
     y-domain: y-domain,
