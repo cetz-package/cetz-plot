@@ -1,5 +1,6 @@
 #import "elements/anchor.typ": anchor
 #import "elements/annotation.typ": annotation
+#import "elements/series.typ": series
 
 // Continuous Continuous
 #import "elements/xy.typ": xy

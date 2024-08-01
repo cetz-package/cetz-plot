@@ -83,9 +83,6 @@
               x-error: 0,
               y-error: 0,
               label: none,
-              mark: "x",
-              mark-size: .2,
-              mark-style: (:),
               whisker-size: .2,
               style: (:),
               axes: ("x", "y")) = {
@@ -123,12 +120,17 @@
     x-domain: x-domain,
     y-domain: y-domain,
 
-    mark: mark,
-    mark-size: mark-size,
-    mark-style: mark-style,
     whisker-size: whisker-size,
     style: style,
     plot-prepare: _prepare,
     plot-stroke: _stroke,
+    plot-legend-preview: (self) => {
+      draw-errorbar(
+        (0.5, 0.5),
+        0, 0.4,
+        0.01, 0.1,
+        self.style
+      )
+    }
   ),)
 }
