@@ -34,9 +34,9 @@
   }
 }
 
-#let draw-mark(pts, x, y, mark, mark-size, plot-size) = {
+#let draw-mark(pts, ctx, mark, mark-size, plot-size) = {
   let pts = pts.map(pt => {
-    axes.transform-vec(plot-size, x, y, none, pt)
+    (ctx.transform-vec)(plot-size, ctx.axes, pt)
   }).filter(pt => pt != none)
 
   for pt in pts {

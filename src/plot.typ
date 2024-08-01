@@ -3,6 +3,7 @@
 #import "plot/elements/annotation.typ": calc-annotation-domain
 #import "plot/legend.typ" as plot-legend
 #import "plot/axis-style.typ"
+#import "plot/mark.typ"
 #import "axes/axes.typ"
 
 // TODO: Refactor this into a better way of providing palettes
@@ -325,7 +326,7 @@
       if "mark" in d and d.mark != none {
         draw.group({
           draw.set-style(..d.style, ..d.mark-style)
-          mark.draw-mark(d.data, x, y, d.mark, d.mark-size, size)
+          mark.draw-mark(d.data, plot-ctx, d.mark, d.mark-size, size)
         })
       }
     }

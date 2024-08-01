@@ -4,7 +4,7 @@
 
 #import "grid.typ"
 #import "axis.typ": draw-axis-line, inset-axis-points, place-ticks-on-line, place-ticks-on-radius
-#import "transforms.typ": data-viewport, axis-viewport, 
+#import "transforms.typ": data-viewport, axis-viewport, transform-vec
 #import "clipper.typ"
 
 #let default-style-polar-2d = util.merge-dictionary(
@@ -36,6 +36,7 @@
     x-scale: x-scale, 
     y-scale: y-scale,
     clip: ((x.min, y.min), (x.max, y.max)), // TODO: Change to radius
+    transform-vec: transform-vec,
     compute-stroke-paths: clipper.compute-stroke-paths,
     compute-fill-paths: clipper.compute-fill-paths
   )

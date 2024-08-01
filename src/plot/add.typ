@@ -3,6 +3,7 @@
 
 // Continuous Continuous
 #import "elements/xy.typ": xy
+#import "elements/errorbar.typ": errorbar
 
 // Categorical Continuous
 #import "elements/violin.typ": violin

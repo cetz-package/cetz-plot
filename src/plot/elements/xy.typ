@@ -224,12 +224,18 @@
          line: "linear",
          axes: ("x", "y"),
          label: none,
-         data
+
+         data,
+         x-key: 0,
+         y-key: 1,
          ) = {
   // If data is of type function, sample it
   if type(data) == function {
     data = sample.sample-fn(data, domain, samples, sample-at: sample-at)
   }
+
+  // data
+  let data = data.map(it=>(it.at(x-key), it.at(y-key)))
 
   // Transform data
   let line-data = transform-lines(data, line)
