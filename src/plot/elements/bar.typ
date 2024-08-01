@@ -3,7 +3,7 @@
 #let _prepare(self, ctx) = {
 
 
-  self.stroke-paths = self.data.map(d=>{
+  self.stroke-paths = self.bar-data.map(d=>{
 
     let (x,y) = (d.at(self.x-key),d.at(self.y-key))
     let base = if self.y-base-key != none {
@@ -23,7 +23,7 @@
     )
   })
 
-  self.fill-paths = self.data.map(d=>{
+  self.fill-paths = self.bar-data.map(d=>{
     let (x,y) = (d.at(self.x-key),d.at(self.y-key))
     let base = if self.y-base-key != none {
       d.at(self.y-base-key, default: 0)
@@ -91,11 +91,11 @@
   )
 
   return ((
-    type: "errorbar",
+    type: "bar",
     label: label,
     axes: axes,
 
-    data: data,
+    bar-data: data,
     x-key: x-key,
     y-key: y-key,
     y-base-key: y-base-key,

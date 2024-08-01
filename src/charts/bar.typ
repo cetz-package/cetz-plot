@@ -1,39 +1,58 @@
 #import "/src/cetz.typ": canvas
+#import "/src/plot.typ": plot
+#import "/src/plot/add.typ" as add: series, bar
+
 
 #let bar(
-  size: (5, 5*0.75),
   data,
   labels: (),
   label-key: none,
   y-keys: (1,),
   y-error-keys: none,
-  mode: "clustered",
+  // Handle inter-cluster spacing and intra-cluster
+  mode: "cluster",
   ..plot-args
 ) = canvas({
-  cetz-plot.plot(
-    size: size,
+  plot(
     ..plot-args,
     // TODO: Handle x-labels
     { 
 
       // TODO: Preprocess data into more convenient format
+      let series = if mode == "cluster" {
+        for (index, y-key) in y-keys.enumerate() {
+          ((
+            label: if label-key != none {labels.at(index)},
+            data: data.enumerate().map(((k,v))=>{
+              (
+                x: k,
+                y: v.at(y-key),
+                y-err: if (y-error-keys != none) {
+                  v.at(y-error-keys.at(index))
+                }
+              )
+            })
+          ),)
+        }
+      } else {()}
 
       // Render as series
-      for (label, bar-data, error-data) in data {
-        cetz-plot.add.series(
+      for (label, data) in series {
+        add.series(
           label: label,
           {
-            cetz-plot.add.bar(
-              bar-data,
-              // TODO
+            add.bar(
+              data,
+              x-key: "x",
+              y-key: "y",
             )
 
-            if y-error-keys != none {
-              cetz-plot.add.errorbar(
-                bar-data,
-                // TODO
-              )
-            }
+            // if y-error-keys != none {
+            //   add.errorbar(
+            //     data,
+            //     // TODO
+            //   )
+            // }
           }
         )
       }
