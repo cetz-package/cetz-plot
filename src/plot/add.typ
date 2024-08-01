@@ -8,3 +8,4 @@
 
 // Categorical Continuous
 #import "elements/violin.typ": violin
+#import "elements/bar.typ": bar

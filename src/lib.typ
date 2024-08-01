@@ -4,4 +4,5 @@
 #import "/src/plot.typ": plot
 #import "/src/plot/axis-style.typ"
 #import "/src/plot/add.typ"
+#import "/src/chart.typ"
 
