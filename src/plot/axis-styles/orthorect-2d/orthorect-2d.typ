@@ -61,7 +61,7 @@
   }
 
   if (right == auto){
-    right = bottom
+    right = left
     right.is-mirror = true
   }
 

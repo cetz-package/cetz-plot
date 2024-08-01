@@ -241,9 +241,58 @@
   return data
 }
 
+/// Create a plot environment. Data to be plotted is given by passing it to the
+/// `plot.add` or other plotting functions. The plot environment supports different
+/// axis styles to draw, see its parameter `axis-style:`.
+/// - body (body): Calls of `plot.add` or `plot.add-*` commands. Note that normal drawing
+///   commands like `line` or `rect` are not allowed inside the plots body, instead wrap
+///   them in `plot.annotate`, which lets you select the axes used for drawing.
+///
+///   ```example
+///   cetz-plot.plot({
+///     cetz-plot.add.xy(calc.sin, domain: (0,2*calc.pi))
+///   })
+///   ```
+/// - size (array): Plot size tuple of `(<width>, <height>)` in canvas units.
+///   This is the plots inner plotting size without axes and labels.
+///   this value, as it doesn't include axis labels, ticks, or the legend.
+///   ```example
+///   cetz-plot.plot(
+///     size: (5,1),
+///     x-tick-step: none, y-tick-step: none,
+///     {cetz-plot.add.xy(calc.sin, domain: (0,2*calc.pi))}
+///   )
+///   ```
+/// - axis-style (axis-style-module): TODO: Make this link to the axis-style section
+/// - name (string, none): The plots element name to be used when referring to anchors
+/// - plot-style (style,function): Styling to use for drawing plot graphs.
+///   This style gets inherited by all plots and supports `palette` functions.
+///   The following style keys are supported:
+///   #show-parameter-block("stroke", ("none", "stroke"), default: 1pt, [
+///     Stroke style to use for stroking the graph.
+///   ])
+///   #show-parameter-block("fill", ("none", "paint"), default: none, [
+///     Paint to use for filled graphs. Note that not all graphs may support filling and
+///     that you may have to enable filling per graph, see `plot.add(fill: ..)`.
+///   ])
+/// - mark-style (style,function): Styling to use for drawing plot marks.
+///   This style gets inherited by all plots and supports `palette` functions.
+///   The following style keys are supported:
+///   #show-parameter-block("stroke", ("none", "stroke"), default: 1pt, [
+///     Stroke style to use for stroking the mark.
+///   ])
+///   #show-parameter-block("fill", ("none", "paint"), default: none, [
+///     Paint to use for filling marks.
+///   ])
+/// - legend (none, auto, coordinate): The position the legend will be drawn at. See plot-legends for information about legends. If set to `<auto>`, the legend's "default-placement" styling will be used. If set to a `<coordinate>`, it will be taken as relative to the plot's origin.
+/// - legend-anchor (auto, string): Anchor of the legend group to use as its origin.
+///   If set to `auto` and `lengend` is one of the predefined legend anchors, the
+///   opposite anchor to `legend` gets used.
+/// - legend-style (style): Style key-value overwrites for the legend style with style root `legend`.
+/// - ..options (any): Axis options, see _options_ below.
 #let plot(
   body,
-  size: (1,1),
+  size: (5,5 * 3/4),
   axis-style: axis-style.orthorect-2d,
   name: none,
   plot-style: default-plot-style,

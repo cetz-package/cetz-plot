@@ -90,7 +90,7 @@
   show-parameter-list: show-parameter-list
 )
 
-#let parse-show-module(path) = {
+#let parse-show-module(path, ..args) = {
   tidy.show-module(
     tidy.parse-module(
       read(path),
@@ -102,6 +102,7 @@
     ),
     show-outline: false,
     sort-functions: none,
-    style: style
+    style: style,
+    ..args
   )
 }
