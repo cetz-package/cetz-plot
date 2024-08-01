@@ -73,19 +73,26 @@ You can use the following options to customize each axis of the plot. You must p
   Axis upper domain value. If this is set to a lower value than `min`, the axis' direction is swapped
 ]
 
-// #doc-style.show-parameter-block("equal", ("string"), default: "none", [
-//   Set the axis domain to keep a fixed aspect ratio by multiplying the other axis domain by the plots aspect ratio,
-//   depending on the other axis orientation (see `horizontal`).
-//   This can be useful to force one axis to grow or shrink with another one.
-//   You can only "lock" two axes of different orientations.
-//   #example(```
-//   cetz-plot.plot(size: (2,1), x-tick-step: 1, y-tick-step: 1,
-//             x-equal: "y",
-//   {
-//     plot.add.xy(domain: (0, 2 * calc.pi), t => (calc.cos(t), calc.sin(t)))
-//   })
-//   ```)
-// ])
+#doc-style.show-parameter-block("equal", ("string"), default: "none")[
+  Set the axis domain to keep a fixed aspect ratio by multiplying the other axis domain by the plots aspect ratio,
+  depending on the other axis orientation (see `horizontal`).
+  This can be useful to force one axis to grow or shrink with another one.
+  You can only "lock" two axes of different orientations.
+  #example(```
+  cetz-plot.plot(
+    size: (5,2.5), 
+    x-tick-step: 1, y-tick-step: 1,
+    x-equal: "y",
+    {
+      cetz-plot.add.xy(
+        domain: (0, 2 * calc.pi), 
+        t => (calc.cos(t), calc.sin(t))
+      )
+    }
+  )
+  ```)
+]
+
 #doc-style.show-parameter-block("horizontal", ("bool"), default: "axis name dependant")[
   If true, the axis is considered an axis that gets drawn horizontally, vertically otherwise.
   The default value depends on the axis name on axis creation. Axes which name start with `x` have this
@@ -102,39 +109,51 @@ You can use the following options to customize each axis of the plot. You must p
   Like `tick-step`, but for minor tick marks. In contrast to ticks, minor ticks do not have labels.
 ]
 
-// #doc-style.show-parameter-block("ticks", ("none", "array"), default: "none", [
-//   A List of custom tick marks to additionally draw along the axis. They can be passed as
-//   an array of `<float>` values or an array of `(<float>, <content>)` tuples for
-//   setting custom tick mark labels per mark.
+#doc-style.show-parameter-block("ticks", ("none", "array"), default: none)[
+  A List of custom tick marks to additionally draw along the axis. They can be passed as
+  an array of `<float>` values or an array of `(<float>, <content>)` tuples for
+  setting custom tick mark labels per mark.
 
-//   #example(```
-//   cetz-plot.plot(x-tick-step: none, y-tick-step: none,
-//             x-min: 0, x-max: 4,
-//             x-ticks: (1, 2, 3),
-//             y-min: 1, y-max: 2,
-//             y-ticks: ((1, [One]), (2, [Two])),
-//   {
-//     plot.add.xy(((0,0),))
-//   })
-//   ```)
+  #example(```
+  cetz-plot.plot(
+    x-min: 0, x-max: 4,
+    x-tick-step: none, 
+    x-ticks: (1, 2, 3),
 
-//   Examples: `(1, 2, 3)` or `((1, [One]), (2, [Two]), (3, [Three]))`])
-// #doc-style.show-parameter-block("format", ("none", "string", "function"), default: "float", [
-//   How to format the tick label: You can give a function that takes a `<float>` and return
-//   `<content>` to use as the tick label. You can also give one of the predefined options:
-//   / float: Floating point formatting rounded to two digits after the point (see `decimals`)
-//   / sci: Scientific formatting with $times 10^n$ used as exponet syntax
+    y-min: 1, y-max: 2,
+    y-tick-step: none,
+    y-ticks: ((1, [One]), (2, [Two])),
+    {
+      cetz-plot.add.xy(((0,0),))
+    }
+  )
+  ```)
 
-//   #example(```
-//   let formatter(v) = if v != 0 {$ #{v/calc.pi} pi $} else {$ 0 $}
-//   cetz-plot.plot(x-tick-step: calc.pi, y-tick-step: none,
-//             x-min: 0, x-max: 2 * calc.pi,
-//             x-format: formatter,
-//   {
-//     plot.add.xy(((0,0),))
-//   })
-//   ```)
-// ])
+  Examples: `(1, 2, 3)` or `((1, [One]), (2, [Two]), (3, [Three]))`
+]
+
+#doc-style.show-parameter-block("format", ("none", "string", "function"), default: "float")[
+  How to format the tick label: You can give a function that takes a `<float>` and return
+  `<content>` to use as the tick label. You can also give one of the predefined options:
+  / float: Floating point formatting rounded to two digits after the point (see `decimals`)
+  / sci: Scientific formatting with $times 10^n$ used as exponet syntax
+
+  #example(```
+  let formatter(v) = if v != 0 {
+    $ #{v/calc.pi} pi $
+  } else {
+    $ 0 $
+  }
+
+  cetz-plot.plot(
+    x-tick-step: calc.pi, 
+    x-min: 0, x-max: 2 * calc.pi,
+    x-format: formatter,
+  {
+    cetz-plot.add.xy(((0,0),))
+  })
+  ```)
+]
 
 #doc-style.show-parameter-block("decimals", ("int"), default: 2, [
   Number of decimals digits to display for tick labels, if the format is set
@@ -153,6 +172,7 @@ You can use the following options to customize each axis of the plot. You must p
 #doc-style.show-parameter-block("base", ("none", "number"), default: none)[
   The base to be used when labeling axis ticks in logarithmic scaling
 ]
+
 #doc-style.show-parameter-block("grid", ("bool", "string"), default: "false")[
   If `true` or `"major"`, show grid lines for all major ticks. If set
   to `"minor"`, show grid lines for minor ticks only.
@@ -172,6 +192,7 @@ You can use the following options to customize each axis of the plot. You must p
   )
   ```)
 ]
+
 #doc-style.show-parameter-block("break", ("bool"), default: false)[
   If true, add a "sawtooth" at the start or end of the axis line, depending
   on the axis bounds. If the axis min. value is > 0, a sawtooth is added
