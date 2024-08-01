@@ -1,5 +1,6 @@
 #import "/src/cetz.typ": draw, util, styles
 
+#import "plot/elements/annotation.typ": calc-annotation-domain
 #import "plot/legend.typ" as plot-legend
 #import "plot/axis-style.typ"
 #import "axes/axes.typ"
@@ -124,7 +125,7 @@
   return axis-dict
 }
 
-#let _create-axis-dict(ctx, data, annotations, anchors, options, size) = {
+#let _create-axis-dict(ctx, data, anchors, annotations, options, size) = {
   let axis-dict = (:)
   for d in data + annotations {
     if "axes" not in d { continue }
@@ -332,9 +333,9 @@
     // Foreground Annotations
     for a in annotations.filter(a => not a.background) {
       let axes = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(axes, size)
+      let plot-ctx = axis-style.make-ctx(axes, size)
 
-      data-viewport(axes, size, {
+      axis-style.data-viewport(axes, size, {
         draw.anchor("default", (0, 0))
         a.body
       })
