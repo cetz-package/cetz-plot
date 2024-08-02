@@ -6,7 +6,6 @@
 // the cart before the horse
 
 ///
-/// - ..plot-args (variadic): Additional plotting parameters and axis options to be passed to @@plot
 #let clustered(
   data,
   labels: (),
@@ -61,16 +60,34 @@
   )
 })
 
-///
+/// Render a stacked bar chart
+///   ```example-nocanvas
+///   cetz-plot.chart.bar.stacked(
+///     size: (4,4),
+///     (
+///       ([One],   1, 1, 2, 3),
+///       ([Two],   3, 1, 1 ,1),
+///       ([Three], 3, 2, 1, 3),
+///     ),
+///     label-key: 0,
+///     y-keys: (1,2,3,4),
+///     labels: (
+///       $0 -> 24$, 
+///       $25 -> 49$,
+///       $50 -> 74$, 
+///       $75 -> 100$
+///     ),
+///   )
+///   ```
 /// - ..plot-args (variadic): Additional plotting parameters and axis options to be passed to @@plot
 #let stacked(
   data,
   labels: (),
   label-key: 0,
   y-keys: (1,),
-  y-error-keys: none, // TODO: Can stacked bars have error?
+  y-error-keys: none,
   bar-width: 0.5,
-  x-spacing: 1, // TODO: Consider naming of this argument
+  x-spacing: 1,
   ..plot-args
 ) = canvas({
   let series-count = y-keys.len()
@@ -102,7 +119,8 @@
   plot(
     x-tick-step: if label-key == none {x-spacing},
     x-ticks: if label-key != none {
-      data.map(d=>d.at(label-key, default: none)).enumerate()
+      data.enumerate()
+          .map(((i,d))=>(i*x-spacing, d.at(label-key, default: none)))
     } else {()},
     ..plot-args,
     for (label, data) in series-data {

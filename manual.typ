@@ -1,5 +1,5 @@
 #import "/doc/util.typ": *
-#import "/doc/example.typ": example
+#import "/doc/example.typ": example, example-nocanvas
 #import "/doc/style.typ" as doc-style
 #import "/src/lib.typ": *
 #import "/src/cetz.typ": *
@@ -11,6 +11,7 @@
 //   /* canvas drawing code */
 //   ```
 #show raw.where(lang: "example"): example
+#show raw.where(lang: "example-nocanvas"): example-nocanvas
 #show raw.where(lang: "example-vertical"): example.with(vertical: true)
 
 #make-title()
