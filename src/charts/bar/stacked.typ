@@ -1,4 +1,4 @@
-#import "/src/cetz.typ": canvas
+#import "/src/cetz.typ": canvas, palette
 #import "plotter.typ": plotter
 
 /// Render a stacked bar chart
@@ -28,6 +28,8 @@
   y-keys: (1,),
   y-error-keys: none,
   bar-width: 0.5,
+  bar-style: palette.red,
+  axes: ("x", "y"),
   ..plot-args
 ) = {
   let series-count = y-keys.len()
@@ -65,6 +67,8 @@
     y-error-key: none,
     label-key: label-key,
     bar-width: bar-width,
+    bar-style: bar-style,
+    axes: axes,
     ..plot-args,
   )
 }

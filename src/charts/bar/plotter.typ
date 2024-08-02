@@ -13,6 +13,7 @@
   label-key: none,
   bar-width: 0.7,
   bar-style: palette.red,
+  axes: ("x", "y"),
   ..plot-args,
 ) = {
   draw.group(ctx => {
@@ -43,12 +44,14 @@
               y-key: y-key,
               y-offset-key: y-offset-key,
               bar-width: bar-width,
+              axes: axes,
             )
 
             if y-error-keys != none {
               add.errorbar(
                 data,
                 x-key: x-key,y-key: y-key, y-error-key: y-error-key,
+                axes: axes,
               )
             }
           }
