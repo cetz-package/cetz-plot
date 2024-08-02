@@ -1,1 +1,1 @@
-#import "charts/bar.typ": bar
+#import "charts/bar.typ"
