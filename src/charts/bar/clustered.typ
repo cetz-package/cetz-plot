@@ -61,7 +61,7 @@
     x-key: "x", 
     y-key: "y",
     y-error-key: none,
-    label-key: none,
+    label-key: label-key,
     bar-width: bar-width,
     ..plot-args,
   )
