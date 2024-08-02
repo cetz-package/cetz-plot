@@ -33,8 +33,8 @@
       draw.line(
         (radius, radius), 
         (
-          radius * (calc.cos(theta) + 1),
-          radius * (calc.sin(theta) + 1)
+          radius * (calc.sin(theta) + 1),
+          radius * (calc.cos(theta) + 1)
         ), 
         stroke: if is-major and (kind == 1 or kind == 3) {
           style.grid.stroke
