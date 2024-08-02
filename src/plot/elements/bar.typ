@@ -1,22 +1,25 @@
 #import "/src/cetz.typ": draw
 
+// TODO: Refactor stroke-paths and fill-paths generation into something more
+// optimized
+
 #let _prepare(self, ctx) = {
 
   self.stroke-paths = self.bar-data.map(d=>{
 
     let (x,y) = (d.at(self.x-key),d.at(self.y-key))
-    let base = if self.y-base-key != none {
-      d.at(self.y-base-key, default: 0)
+    let offset = if self.y-offset-key != none {
+      d.at(self.y-offset-key, default: 0)
     } else {
       0
     };
 
     (ctx.compute-stroke-paths)(
       (
-        (x - self.bar-width/2, base),
-        (x - self.bar-width/2, y+base),
-        (x + self.bar-width/2, y+base),
-        (x + self.bar-width/2, base),
+        (x - self.bar-width/2, offset),
+        (x - self.bar-width/2, y+offset),
+        (x + self.bar-width/2, y+offset),
+        (x + self.bar-width/2, offset),
       ), 
       ctx,
     )
@@ -24,18 +27,18 @@
 
   self.fill-paths = self.bar-data.map(d=>{
     let (x,y) = (d.at(self.x-key),d.at(self.y-key))
-    let base = if self.y-base-key != none {
-      d.at(self.y-base-key, default: 0)
+    let offset = if self.y-offset-key != none {
+      d.at(self.y-offset-key, default: 0)
     } else {
       0
     };
 
     (ctx.compute-fill-paths)(
       (
-        (x - self.bar-width/2, base),
-        (x - self.bar-width/2, y+base),
-        (x + self.bar-width/2, y+base),
-        (x + self.bar-width/2, base),
+        (x - self.bar-width/2, offset),
+        (x - self.bar-width/2, y+offset),
+        (x + self.bar-width/2, y+offset),
+        (x + self.bar-width/2, offset),
       ), 
       ctx,
     )
@@ -69,7 +72,7 @@
   data,
   x-key: 0,
   y-key: 1,
-  y-base-key: none,
+  y-offset-key: none,
   bar-width: 0.5,
   label: none,
   style: (:),
@@ -81,15 +84,15 @@
     calc.max(..data.map(it=>{it.at(x-key)+bar-width})),
   )
 
-  let y-domain = if y-base-key != none {
+  let y-domain = if y-offset-key != none {
     (
       calc.min(
-        ..data.map(it=>{it.at(y-key)+it.at(y-base-key, default: 0)}),
-        ..data.map(it=>{it.at(y-base-key, default: 0)})
+        ..data.map(it=>{it.at(y-key)+it.at(y-offset-key, default: 0)}),
+        ..data.map(it=>{it.at(y-offset-key, default: 0)})
       ),
       calc.max(
-        ..data.map(it=>{it.at(y-key)+it.at(y-base-key, default: 0)}),
-        ..data.map(it=>{it.at(y-base-key, default: 0)})
+        ..data.map(it=>{it.at(y-key)+it.at(y-offset-key, default: 0)}),
+        ..data.map(it=>{it.at(y-offset-key, default: 0)})
       )
     )
   } else {
@@ -107,7 +110,7 @@
     bar-data: data,
     x-key: x-key,
     y-key: y-key,
-    y-base-key: y-base-key,
+    y-offset-key: y-offset-key,
 
     x-domain: x-domain,
     y-domain: y-domain,

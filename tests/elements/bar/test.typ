@@ -26,7 +26,7 @@
 
       cetz-plot.add.bar(
         data, 
-        y-base-key: 2,
+        y-offset-key: 2,
         label: [Hello],
       )
 

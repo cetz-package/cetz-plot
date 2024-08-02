@@ -1,1 +1,1 @@
-#import "charts/bar.typ"
+#import "charts/bar.typ" as bar: stacked, clustered
