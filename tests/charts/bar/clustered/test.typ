@@ -7,11 +7,12 @@
   ([Three], 3, 2, 1, 3),
 )
 
-#cetz-plot.chart.bar.clustered(
+#test-case(cetz-plot.chart.bar.clustered(
   size: (10,9),
   label-key: 0,
   y-keys: (1,2,3,4),
   y-error-keys: (1,2,3,4),
   labels: ($0 -> 24$, $25 -> 49$,$50 -> 74$, $75 -> 100$),
-  data
-)
+  data,
+  // axes: ("y", "x")
+))

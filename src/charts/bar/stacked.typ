@@ -3,7 +3,7 @@
 #import "/src/plot/add.typ" as add: series, bar
 
 /// Render a stacked bar chart
-///   ```example-nocanvas
+///   ```example
 ///   cetz-plot.chart.bar.stacked(
 ///     size: (4,4),
 ///     (
@@ -30,7 +30,7 @@
   y-error-keys: none,
   bar-width: 0.5,
   ..plot-args
-) = canvas({
+) = {
   let series-count = y-keys.len()
   let cluster-width = series-count * bar-width
   let offsets = (0,)*series-count
@@ -83,4 +83,4 @@
       )
     }
   )
-})
+}

@@ -2,7 +2,7 @@
 #import "plotter.typ": plotter
 
 /// Render a clustered bar chart
-///   ```example-nocanvas
+///   ```example
 ///   cetz-plot.chart.bar.clustered(
 ///     size: (4,4),
 ///     (
@@ -29,7 +29,7 @@
   bar-width: 0.7,
   bar-spacing: 0,
   ..plot-args
-) = canvas({
+) = {
   let series-count = y-keys.len()
   bar-width /= series-count
   let cluster-width = series-count * bar-width + (series-count - 1) * bar-spacing
@@ -65,4 +65,4 @@
     bar-width: bar-width,
     ..plot-args,
   )
-})
+}
