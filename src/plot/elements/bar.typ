@@ -2,7 +2,6 @@
 
 #let _prepare(self, ctx) = {
 
-
   self.stroke-paths = self.bar-data.map(d=>{
 
     let (x,y) = (d.at(self.x-key),d.at(self.y-key))
@@ -15,8 +14,8 @@
     (ctx.compute-stroke-paths)(
       (
         (x - self.bar-width/2, base),
-        (x - self.bar-width/2, y),
-        (x + self.bar-width/2, y),
+        (x - self.bar-width/2, y+base),
+        (x + self.bar-width/2, y+base),
         (x + self.bar-width/2, base),
       ), 
       ctx,
@@ -34,8 +33,8 @@
     (ctx.compute-fill-paths)(
       (
         (x - self.bar-width/2, base),
-        (x - self.bar-width/2, y),
-        (x + self.bar-width/2, y),
+        (x - self.bar-width/2, y+base),
+        (x + self.bar-width/2, y+base),
         (x + self.bar-width/2, base),
       ), 
       ctx,
@@ -81,14 +80,23 @@
     calc.max(..data.map(it=>{it.at(x-key)+bar-width})),
   )
 
-  let y-domain = (
-    if y-base-key != none {
-      calc.min(..data.map(it=>{it.at(y-base-key, default: 0)}))
-    } else {
-
-    },
-    calc.max(..data.map(it=>{it.at(y-key)})),
-  )
+  let y-domain = if y-base-key != none {
+    (
+      calc.min(
+        ..data.map(it=>{it.at(y-key)+it.at(y-base-key, default: 0)}),
+        ..data.map(it=>{it.at(y-base-key, default: 0)})
+      ),
+      calc.max(
+        ..data.map(it=>{it.at(y-key)+it.at(y-base-key, default: 0)}),
+        ..data.map(it=>{it.at(y-base-key, default: 0)})
+      )
+    )
+  } else {
+    (
+      0,
+      calc.max(..data.map(it=>{it.at(y-key)})),
+    )
+  }
 
   return ((
     type: "bar",

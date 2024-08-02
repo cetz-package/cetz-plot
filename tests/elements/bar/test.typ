@@ -20,7 +20,7 @@
 
     x-tick-step: none,
     // y-min: 50,
-    y-max: 105,
+    // y-max: 105,
     x-ticks: ((0, [My Bar]),),
     {
 
