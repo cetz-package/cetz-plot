@@ -2,6 +2,8 @@
 #import "/src/plot.typ": plot
 #import "/src/plot/add.typ" as add: series, bar
 
+///
+/// - ..plot-args (variadic): Additional plotting parameters and axis options to be passed to @@plot
 #let clustered(
   data,
   labels: (),

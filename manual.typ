@@ -226,4 +226,15 @@ You can use the following options to customize each axis of the plot. You must p
   to its end.
 ]
 
-// = Chart
+#pagebreak()
+== Add
+
+#doc-style.parse-show-module("/src/plot/elements/bar.typ", first-heading-level: 2)
+
+
+#pagebreak()
+= Chart
+
+== Bar
+
+#doc-style.parse-show-module("/src/charts/bar.typ", first-heading-level: 2)

@@ -64,6 +64,7 @@
   draw.rect((0,0), (1,0.5), ..self.style)
 }
 
+/// 
 #let bar(
   data,
   x-key: 0,
