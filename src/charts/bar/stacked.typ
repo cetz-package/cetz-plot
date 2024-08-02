@@ -20,7 +20,28 @@
 ///     ),
 ///   )
 ///   ```
-/// - ..plot-args (variadic): Additional plotting parameters and axis options to be passed to @@plot
+/// - data (array): An array of clusers to plot. Each entry can include a label
+///   for the cluster, shown on the `x` axis, a number of `y` coordinates that
+///   represent the magnitude of a bar that starts at 0, and optionally a
+///   corresponding number of `y-error` magnitudes for each bar.
+/// - labels (array): An array of either content or none, to be shown in the legend
+///   for its corresponding series. The n'th y-keys series is labelled by the
+///   n'th label (or none).
+/// - label-key (string, int): The key at which the x-axis label is described in
+///   each data entry.
+/// - y-keys (array): The n'th entry in `y-keys` corresponds to the key at which 
+///   the `y` coordinate can be found in each data entry, for the n'th series.
+/// - y-error-keys (any): The n'th entry in `y-error-keys` corresponds to the key at 
+///   which the `y-error` magnitude (as a float or as a tuple) can be found in
+///   each data entry, for the n'th series.
+/// - bar-width (float): The width of the bar along the `x` axis, in data-viewport
+///   space. The bar is drawn centered about its `x` coordinate, therefore, the bar 
+///   extends by $#raw("bar-width")\/2$ either side.
+/// - bar-style (style): Style to use, can be used with a `palette` function
+/// - axes (axes): Name of the axes to use for plotting. Reversing the axes
+///   means rotating the plot by 90 degrees. 
+/// - ..plot-args (variadic): Additional plotting parameters and axis options to be 
+///   passed to @@plot
 #let stacked(
   data,
   labels: (),

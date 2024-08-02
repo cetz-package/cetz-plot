@@ -238,4 +238,5 @@ You can use the following options to customize each axis of the plot. You must p
 == Bar
 
 #doc-style.parse-show-module("/src/charts/bar/clustered.typ", first-heading-level: 2)
+#pagebreak()
 #doc-style.parse-show-module("/src/charts/bar/stacked.typ", first-heading-level: 2)
