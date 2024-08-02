@@ -67,7 +67,43 @@
   draw.rect((0,0), (1,0.5), ..self.style)
 }
 
-/// 
+/// Adds a series of bars. Bars are of `bar-width` total width, centered at
+/// a given `x` coordinate, between heights `y-offset` (default: `0`) and `y-offset`
+/// \+ `y`.
+///
+/// ```example
+/// cetz-plot.plot(
+///   x-min: -0.5, x-max: 0.5, x-tick-step: 0.25,
+///   y-max: 1.2,
+///  {
+///   cetz-plot.add.bar(
+///     ((0,1),),
+///     bar-width: 0.5,
+///   )
+/// })
+/// ```
+///
+/// - data (array): An array representing a single series of bars. Entries can be
+///   of type `array` or `dictionary`, and must contain within them an `x` coordinate,
+///   and optionally a `y` coordinate expressing the magnitude of the bar to add, and
+///   optionally a `y-offset` coordinate (default: 0) which dictates where the bar's base
+///   is draw.
+/// - x-key (string, int): The key at which the `x` coordinate is described in each `data`
+///   entry.
+/// - y-key (string, int): The key at which the `y` coordinate is described in each `data`
+///   entry.
+/// - y-offset-key (string, int): The key at which the `y-offset` coordinate is 
+///   described in each `data` entry. If `none`, the `y-offset` is assumed to be `0` for
+///   each entry. If `y-offset-key` is not contained within an entry despite being set,
+///   the `y-offset` is assumed to be `0`.
+/// - bar-width (float): The width of the bar along the `x` axis, in data-viewport space.
+///   The bar is drawn centered about its `x` coordinate, therefore, the bar extends by
+///   $#raw("bar-width")\/2$ either side.
+/// - label (content): The label to be shown in the legend. If `none`, no entry is shown
+///   in the legend.
+/// - style (style): Style to use, can be used with a `palette` function
+/// - axes (axes): Name of the axes to use for plotting. Reversing the axes
+///   means rotating the plot by 90 degrees.
 #let bar(
   data,
   x-key: 0,
