@@ -1,6 +1,5 @@
 #import "/src/cetz.typ": canvas
-#import "/src/plot.typ": plot
-#import "/src/plot/add.typ" as add: series, bar
+#import "plotter.typ": plotter
 
 /// Render a stacked bar chart
 ///   ```example
@@ -57,30 +56,15 @@
     )
   }
 
-  plot(
-    x-tick-step: if label-key == none {1},
-    x-ticks: if label-key != none {
-      data.map((d)=>d.at(label-key, default: none)).enumerate()
-    } else {()},
+  plotter(
+    data,
+    series-data,
+    x-key: "x", 
+    y-key: "y",
+    y-offset-key: "y-offset",
+    y-error-key: none,
+    label-key: label-key,
+    bar-width: bar-width,
     ..plot-args,
-    for (label, data) in series-data {
-      add.series(
-        label: label,
-        {
-          add.bar(
-            data,
-            x-key: "x", y-key: "y", y-offset-key: "y-offset",
-            bar-width: bar-width,
-          )
-
-          if y-error-keys != none {
-            add.errorbar(
-              data,
-              x-key: "x",y-key: "y", y-error-key: "y-err",
-            )
-          }
-        }
-      )
-    }
   )
 }

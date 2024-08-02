@@ -9,6 +9,7 @@
   x-key: "x", 
   y-key: "y",
   y-error-keys: none,
+  y-offset-key: none,
   label-key: none,
   bar-width: 0.7,
   bar-style: palette.red,
@@ -40,6 +41,7 @@
               data,
               x-key: x-key,
               y-key: y-key,
+              y-offset-key: y-offset-key,
               bar-width: bar-width,
             )
 
