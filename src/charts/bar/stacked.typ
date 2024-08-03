@@ -160,5 +160,7 @@
   bar-width: bar-width,
   bar-style: bar-style,
   axes: axes,
+  y-tick-step: 0.2,
+  y-format: (it)=>{$#{it*100}%$},
   ..plot-args
 )
