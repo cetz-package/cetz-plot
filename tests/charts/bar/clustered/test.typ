@@ -2,17 +2,36 @@
 #import "/tests/helper.typ": *
 
 #let data = (
-  ([One], 1, 1, 2, 3),
-  ([Two], 3, 1, 1 ,1),
-  ([Three], 3, 2, 1, 3),
+  ([15-24], 18.0, 20.1, 23.0, 17.0, 2),
+  ([25-29], 16.3, 17.6, 19.4, 15.3),
+  ([30-34], 14.0, 15.3, 13.9, 18.7, 4),
+  ([35-44], 35.5, 26.5, 29.4, 25.8, 5),
+  ([45-54], 25.0, 20.6, 22.4, 22.0, 6),
+  ([55+],   19.9, 18.2, 19.2, 16.4, 7),
 )
 
 #test-case(cetz-plot.chart.bar.clustered(
   size: (10,9),
   label-key: 0,
   y-keys: (1,2,3,4),
-  y-error-keys: (1,2,3,4),
-  labels: ($0 -> 24$, $25 -> 49$,$50 -> 74$, $75 -> 100$),
+  labels: ([Low], [Medium], [High], [Very high]),
   data,
-  // axes: ("y", "x")
+))
+
+#test-case(cetz-plot.chart.bar.clustered(
+  size: (10,9),
+  label-key: 0,
+  y-keys: (4,),
+  y-error-keys: (5,),
+  labels: ([Low], [Medium], [High], [Very high]),
+  data,
+))
+
+#test-case(cetz-plot.chart.bar.clustered(
+  size: (10,9),
+  label-key: 0,
+  y-keys: (1,2,3,4),
+  labels: ([Low], [Medium], [High], [Very high]),
+  bar-style: cetz.palette.blue,
+  data,
 ))

@@ -75,6 +75,10 @@
           ((
             x: x,
             y: y,
+            y-error: if y-error-keys != none {
+              let err-key = y-error-keys.at(series-index, default: none)
+              if err-key != none {observation.at(err-key, default: 0)}
+            }
           ),)
         }
       )
@@ -86,7 +90,7 @@
     series-data,
     x-key: "x", 
     y-key: "y",
-    y-error-key: none,
+    y-error-key: if y-error-keys != none {"y-error"},
     label-key: label-key,
     bar-width: bar-width,
     bar-style: bar-style,

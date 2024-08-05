@@ -20,5 +20,5 @@
                       bar-width: .8,
                       data2,
                       labels: ([Low], [Medium], [High], [Very high]),
-                      legend: "inner-north-east",)
+                      legend: "inner-north-east")
 })

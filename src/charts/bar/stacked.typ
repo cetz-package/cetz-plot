@@ -53,9 +53,9 @@
   axes: ("x", "y"),
   ..plot-args
 ) = {
-  let series-count = y-keys.len()
-  let cluster-width = series-count * bar-width
-  let offsets = (0,)*series-count
+  let cluster-count = data.len()
+  let cluster-width = cluster-count * bar-width
+  let offsets = (0,)*cluster-count
 
   let series-data = ()
 
