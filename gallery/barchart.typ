@@ -17,7 +17,7 @@
   chart.barchart(mode: "clustered",
                  size: (9, auto),
                  label-key: 0,
-                 value-key: (..range(1, 5)),
+                 value-key: (..range(1, 4)),
                  bar-width: .8,
                  x-tick-step: 2.5,
                  data2,
