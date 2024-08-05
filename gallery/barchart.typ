@@ -14,13 +14,11 @@
 
 #canvas({
   draw.set-style(legend: (fill: white))
-  chart.barchart(mode: "clustered",
-                 size: (9, auto),
-                 label-key: 0,
-                 value-key: (..range(1, 4)),
-                 bar-width: .8,
-                 x-tick-step: 2.5,
-                 data2,
-                 labels: ([Low], [Medium], [High], [Very high]),
-                 legend: "legend.inner-north-east",)
+  chart.bar.clustered(size: (9, 8),
+                      label-key: 0,
+                      y-keys: (..range(1, 5)),
+                      bar-width: .8,
+                      data2,
+                      labels: ([Low], [Medium], [High], [Very high]),
+                      legend: "inner-north-east")
 })

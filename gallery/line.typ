@@ -19,21 +19,21 @@
 
   // Set-up a thin axis style
   set-style(axes: (stroke: .5pt, tick: (stroke: .5pt)),
-            legend: (stroke: none, orientation: ttb, item: (spacing: .3), scale: 80%))
+            legend: (stroke: none, fill: none, orientation: ttb, item: (spacing: .3), scale: 80%))
 
   plot.plot(size: (12, 8),
     x-tick-step: calc.pi/2,
-    x-format: plot.formats.multiple-of,
+    x-format: axes.format.multiple-of,
     y-tick-step: 2, y-min: -2.5, y-max: 2.5,
     legend: "inner-north",
     {
       let domain = (-1.1 * calc.pi, +1.1 * calc.pi)
 
       for ((title, f)) in fn {
-        plot.add-fill-between(f, f1, domain: domain,
+        plot.add.fill-between(f, f1, domain: domain,
           style: (stroke: none), label: title)
       }
-      plot.add(f1, domain: domain, label: $ sin x  $,
+      plot.add.xy(f1, domain: domain, label: $ sin x  $,
         style: (stroke: black))
     })
 })

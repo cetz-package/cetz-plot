@@ -68,9 +68,10 @@
     series-data.push(
       (
         label: if label-key != none {labels.at(series-index)},
-        data: for (observation-index, observation) in data.enumerate() { 
+        data: for (observation-index, observation) in data.enumerate() {
           let x = observation-index - cluster-width/2 + series-index * (bar-width + bar-spacing) + bar-width/2
           let y = observation.at(y-key, default: 0)
+
           ((
             x: x,
             y: y,
