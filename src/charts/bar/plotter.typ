@@ -8,7 +8,7 @@
   series-data,
   x-key: "x", 
   y-key: "y",
-  y-error-keys: none,
+  y-error-key: none,
   y-offset-key: none,
   label-key: none,
   bar-width: 0.7,
@@ -56,7 +56,7 @@
               axes: axes,
             )
 
-            if y-error-keys != none {
+            if y-error-key != none {
               add.errorbar(
                 data,
                 x-key: x-key,y-key: y-key, y-error-key: y-error-key,
