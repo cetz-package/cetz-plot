@@ -60,7 +60,6 @@
   let series-count = y-keys.len()
   bar-width /= series-count
   let cluster-width = series-count * bar-width + (series-count - 1) * bar-spacing
-  let offsets = (0,)*series-count
 
   let series-data = ()
 
@@ -72,7 +71,6 @@
         data: for (observation-index, observation) in data.enumerate() { 
           let x = observation-index - cluster-width/2 + series-index * (bar-width + bar-spacing) + bar-width/2
           let y = observation.at(y-key, default: 0)
-          offsets.at(observation-index) += y
           ((
             x: x,
             y: y,
