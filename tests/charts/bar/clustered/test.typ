@@ -14,7 +14,6 @@
   size: (10,9),
   label-key: 0,
   y-keys: (1,2,3,4),
-  // y-error-keys: (1,2,3,4),
   labels: ([Low], [Medium], [High], [Very high]),
   data,
 ))
@@ -25,5 +24,14 @@
   y-keys: (4,),
   y-error-keys: (5,),
   labels: ([Low], [Medium], [High], [Very high]),
+  data,
+))
+
+#test-case(cetz-plot.chart.bar.clustered(
+  size: (10,9),
+  label-key: 0,
+  y-keys: (1,2,3,4),
+  labels: ([Low], [Medium], [High], [Very high]),
+  bar-style: cetz.palette.blue,
   data,
 ))
