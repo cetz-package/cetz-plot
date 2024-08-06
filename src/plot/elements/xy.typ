@@ -40,7 +40,7 @@
     line = (type: line)
   }
 
-  let line-type = line.at("type", default: "linear")
+  let line-type = line.at("type", default: "raw")
   assert(line-type in ("raw", "linear", "spline", "vh", "hv", "hvh"))
 
   // Transform data into line-data
@@ -213,24 +213,23 @@
 ///   ```)
 /// - label (none,content): Legend label to show for this plot.
 #let xy(domain: auto,
-         hypograph: false,
-         epigraph: false,
-         fill: false,
-         fill-type: "axis",
-         style: (:),
-         mark: none,
-         mark-size: .2,
-         mark-style: (:),
-         samples: 50,
-         sample-at: (),
-         line: "linear",
-         axes: ("x", "y"),
-         label: none,
+        hypograph: false,
+        epigraph: false,
+        fill: false,
+        fill-type: "axis",
+        style: (:),
+        mark: none,
+        mark-size: .2,
+        mark-style: (:),
+        samples: 50,
+        sample-at: (),
+        line: "raw",
+        axes: ("x", "y"),
+        label: none,
 
-         data,
-         x-key: 0,
-         y-key: 1,
-         ) = {
+        data,
+        x-key: 0,
+        y-key: 1) = {
   // If data is of type function, sample it
   if type(data) == function {
     data = sample.sample-fn(data, domain, samples, sample-at: sample-at)
@@ -439,7 +438,7 @@
                       domain: auto,
                       samples: 50,
                       sample-at: (),
-                      line: "linear",
+                      line: "raw",
                       axes: ("x", "y"),
                       label: none,
                       style: (:)) = {
