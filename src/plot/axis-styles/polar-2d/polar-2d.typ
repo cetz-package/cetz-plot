@@ -17,7 +17,7 @@
   )
 )
 
-// Consider refactor
+// TODO: Consider refactor
 #let make-ctx((x, y), size) = {
   assert(x != none, message: "X axis does not exist")
   assert(y != none, message: "Y axis does not exist")
@@ -31,7 +31,7 @@
   }
 
   return (
-    axes: (x,y), 
+    axes: (x, y),
     size: size, 
     x-scale: x-scale, 
     y-scale: y-scale,
@@ -43,7 +43,7 @@
 }
 
 #let draw-axes(
-  (w,h), 
+  (w, h),
   axis-dict, 
   name: none,
   ..style
@@ -51,7 +51,7 @@
   let angular = axis-dict.at("x", default: none)
   let distal = axis-dict.at("y", default: none)
 
-  let radius = calc.min(w,h)/2
+  let radius = calc.min(w, h) / 2
 
   draw.group(name: name, ctx => {
     draw.anchor("origin", (radius, radius))
@@ -95,7 +95,6 @@
     
     // Draw axes
     draw.group(name: "axes", {
-
       // Render distal
       draw.on-layer(style.axis-layer, {
           draw.group(name: "axis", {
@@ -136,54 +135,6 @@
             }
           })
       })
-      // let axes = (
-      //   ("angular", (0, 0), (w, 0), (0, -1), false, angular-ticks, angular,),
-      //   ("distal",   (0, 0), (0, h), (-1, 0), true,  distal-ticks, distal,),
-      // )
-      // let label-placement = (
-      //   angular: ("south", "north", 0deg),
-      //   distal:    ("north", "south", 0deg),
-      // )
-
-      // for (name, start, end, outsides, flip, ticks, axis) in axes {
-      //   let style = get-axis-style(ctx, style, name)
-      //   let is-mirror = axis == none or axis.at("is-mirror", default: false)
-      //   let is-horizontal = name in ("bottom", "top")
-
-      //   if style.padding != 0 {
-      //     let padding = vector.scale(outsides, style.padding)
-      //     start = vector.add(start, padding)
-      //     end = vector.add(end, padding)
-      //   }
-
-      //   let (data-start, data-end) = inset-axis-points(ctx, style, axis, start, end)
-
-      //   draw.on-layer(style.axis-layer, {
-      //     draw.group(name: "axis", {
-      //       if axis != none {
-      //         draw-axis-line(start, end, axis, is-horizontal, style)
-      //         place-ticks-on-line(ticks, data-start, data-end, style, flip: flip, is-mirror: is-mirror)
-      //       }
-      //     })
-
-      //     if axis != none and axis.label != none and not is-mirror {
-      //       let offset = vector.scale(outsides, style.label.offset)
-      //       let (group-anchor, content-anchor, angle) = label-placement.at(name)
-
-      //       if style.label.anchor != auto {
-      //         content-anchor = style.label.anchor
-      //       }
-      //       if style.label.angle != auto {
-      //         angle = style.label.angle
-      //       }
-
-      //       draw.content((rel: offset, to: "axis." + group-anchor),
-      //         [#axis.label],
-      //         angle: angle,
-      //         anchor: content-anchor)
-      //     }
-      //   })
-      // }
     })
   })
 }

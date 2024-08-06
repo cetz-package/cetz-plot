@@ -1,15 +1,12 @@
 #import "/src/cetz.typ": draw, matrix, process, util, drawable
 
-// Transform a single vector along a x, y and z axis
+// Transform a single vector along a x and y axis
 //
 // - size (vector): Coordinate system size
-// - x-axis (axis): X axis
-// - y-axis (axis): Y axis
-// - z-axis (axis): Z axis
+// - axes (tuple): Axis tuple (x and y)
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, (angular, distal), vec) = {
-
   let radius = calc.min(..size)
   let x-norm = (vec.at(0) - angular.min) / (angular.max - angular.min)
   let y-norm = (vec.at(1) - distal.min) / (distal.max - distal.min)
@@ -24,11 +21,9 @@
 // Draw inside viewport coordinates of two axes
 //
 // - size (vector): Axis canvas size (relative to origin)
-// - x (axis): Horizontal axis
-// - y (axis): Vertical axis
-// - z (axis): Z axis
+// - axes (tuple): Axis tuple
 // - name (string,none): Group name
-#let axis-viewport(size,(x, y,), body, name: none) = {
+#let axis-viewport(size, (x, y), body, name: none) = {
   draw.group(name: name, (ctx => {
     let transform = ctx.transform
 
@@ -76,5 +71,5 @@
   }
 
   // Setup the viewport
-  axis-viewport(size, (x,y), body, name: name)
+  axis-viewport(size, (x, y), body, name: name)
 }

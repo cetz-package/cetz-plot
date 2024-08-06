@@ -236,7 +236,7 @@
   }
 
   // data
-  let data = data.map(it=>(it.at(x-key), it.at(y-key)))
+  let data = data.map(it => (it.at(x-key), it.at(y-key)))
 
   // Transform data
   let line-data = transform-lines(data, line)
