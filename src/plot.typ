@@ -310,8 +310,13 @@
   legend-style: (:),
   ..options
 ) = draw.group(name: name, ctx => {
-
   // TODO: Assert cetz min version here!
+
+  let (make-ctx, draw-axes, data-viewport) = if type(axis-style) == function {
+    axis-style()
+  } else {
+    axis-style
+  }
 
   let (data, anchors, annotations) = _destructure-body(body)
   let axis-dict = _create-axis-dict(ctx, data, anchors, annotations, options, size)
@@ -325,7 +330,7 @@
       if "axes" not in data.at(i) { continue }
 
       let axes = data.at(i).axes.map(name => axis-dict.at(name))
-      let plot-ctx = axis-style.make-ctx(axes, size)
+      let plot-ctx = make-ctx(axes, size)
 
       if "plot-prepare" in data.at(i) {
         data.at(i) = (data.at(i).plot-prepare)(data.at(i), plot-ctx)
@@ -337,9 +342,9 @@
     // Background Annotations
     for a in annotations.filter(a => a.background) {
       let axes = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = axis-style.make-ctx(axes, size)
+      let plot-ctx = make-ctx(axes, size)
 
-      axis-style.data-viewport(axes, size, {
+      data-viewport(axes, size, {
         draw.anchor("default", (0, 0))
         a.body
       })
@@ -350,9 +355,9 @@
       if "axes" not in d { continue }
 
       let axes = d.axes.map(name => axis-dict.at(name))
-      let plot-ctx = axis-style.make-ctx(axes, size)
+      let plot-ctx = make-ctx(axes, size)
 
-      axis-style.data-viewport(axes, size, {
+      data-viewport(axes, size, {
         draw.anchor("default", (0, 0))
         draw.set-style(..d.style)
 
@@ -362,16 +367,16 @@
       })
     }
 
-    axis-style.draw-axes(size, axis-dict)
+    draw-axes(size, axis-dict)
 
     // Stroke + Mark data
     for d in data {
       if "axes" not in d { continue }
 
       let axes = d.axes.map(name => axis-dict.at(name))
-      let plot-ctx = axis-style.make-ctx(axes, size)
+      let plot-ctx = make-ctx(axes, size)
 
-      axis-style.data-viewport(axes, size, {
+      data-viewport(axes, size, {
         draw.anchor("default", (0, 0))
         draw.set-style(..d.style)
 
@@ -391,9 +396,9 @@
     // Foreground Annotations
     for a in annotations.filter(a => not a.background) {
       let axes = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = axis-style.make-ctx(axes, size)
+      let plot-ctx = make-ctx(axes, size)
 
-      axis-style.data-viewport(axes, size, {
+      data-viewport(axes, size, {
         draw.anchor("default", (0, 0))
         a.body
       })
