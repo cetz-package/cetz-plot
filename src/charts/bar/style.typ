@@ -1,9 +1,17 @@
 #let barchart-default-style = (
-  axes: (tick: (length: 0), grid: (stroke: (dash: "dotted"))),
-  bar-width: .8,
-  cluster-gap: 0,
+  axes: (
+    // Hide ticks
+    tick: (length: 0),
+
+    // Show a dotted grid
+    grid: (stroke: (dash: "dotted")),
+
+    // Hide top and right axis
+    top: (hidden: true),
+    right: (hidden: true),
+  ),
+
   error: (
     whisker-size: .25,
   ),
-  y-inset: 1,
 )

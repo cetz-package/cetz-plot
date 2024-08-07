@@ -16,9 +16,7 @@
   axes: ("x", "y"),
   ..plot-args,
 ) = {
-
   draw.group(ctx => {
-
     // Setup styles
     let style = styles.resolve(
       ctx.style, 
@@ -29,7 +27,6 @@
     draw.set-style(..style)
   
     plot(
-      
       // To do: Is there a better way to setup the x-axis using custom axis-style
       x-min: -0.75, x-max: data.len() - 0.25,
       x-tick-step: if label-key == none {1},

@@ -16,6 +16,8 @@
     top:    (tick: (label: (anchor: "south"))),
     stroke: (cap: "square"),
     padding: 0,
+    draw-unset: false,
+    hidden: false,
   )
 )
 
@@ -45,7 +47,7 @@
 }
 
 #let draw-axes(
-  (w,h), 
+  (w, h),
   axis-dict, 
   name: none,
   ..style
@@ -144,10 +146,10 @@
         let path = draw-axis-line(start, end, axis, is-horizontal, style)
         draw.on-layer(style.axis-layer, {
           draw.group(name: "axis", {
-            // if draw-unset or axis != none {
+            if not style.hidden and (style.draw-unset or axis != none) {
               path;
               place-ticks-on-line(ticks, data-start, data-end, style, flip: flip, is-mirror: is-mirror)
-            // }
+            }
           })
 
           if axis != none and axis.label != none and not is-mirror {
