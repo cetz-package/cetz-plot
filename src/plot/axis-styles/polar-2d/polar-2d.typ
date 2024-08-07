@@ -13,7 +13,6 @@
     distal: (tick: (label: (anchor: "north-east", offset: -0.2))),
     angular: (tick: (label: (anchor: "center", offset: 0.35,), length: 5pt)),
     stroke: (cap: "square"),
-    padding: 0,
   )
 )
 
@@ -92,7 +91,7 @@
         })
       }
     })
-    
+
     // Draw axes
     draw.group(name: "axes", {
       // Render distal
@@ -109,7 +108,7 @@
               place-ticks-on-line(
                 distal-ticks, 
                 (radius, radius), 
-                (radius, radius*2), 
+                (radius, radius * 2),
                 prepare-style(ctx, style.distal),
               )
             }
@@ -117,8 +116,9 @@
       })
 
       draw.on-layer(style.axis-layer, {
-          draw.group(name: "axis", {
+          draw.group(name: "axis", ctx => {
             if angular != none {
+
               // To do: Allow finer control over placement
               draw.circle(
                 "origin",
@@ -129,7 +129,7 @@
 
               place-ticks-on-radius(
                 angular-ticks, 
-                (radius),
+                radius,
                 prepare-style(ctx, style.angular), 
               )
             }
