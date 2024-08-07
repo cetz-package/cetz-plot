@@ -1,6 +1,7 @@
 #import "/src/cetz.typ": canvas, palette, draw, styles
 #import "/src/plot.typ": plot
 #import "/src/plot/add.typ" as add: series, bar, errorbar
+#import "/src/plot/axis-style.typ"
 #import "style.typ": barchart-default-style
 
 /// Render a single series as a barchart
@@ -67,9 +68,8 @@
       base: barchart-default-style
     )
     draw.set-style(..style)
-  
+
     plot(
-      
       // To do: Is there a better way to setup the x-axis using custom axis-style
       x-min: -0.75, x-max: data.len() - 0.25,
       x-tick-step: if label-key == none {1},
@@ -81,7 +81,6 @@
 
       plot-style: bar-style,
       ..plot-args,
-
       {
         add.series(
           label: label,
@@ -108,5 +107,4 @@
       }
     )
   })
-
 }
