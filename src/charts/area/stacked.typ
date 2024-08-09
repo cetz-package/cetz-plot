@@ -42,16 +42,18 @@
   ..plot-args
 ) = stacked(
   data.map(d=>{
-    let sum = y-keys.map(k=>d.at(k, default: 0)).sum()
-    for key in y-keys {
-      d.at(key) /= sum
+    let sum = y-keys.map(k=>data.map(d=>d.at(k, default: 0)).sum())
+    for (index, key) in y-keys.enumerate() {
+      d.at(key) /= sum.at(index)
     }
     d
-  }), 
+  }),
   label-key: label-key,
   x-key: x-key,
   y-keys: y-keys,
   area-style: area-style,
   axes: axes,
+  y-tick-step: 0.2,
+  y-format: (it)=>{$#{it*100}%$},
   ..plot-args
 )
