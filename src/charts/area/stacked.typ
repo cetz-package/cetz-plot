@@ -3,6 +3,7 @@
 
 #let stacked(
   data,
+  label-key: none,
   x-key: 0,
   y-keys: (1,),
   area-style: palette.red,
@@ -14,8 +15,7 @@
   for (series-index, data) in data.enumerate(){
     series-data.push(
       (
-        // label: if label-key != none {data.at(label-key)},
-        label: none,
+        label: if label-key != none {data.at(label-key)},
         data: y-keys.map(k=>data.at(k, default: 0))
       )
     )
@@ -34,9 +34,9 @@
 
 #let stacked100(
   data,
-  label-key: 0,
-  x-key: 1,
-  y-keys: (2,),
+  label-key: none,
+  x-key: 0,
+  y-keys: (1,),
   area-style: palette.red,
   axes: ("x", "y"),
   ..plot-args

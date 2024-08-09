@@ -186,7 +186,7 @@
 
           // Draw label
           content(label-west,
-            align(left + horizon, label),
+            align(left + horizon, [#label]),
             name: "label", anchor: "west")
         }, name: "item", anchor: if style.orientation == ltr { "west" } else { "north-west" })
 
