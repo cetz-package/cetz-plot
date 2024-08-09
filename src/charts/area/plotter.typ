@@ -36,6 +36,11 @@
             add.fill-between(
               data.enumerate().map(((k,v))=>(x-list.at(k), v + y-offsets.at(k))), 
               data.enumerate().map(((k,v))=>(x-list.at(k), y-offsets.at(k))),
+              style: (stroke: none),
+            )
+
+            add.xy(
+              data.enumerate().map(((k,v))=>(x-list.at(k), v + y-offsets.at(k))),
             )
 
             if stack == true {

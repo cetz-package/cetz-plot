@@ -14,7 +14,8 @@
   for (series-index, data) in data.enumerate(){
     series-data.push(
       (
-        label: if label-key != none {data.at(label-key)},
+        // label: if label-key != none {data.at(label-key)},
+        label: none,
         data: y-keys.map(k=>data.at(k, default: 0))
       )
     )
@@ -23,7 +24,7 @@
   plotter(
     series-data, 
     number-points: y-keys.len(),
-    x-list: x-list,
+    x-key: x-key,
     area-style: area-style,
     axes: axes,
     stack: true,
