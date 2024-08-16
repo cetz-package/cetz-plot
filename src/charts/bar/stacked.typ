@@ -1,23 +1,23 @@
-#import "/src/cetz.typ": canvas, palette
-#import "plotter.typ": plotter
+#import "/src/cetz.typ" as cetz: canvas, palette
+#import "/src/plot.typ"
+#import "/src/charts/environment.typ": chart
+
+//#import "plotter.typ": plotter
 
 /// Render a stacked bar chart
 ///   ```example
 ///   cetz-plot.chart.bar.stacked(
-///     size: (4,4),
-///     (
-///       ([One],   1, 1, 2, 3),
-///       ([Two],   3, 1, 1 ,1),
-///       ([Three], 3, 2, 1, 3),
-///     ),
+///     size: (4, 4),
+///     (([One],   1, 1, 2, 3),
+///      ([Two],   3, 1, 1 ,1),
+///      ([Three], 3, 2, 1, 3)),
 ///     label-key: 0,
-///     y-keys: (1,2,3,4),
+///     y-keys: (1, 2, 3, 4),
 ///     labels: (
 ///       $0 -> 24$, 
 ///       $25 -> 49$,
 ///       $50 -> 74$, 
-///       $75 -> 100$
-///     ),
+///       $75 -> 100$),
 ///   )
 ///   ```
 /// - data (array): An array of clusers to plot. Each entry can include a label
@@ -53,64 +53,52 @@
   axes: ("x", "y"),
   ..plot-args
 ) = {
-  let cluster-count = data.len()
-  let cluster-width = cluster-count * bar-width
-  let offsets = (0,)*cluster-count
+  let num-cols = data.len()
+  let plot-args = plot-args.named()
 
-  let series-data = ()
-
-  for (series-index, y-key) in y-keys.enumerate() {
-
-    series-data.push(
-      (
-        label: if label-key != none {labels.at(series-index)},
-        data: for (observation-index, observation) in data.enumerate() { 
-          let x = observation-index
-          let y = observation.at(y-key, default: 0)
-          let y-offset = offsets.at(observation-index)
-          offsets.at(observation-index) += y
-          ((
-            x: x,
-            y: y,
-            y-offset: y-offset,
-          ),)
-        }
-      )
-    )
+  if "ticks" not in plot-args {
+    plot-args.x-ticks = data.enumerate().map(((x, col)) => {
+      (x, [#x])
+    })
   }
 
-  plotter(
-    data,
-    series-data,
-    x-key: "x", 
-    y-key: "y",
-    y-offset-key: "y-offset",
-    y-error-key: none,
-    label-key: label-key,
-    bar-width: bar-width,
-    bar-style: bar-style,
-    axes: axes,
-    ..plot-args,
-  )
+  chart(x-tick-step: none, ..plot-args, style => {
+    import "/src/plot/add.typ"
+
+    let y-offset = (0,) * num-cols
+    for (y, y-key) in y-keys.enumerate() {
+      let row-data = data.enumerate().map(((x, col)) => {
+        (x, col.at(y-key, default: 0), y-offset.at(x, default: 0))
+      })
+
+      y-offset = y-offset.enumerate().map(((x, offset)) => {
+        offset + row-data.at(x).at(1)
+      })
+
+      add.bar(row-data,
+        x-key: 0,
+        y-key: 1,
+        y-offset-key: 2,
+        axes: axes,
+        style: bar-style)
+    }
+  })
 }
 
 /// Render a stacked bar chart
 ///   ```example
 ///   cetz-plot.chart.bar.stacked100(
-///     size: (4,4),
-///     (
-///       ([One],   1, 1, 2, 3),
-///       ([Two],   3, 1, 1 ,1),
-///       ([Three], 3, 2, 1, 3),
-///     ),
+///     size: (4, 4),
+///     (([One],   1, 1, 2, 3),
+///      ([Two],   3, 1, 1 ,1),
+///      ([Three], 3, 2, 1, 3)),
 ///     label-key: 0,
-///     y-keys: (1,2,3,4),
+///     y-keys: (1, 2, 3, 4),
 ///     labels: (
 ///       $0 -> 24$, 
 ///       $25 -> 49$,
 ///       $50 -> 74$, 
-///       $75 -> 100$
-///     ),
+///       $75 -> 100$),
 ///   )
 ///   ```
 /// - data (array): An array of clusers to plot. Each entry can include a label
@@ -147,11 +135,13 @@
   ..plot-args
 ) = stacked(
   data.map(d=>{
-    let sum = y-keys.map(k=>d.at(k, default: 0)).sum()
+    let sum = y-keys.map(d.at.with(default: 0)).sum()
+    assert(sum != 0,
+      message: "Y value sum must be != 0!")
     for key in y-keys {
       d.at(key) /= sum
     }
-    d
+    return d
   }), 
   labels: labels,
   label-key: label-key,
@@ -161,6 +151,6 @@
   bar-style: bar-style,
   axes: axes,
   y-tick-step: 0.2,
-  y-format: (it)=>{$#{it*100}%$},
+  y-format: (it) => { $#{it * 100}%$ },
   ..plot-args
 )
