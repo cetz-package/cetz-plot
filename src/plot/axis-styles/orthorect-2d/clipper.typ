@@ -28,14 +28,15 @@
   )
 
   let interpolated-end(a, b) = {
+    let pts = ()
     for (edge-a, edge-b) in edges {
       let pt = cetz.intersection.line-line(a, b, edge-a, edge-b)
       if pt != none {
-        return pt
+        pts.push(pt)
       }
     }
+    return pts
   }
-
 
   // Find lines crossing the rect bounds
   // by storing all crossings as tuples (<index>, <goes-inside>, <point-on-border>)
@@ -47,15 +48,29 @@
     crossings.push((0, true, points.first()))
   }
 
-  // Find crossings and compute interseciton points.
+  // Find crossings and compute intersection points.
   for i in range(1, points.len()) {
     let current-inside = in-rect(points.at(i))
     if current-inside != was-inside {
       crossings.push((
         i,
         current-inside,
-        interpolated-end(points.at(i - 1), points.at(i))))
+        interpolated-end(points.at(i - 1), points.at(i)).first()))
       was-inside = current-inside
+    } else if not current-inside {
+      let (px, py) = points.at(i - 1)
+      let (cx, cy) = points.at(i)
+      let (lo-x, hi-x) = (calc.min(px, cx), calc.max(px, cx))
+      let (lo-y, hi-y) = (calc.min(py, cy), calc.max(py, cy))
+
+      let x-differs = (lo-x < min-x and hi-x > max-x) or (lo-x < max-x and hi-x > max-x)
+      let y-differs = (lo-y < min-y and hi-y > max-y) or (lo-y < max-y and hi-y > max-y)
+      if x-differs or y-differs {
+        for pt in interpolated-end(points.at(i - 1), points.at(i)) {
+          crossings.push((i, not current-inside, pt))
+          current-inside = not current-inside
+        }
+      }
     }
   }
 
