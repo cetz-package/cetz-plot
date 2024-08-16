@@ -17,6 +17,7 @@
   ..plot-args,
 ) = {
   draw.group(ctx => {
+  /*
     // Setup styles
     let style = styles.resolve(
       ctx.style, 
@@ -64,5 +65,6 @@
         )
       }
     )
+  */
   })
 }

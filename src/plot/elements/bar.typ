@@ -114,20 +114,19 @@
   style: (:),
   axes: ("x", "y")
 ) = {
-
   let x-domain = (
-    calc.min(..data.map(it=>{it.at(x-key)-bar-width})),
-    calc.max(..data.map(it=>{it.at(x-key)+bar-width})),
+    calc.min(..data.map(it => {it.at(x-key) - bar-width / 2})),
+    calc.max(..data.map(it => {it.at(x-key) + bar-width / 2})),
   )
 
   let y-domain = if y-offset-key != none {
     (
       calc.min(
-        ..data.map(it=>{it.at(y-key)+it.at(y-offset-key, default: 0)}),
+        ..data.map(it=>{it.at(y-key) + it.at(y-offset-key, default: 0)}),
         ..data.map(it=>{it.at(y-offset-key, default: 0)})
       ),
       calc.max(
-        ..data.map(it=>{it.at(y-key)+it.at(y-offset-key, default: 0)}),
+        ..data.map(it=>{it.at(y-key) + it.at(y-offset-key, default: 0)}),
         ..data.map(it=>{it.at(y-offset-key, default: 0)})
       )
     )
@@ -158,6 +157,4 @@
     plot-fill: _fill,
     plot-legend-preview: _legend-preview
   ),)
-
-  
 }
