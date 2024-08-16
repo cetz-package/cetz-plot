@@ -1,3 +1,5 @@
+**Note: cetz-plot has not been released yet! Use cetz 0.2.2 's internal plotting module.**
+
 # CeTZ-Plot
 
 CeTZ-Plot is a library that adds plots and charts to [CeTZ](https://github.com/cetz-package/cetz), a library for drawing with [Typst](https://typst.app).
