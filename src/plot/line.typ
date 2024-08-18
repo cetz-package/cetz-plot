@@ -217,7 +217,7 @@
          mark-style: (:),
          samples: 50,
          sample-at: (),
-         line: "linear",
+         line: "raw",
          axes: ("x", "y"),
          label: none,
          data
