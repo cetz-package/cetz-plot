@@ -40,7 +40,7 @@
     line = (type: line)
   }
 
-  let line-type = line.at("type", default: "linear")
+  let line-type = line.at("type", default: "raw")
   assert(line-type in ("raw", "linear", "spline", "vh", "hv", "hvh"))
 
   // Transform data into line-data
@@ -154,13 +154,12 @@
 ///   to the default sampling. This parameter gets passed to `sample-fn`.
 /// - line (string, dictionary): Line type to use. The following types are
 ///   supported:
-///   / `"linear"`: Draw linear lines between points
-///   / `"spline"`: Calculate a Catmull-Rom through all points
+///   / `"raw"`: Plot raw data
+///   / `"linear"`: Linearize data
+///   / `"spline"`: Calculate a Catmull-Rom curve through all points
 ///   / `"vh"`: Move vertical and then horizontal
 ///   / `"hv"`: Move horizontal and then vertical
 ///   / `"hvh"`: Add a vertical step in the middle
-///   / `"raw"`: Like linear, but without linearization taking place. This is
-///     meant as a "fallback" for either bad performance or bugs.
 ///
 ///   If the value is a dictionary, the type must be
 ///   supplied via the `type` key. The following extra
@@ -217,7 +216,7 @@
          mark-style: (:),
          samples: 50,
          sample-at: (),
-         line: "linear",
+         line: "raw",
          axes: ("x", "y"),
          label: none,
          data
@@ -427,7 +426,7 @@
                       domain: auto,
                       samples: 50,
                       sample-at: (),
-                      line: "linear",
+                      line: "raw",
                       axes: ("x", "y"),
                       label: none,
                       style: (:)) = {
