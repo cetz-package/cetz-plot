@@ -109,8 +109,8 @@
 
     let is-inside = in-rect(pt)
 
-    let (x1, y1) = prev
-    let (x2, y2) = pt
+    let (x1, y1, ..) = prev
+    let (x2, y2, ..) = pt
 
     // Ignore lines if both ends are outsides the x-window and on the
     // same side.

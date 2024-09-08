@@ -497,7 +497,7 @@
 }
 
 // Prepares the axis post creation. The given axis
-// must be completely set-up, including its intervall.
+// must be completely set-up, including its interval.
 // Returns the prepared axis
 #let prepare-axis(ctx, axis, name) = {
   let style = styles.resolve(ctx.style, root: "axes",
@@ -531,15 +531,17 @@
 // - vec (vector): Input vector to transform
 // -> vector
 #let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
+  let axes = (x-axis, y-axis)
 
-  let (x,y,) = for (dim, axis) in (x-axis, y-axis).enumerate() {
-
+  let (x, y,) = for (dim, axis) in axes.enumerate() {
     let s = size.at(dim) - axis.inset.sum()
     let o = axis.inset.at(0)
 
-    let transform-func(n) = if (axis.mode == "log") {
+    let transform-func(n) = if axis.mode == "log" {
       calc.log(calc.max(n, util.float-epsilon), base: axis.base)
-    } else {n}
+    } else {
+      n
+    }
 
     let range = transform-func(axis.max) - transform-func(axis.min)
 
