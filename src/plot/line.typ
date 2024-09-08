@@ -86,16 +86,14 @@
   let (x, y) = (ctx.x, ctx.y)
 
   // Generate stroke paths
-  self.stroke-paths = util.compute-stroke-paths(self.line-data,
-    (x.min, y.min), (x.max, y.max))
+  self.stroke-paths = util.compute-stroke-paths(self.line-data, x, y)
 
   // Compute fill paths if filling is requested
   self.hypograph = self.at("hypograph", default: false)
   self.epigraph = self.at("epigraph", default: false)
   self.fill = self.at("fill", default: false)
   if self.hypograph or self.epigraph or self.fill {
-    self.fill-paths = util.compute-fill-paths(self.line-data,
-      (x.min, y.min), (x.max, y.max))
+    self.fill-paths = util.compute-fill-paths(self.line-data, x, y)
   }
 
   return self
@@ -463,15 +461,12 @@
 
     // Generate stroke paths
     self.stroke-paths = (
-      a: util.compute-stroke-paths(self.line-data.a,
-        (x.min, y.min), (x.max, y.max)),
-      b: util.compute-stroke-paths(self.line-data.b,
-        (x.min, y.min), (x.max, y.max))
+      a: util.compute-stroke-paths(self.line-data.a, x, y),
+      b: util.compute-stroke-paths(self.line-data.b, x, y),
     )
 
     // Generate fill paths
-    self.fill-paths = util.compute-fill-paths(self.line-data.a + self.line-data.b.rev(),
-      (x.min, y.min), (x.max, y.max))
+    self.fill-paths = util.compute-fill-paths(self.line-data.a + self.line-data.b.rev(), x, y)
 
     return self
   }
