@@ -3,25 +3,24 @@
 #import "sample.typ"
 
 #let kernel-normal(x, stdev: 1.5) = {
-  (1/calc.sqrt(2*calc.pi*calc.pow(stdev,2))) * calc.exp( - (x*x)/(2*calc.pow(stdev,2)))
+  (1 / calc.sqrt(2 * calc.pi*calc.pow(stdev, 2))) * calc.exp(-(x*x) / (2 * calc.pow(stdev, 2)))
 }
 
 #let _violin-render(self, ctx, violin, filling: true) = {
   let path = range(self.samples)
-              .map((t)=>violin.min + (violin.max - violin.min) * (t /self.samples ))
-              .map((u)=>(u, (violin.convolve)(u)))
-              .map(((u,v)) => {
-                (violin.x-position + v, u)
-              })
+    .map((t)=>violin.min + (violin.max - violin.min) * (t / self.samples ))
+    .map((u)=>(u, (violin.convolve)(u)))
+    .map(((u,v)) => {
+      (violin.x-position + v, u)
+    })
 
   if self.side == "both"{ 
     path += path.rev().map(((x,y))=> {(2 * violin.x-position - x,y)})
   } else if self.side == "left"{
-    path = path.map( ((x,y))=>{(2 * violin.x-position - x,y)})
+    path = path.map(((x,y)) => (2 * violin.x-position - x,y))
   }
 
-  let (x, y) = (ctx.x, ctx.y)
-  let stroke-paths = util.compute-stroke-paths(path, (x.min, y.min), (x.max, y.max))
+  let stroke-paths = util.compute-stroke-paths(path, ctx.x, ctx.y)
 
   for p in stroke-paths{
     let args = arguments(..p, closed: self.side == "both")
@@ -46,7 +45,7 @@
       min: min - (self.extents * range),
       max: max + (self.extents * range),
       convolve: (t) => {
-        points.map((y)=>(self.kernel)((y - t)/self.bandwidth)).sum() / (points.len() * self.bandwidth)
+        points.map(y => (self.kernel)((y - t) / self.bandwidth)).sum() / (points.len() * self.bandwidth)
       }
     )
   })
@@ -77,8 +76,8 @@
 ///
 /// - data (array): Array of data items. An item is an array containing an `x` and one 
 ///                 or more `y` values.
-/// - x-key (int, string): Key to use for retreiving the `x` position of the violin.
-/// - y-key (int, string): Key to use for retreiving values of points within the category.
+/// - x-key (int, string): Key to use for retrieving the `x` position of the violin.
+/// - y-key (int, string): Key to use for retrieving values of points within the category.
 /// - side (string): The sides of the violin to be rendered:
 ///   / left: Plot only the left side of the violin.
 ///   / right: Plot only the right side of the violin.

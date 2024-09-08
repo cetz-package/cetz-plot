@@ -109,8 +109,8 @@
 
     let is-inside = in-rect(pt)
 
-    let (x1, y1) = prev
-    let (x2, y2) = pt
+    let (x1, y1, ..) = prev
+    let (x2, y2, ..) = pt
 
     // Ignore lines if both ends are outsides the x-window and on the
     // same side.
@@ -173,21 +173,21 @@
 /// Compute clipped stroke paths
 ///
 /// - points (array): X/Y data points
-/// - low (vector): Lower clip-window coordinate
-/// - high (vector): Upper clip-window coordinate
+/// - x (axis): X-Axis
+/// - y (axis): Y-Axis
 /// -> array List of stroke paths
-#let compute-stroke-paths(points, low, high) = {
-  clipped-paths(points, low, high, fill: false)
+#let compute-stroke-paths(points, x, y) = {
+  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: false)
 }
 
 /// Compute clipped fill path
 ///
 /// - points (array): X/Y data points
-/// - low (vector): Lower clip-window coordinate
-/// - high (vector): Upper clip-window coordinate
+/// - x (axis): X-Axis
+/// - y (axis): Y-Axis
 /// -> array List of fill paths
-#let compute-fill-paths(points, low, high) = {
-  clipped-paths(points, low, high, fill: true)
+#let compute-fill-paths(points, x, y) = {
+  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
 }
 
 /// Return points of a sampled catmull-rom through the

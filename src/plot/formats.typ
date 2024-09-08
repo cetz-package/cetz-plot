@@ -115,7 +115,7 @@
 /// ```
 ///
 /// - value (number): Value to format
-/// - digits (int): Number of digits for rouding the factor
+/// - digits (int): Number of digits for rounding the factor
 /// -> Content
 #let sci(value, digits: 2) = {
   let exponent = if value != 0 {

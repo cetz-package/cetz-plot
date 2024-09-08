@@ -209,12 +209,10 @@
   let (x, y) = (ctx.x, ctx.y)
 
   self.contours = self.contours.map(c => {
-    c.stroke-paths = util.compute-stroke-paths(c.line-data,
-      (x.min, y.min), (x.max, y.max))
+    c.stroke-paths = util.compute-stroke-paths(c.line-data, x, y)
 
     if self.fill {
-      c.fill-paths = util.compute-fill-paths(c.line-data,
-        (x.min, y.min), (x.max, y.max))
+      c.fill-paths = util.compute-fill-paths(c.line-data, x, y)
     }
     return c
   })
