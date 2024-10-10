@@ -1,2 +1,2 @@
 // Import cetz into the root scope. Import cetz by importing this file only!
-#import "@preview/cetz:0.2.2": *
+#import "@preview/cetz:0.3.0": *

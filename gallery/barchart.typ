@@ -1,4 +1,4 @@
-#import "@preview/cetz:0.2.2": canvas, draw
+#import "@preview/cetz:0.3.0": canvas, draw
 #import "@preview/cetz-plot:0.1.0": chart
 
 #set page(width: auto, height: auto, margin: .5cm)
@@ -22,5 +22,5 @@
                  x-tick-step: 2.5,
                  data2,
                  labels: ([Low], [Medium], [High], [Very high]),
-                 legend: "legend.inner-north-east",)
+                 legend: "inner-north-east",)
 })
