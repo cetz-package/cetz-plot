@@ -9,7 +9,6 @@
 /// by its x and y axis.
 ///
 /// #example(```
-/// import cetz.plot
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(domain: (0, 2*calc.pi), calc.sin)
 ///   plot.annotate({

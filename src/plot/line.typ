@@ -169,7 +169,6 @@
 ///      use with `"linear"`, defaults to 0.
 ///
 ///   #example(```
-///   import cetz.plot
 ///   let points(offset: 0) = ((0,0), (1,1), (2,0), (3,1), (4,0)).map(((x,y)) => {
 ///     (x,y + offset * 1.5)
 ///   })
@@ -193,7 +192,6 @@
 ///   of the form `x => y`, where `x` is a value in `domain`
 ///   and `y` must be numeric or a 2D vector (for parametric functions).
 ///   #example(```
-///   import cetz.plot
 ///   plot.plot(size: (2, 2), axis-style: none, {
 ///     // Using an array of points:
 ///     plot.add(((0,0), (calc.pi/2,1),
@@ -272,10 +270,10 @@
 /// are at their axis bounds.
 ///
 /// #example(```
-/// cetz.plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
-///   cetz.plot.add(domain: (0, 4*calc.pi), calc.sin)
+/// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
+///   plot.add(domain: (0, 4*calc.pi), calc.sin)
 ///   // Add 3 horizontal lines
-///   cetz.plot.add-hline(-.5, 0, .5)
+///   plot.add-hline(-.5, 0, .5)
 /// })
 /// ```)
 ///
@@ -333,10 +331,10 @@
 /// are at their axis bounds.
 ///
 /// #example(```
-/// cetz.plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
-///   cetz.plot.add(domain: (0, 2*calc.pi), calc.sin)
+/// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
+///   plot.add(domain: (0, 2*calc.pi), calc.sin)
 ///   // Add 3 vertical lines
-///   cetz.plot.add-vline(calc.pi/2, calc.pi, 3*calc.pi/2)
+///   plot.add-vline(calc.pi/2, calc.pi, 3*calc.pi/2)
 /// })
 /// ```)
 ///
@@ -399,8 +397,8 @@
 /// This can be used to display an error-band of a function.
 ///
 /// #example(```
-/// cetz.plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
-///   cetz.plot.add-fill-between(domain: (0, 2*calc.pi),
+/// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
+///   plot.add-fill-between(domain: (0, 2*calc.pi),
 ///     calc.sin, // First function/data
 ///     calc.cos) // Second function/data
 /// })

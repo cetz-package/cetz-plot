@@ -160,7 +160,7 @@
 ///
 ///   #example(```
 ///   let opts = (x-tick-step: none, y-tick-step: none, size: (2,1))
-///   let data = cetz.plot.add(((-1,-1), (1,1),), mark: "o")
+///   let data = plot.add(((-1,-1), (1,1),), mark: "o")
 ///
 ///   for name in (none, "school-book", "left", "scientific") {
 ///     plot.plot(axis-style: name, ..opts, data, name: "plot")
@@ -523,8 +523,6 @@
 /// axis tuple to specify which axis coordinate system to use.
 ///
 /// #example(```
-/// import cetz.plot
-/// import cetz.draw: *
 /// plot.plot(size: (2,2), name: "plot",
 ///           x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1), (2,.5), (4,3)))

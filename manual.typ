@@ -1,8 +1,8 @@
+#import "/src/cetz.typ"
 #import "/doc/util.typ": *
 #import "/doc/example.typ": example
 #import "/doc/style.typ" as doc-style
 #import "/src/lib.typ": *
-#import "/src/cetz.typ": *
 #import "@preview/tidy:0.2.0"
 
 
