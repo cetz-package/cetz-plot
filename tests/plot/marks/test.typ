@@ -1,6 +1,6 @@
 #set page(width: auto, height: auto)
-#import "/src/cetz.typ": *
 #import "/src/lib.typ" as cetz-plot
+#import "/src/cetz.typ": *
 #import "/tests/helper.typ": *
 
 // cetz-plot #13

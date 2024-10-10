@@ -1,6 +1,6 @@
 #set page(width: auto, height: auto)
-#import "/src/lib.typ": *
 #import "/src/cetz.typ": *
+#import "/src/lib.typ": *
 #import "/tests/helper.typ": *
 
 /* Simple plot */

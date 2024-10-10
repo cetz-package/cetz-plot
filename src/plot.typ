@@ -207,7 +207,7 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
-  // TODO: Assert cetz min version here!
+  draw.assert-version(version(0, 3, 0))
 
   // Create plot context object
   let make-ctx(x, y, size) = {
