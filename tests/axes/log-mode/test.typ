@@ -23,7 +23,7 @@
         x => {calc.pow(10, x)},
         samples: 100, 
         line: "raw",
-        label: $y=10^x$
+        label: $ y=10^x $,
       )
       plot.add(
         domain: (1, 10), 
@@ -31,7 +31,7 @@
         samples: 100, 
         line: "raw",
         hypograph: true,
-        label: $y=x$
+        label: $ y=x $,
       )
     }
   )

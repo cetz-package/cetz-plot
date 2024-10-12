@@ -15,7 +15,7 @@
   spacing: .1,     // Spacing between anchor and legend
   item: (
     radius: 0,
-    spacing: .05,  // Spacing between items
+    spacing: 0,    // Extra spacing between items
     preview: (
       width: .75,  // Preview width
       height: .3,  // Preview height
@@ -170,7 +170,7 @@
 
           // Draw item preview
           let draw-preview = if preview == auto { draw-generic-preview } else { preview }
-          group({
+          scope({
             set-viewport(preview-a, preview-b, bounds: (1, 1, 0))
             (draw-preview)(item)
           })
@@ -186,7 +186,7 @@
 
           // Draw label
           content(label-west,
-            align(left + horizon, label),
+            text(top-edge: "ascender", bottom-edge: "descender", align(left + horizon, label)),
             name: "label", anchor: "west")
         }, name: "item", anchor: if style.orientation == ltr { "west" } else { "north-west" })
 
