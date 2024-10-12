@@ -12,7 +12,7 @@
 /// Add one or more box or whisker plots.
 ///
 /// #example(```
-/// cetz.chart.boxwhisker(size: (2,2), label-key: none,
+/// chart.boxwhisker(size: (2,2), label-key: none,
 ///   y-min: 0, y-max: 70, y-tick-step: 20,
 ///   (x: 1, min: 15, max: 60,
 ///    q1: 25, q2: 35, q3: 50))

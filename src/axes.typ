@@ -86,6 +86,7 @@
   padding: 0,
 ))
 
+// Default Schoolbook Style
 #let default-style-schoolbook = util.merge-dictionary(default-style, (
   x: (stroke: auto, fill: none, mark: (start: none, end: "straight"),
     tick: (label: (anchor: "north"))),
@@ -223,14 +224,13 @@
 // - ticks (dictionary): Tick settings:
 //     - step (number): Major tic step
 //     - minor-step (number): Minor tic step
-//     - unit (content): Tick label suffix
 //     - decimals (int): Tick float decimal length
 // - label (content): Axis label
 // - mode (string): Axis scaling function. Takes `lin` or `log`
 // - base (number): Base for tick labels when logarithmically scaled.
 #let axis(min: -1, max: 1, label: none,
           ticks: (step: auto, minor-step: none,
-                  unit: none, decimals: 2, grid: false,
+                  decimals: 2, grid: false,
                   format: "float"
                   ),
           mode: auto, base: auto) = (
@@ -243,14 +243,6 @@
   // to content! Typst has negative zero floats.
   if value == 0 { value = 0 }
 
-  let round(value, digits) = {
-    calc.round(value, digits: digits)
-  }
-
-  let format-float(value, digits) = {
-    $#round(value, digits)$
-  }
-
   if type(value) != typst-content {
     let format = tic-options.at("format", default: "float")
     if format == none {
@@ -262,15 +254,12 @@
     } else if format == "sci" {
       value = formats.sci(value, digits: tic-options.at("decimals", default: 2))
     } else {
-      value = format-float(value, tic-options.at("decimals", default: 2))
+      value = formats.decimal(value, digits: tic-options.at("decimals", default: 2))
     }
   } else if type(value) != typst-content {
     value = str(value)
   }
 
-  if tic-options.at("unit", default: none) != none {
-    value += tic-options.unit
-  }
   return value
 }
 

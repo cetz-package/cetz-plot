@@ -3,8 +3,8 @@
 /// Add one or more box or whisker plots
 ///
 /// #example(```
-/// cetz.plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
-///   cetz.plot.add-boxwhisker((x: 1, // Location on x-axis
+/// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
+///   plot.add-boxwhisker((x: 1, // Location on x-axis
 ///     outliers: (7, 65, 69),        // Optional outlier values
 ///     min: 15, max: 60,             // Minimum and maximum
 ///     q1: 25,                       // Quartiles: Lower

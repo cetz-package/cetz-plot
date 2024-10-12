@@ -242,8 +242,8 @@
 /// Add a contour plot of a sampled function or a matrix.
 ///
 /// #example(```
-/// cetz.plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
-///   cetz.plot.add-contour(x-domain: (-3, 3), y-domain: (-3, 3),
+/// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
+///   plot.add-contour(x-domain: (-3, 3), y-domain: (-3, 3),
 ///     style: (fill: rgb(50,50,250,50)),
 ///     fill: true,
 ///     op: "<",        // Find contours where data < z

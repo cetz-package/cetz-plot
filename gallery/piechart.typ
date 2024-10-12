@@ -1,4 +1,4 @@
-#import "@preview/cetz:0.2.2"
+#import "@preview/cetz:0.3.0"
 #import "@preview/cetz-plot:0.1.0": chart
 
 #set page(width: auto, height: auto, margin: .5cm)
@@ -22,7 +22,7 @@
   chart.piechart(
     data,
     value-key: 1,
-    label-key: 0,
+    label-key: none,
     radius: 4,
     slice-style: colors,
     inner-radius: 1,

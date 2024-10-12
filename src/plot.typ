@@ -115,9 +115,6 @@
 ///   Number of decimals digits to display for tick labels, if the format is set
 ///   to `"float"`.
 /// ])
-/// #show-parameter-block("unit", ("none", "content"), default: "none", [
-///   Suffix to append to all tick labels.
-/// ])
 /// #show-parameter-block("mode", ("none", "string"), default: "none", [
 ///   The scaling function of the axis. Takes `lin` (default) for linear scaling,
 ///   and `log` for logarithmic scaling.])
@@ -160,7 +157,7 @@
 ///
 ///   #example(```
 ///   let opts = (x-tick-step: none, y-tick-step: none, size: (2,1))
-///   let data = cetz.plot.add(((-1,-1), (1,1),), mark: "o")
+///   let data = plot.add(((-1,-1), (1,1),), mark: "o")
 ///
 ///   for name in (none, "school-book", "left", "scientific") {
 ///     plot.plot(axis-style: name, ..opts, data, name: "plot")
@@ -207,7 +204,7 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
-  // TODO: Assert cetz min version here!
+  draw.assert-version(version(0, 3, 0))
 
   // Create plot context object
   let make-ctx(x, y, size) = {
@@ -523,8 +520,6 @@
 /// axis tuple to specify which axis coordinate system to use.
 ///
 /// #example(```
-/// import cetz.plot
-/// import cetz.draw: *
 /// plot.plot(size: (2,2), name: "plot",
 ///           x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1), (2,.5), (4,3)))

@@ -90,7 +90,6 @@
 /// Draw a pie- or donut-chart
 ///
 /// #example(```
-/// import cetz.chart
 /// let data = (24, 31, 18, 21, 23, 18, 27, 17, 26, 13)
 /// let colors = gradient.linear(red, blue, green, yellow)
 ///

@@ -1,8 +1,8 @@
+#import "/src/cetz.typ"
 #import "/doc/util.typ": *
 #import "/doc/example.typ": example
 #import "/doc/style.typ" as doc-style
 #import "/src/lib.typ": *
-#import "/src/cetz.typ": *
 #import "@preview/tidy:0.2.0"
 
 
@@ -39,7 +39,7 @@ CeTZ-Plot is a simple plotting library for use with CeTZ.
 
 This is the minimal starting point:
 #pad(left: 1em)[```typ
-#import "@preview/cetz:0.2.2"
+#import "@preview/cetz:0.3.0"
 #import "@preview/cetz-plot:0.1.0"
 #cetz.canvas({
   import cetz.draw: *
