@@ -243,14 +243,6 @@
   // to content! Typst has negative zero floats.
   if value == 0 { value = 0 }
 
-  let round(value, digits) = {
-    calc.round(value, digits: digits)
-  }
-
-  let format-float(value, digits) = {
-    $#round(value, digits)$
-  }
-
   if type(value) != typst-content {
     let format = tic-options.at("format", default: "float")
     if format == none {
@@ -262,7 +254,7 @@
     } else if format == "sci" {
       value = formats.sci(value, digits: tic-options.at("decimals", default: 2))
     } else {
-      value = format-float(value, tic-options.at("decimals", default: 2))
+      value = formats.decimal(value, digits: tic-options.at("decimals", default: 2))
     }
   } else if type(value) != typst-content {
     value = str(value)

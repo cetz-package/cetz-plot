@@ -1,5 +1,3 @@
-
-
 #set page(width: auto, height: auto)
 
 #import "/tests/helper.typ": *
@@ -7,8 +5,7 @@
 #import cetz: draw, canvas
 #import cetz-plot: axes,
 
-// plot.add test with logarithmic scaling
-#box(stroke: 2pt + red, canvas({
+#test-case({
   import draw: *
 
   plot.plot(
@@ -38,7 +35,7 @@
       )
     }
   )
-}))
+})
 
 // Bode plot test
 #box(stroke: 2pt + red,{

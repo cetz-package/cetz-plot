@@ -1,3 +1,6 @@
+// Temporary fix Typst measure bug
+#let _block-eq(body) = math.equation(block: true, numbering: none, body)
+
 // Compare two floats
 #let _compare(a, b, eps: 1e-6) = {
   return calc.abs(a - b) <= eps
@@ -56,7 +59,7 @@
 /// - eps (number): Epsilon used for comparison
 /// -> Content if a matching fraction could be found or none
 #let fraction(value, denom: auto, eps: 1e-6) = {
-  return _find-fraction(value, denom: denom, eps: eps)
+  return _block-eq(_find-fraction(value, denom: denom, eps: eps))
 }
 
 /// Multiple of tick formatter
@@ -83,24 +86,24 @@
 /// -> Content if a matching fraction could be found or none
 #let multiple-of(value, factor: calc.pi, symbol: $pi$, fraction: true, digits: 2, eps: 1e-6) = {
   if _compare(value, 0, eps: eps) {
-    return $0$
+    return _block-eq($0$)
   }
 
   let a = value / factor
   if _compare(a, 1, eps: eps) {
-    return symbol
+    return _block-eq(symbol)
   } else if _compare(a, -1, eps: eps) {
-    return $-$ + symbol
+    return _block-eq($-$ + symbol)
   }
 
   if fraction != none {
     let frac = _find-fraction(a, denom: if fraction == true { auto } else { fraction })
     if frac != none {
-      return frac + symbol
+      return _block-eq(frac + symbol)
     }
   }
 
-  return $#calc.round(a, digits: digits)$ + symbol
+  return _block-eq($#calc.round(a, digits: digits)$ + symbol)
 }
 
 /// Scientific notation tick formatter
@@ -133,7 +136,26 @@
 
   value = calc.round(value, digits: digits)
   if exponent <= -1 or exponent >= 1 {
-    return $#value times 10^#exponent$
+    return _block-eq($#value times 10^#exponent$)
   }
-  return $#value$
+
+  return _block-eq($#value$)
+}
+
+/// Rounded decimal number formatter
+///
+/// ```example
+/// plot.plot(size: (5,1),
+///           x-format: plot.formats.decimal,
+///           x-tick-step: .5,
+///           y-tick-step: none, {
+///   plot.add(x => x, domain: (-1, 1))
+/// })
+/// ```
+///
+/// - value (number): Value to format
+/// - digits (int): Number of digits to round to
+/// -> Content
+#let decimal(value, digits: 2) = {
+  _block-eq($#calc.round(value, digits: digits)$)
 }
