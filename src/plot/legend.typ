@@ -18,7 +18,7 @@
     spacing: .05,  // Spacing between items
     preview: (
       width: .75,  // Preview width
-      height: .3,  // Preview height
+      height: .35, // Preview height
       margin: .1   // Distance between preview and label
     )
   ),
@@ -170,7 +170,7 @@
 
           // Draw item preview
           let draw-preview = if preview == auto { draw-generic-preview } else { preview }
-          group({
+          scope({
             set-viewport(preview-a, preview-b, bounds: (1, 1, 0))
             (draw-preview)(item)
           })
