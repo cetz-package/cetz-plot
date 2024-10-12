@@ -54,7 +54,6 @@
 ///                 width can be set to `auto`.
 /// - bar-style (style,function): Style or function (idx => style) to use for
 ///   each bar, accepts a palette function.
-/// - y-unit (content,auto): Tick suffix added to each tick label
 /// - y-label (content,none): Y axis label
 /// - x-label (content,none): x axis label
 /// - labels (none,content): Legend labels per y value group
@@ -67,7 +66,7 @@
                  size: (auto, 1),
                  bar-style: palette.red,
                  x-label: none,
-                 y-unit: auto,
+                 y-format: auto,
                  y-label: none,
                  labels: none,
                  ..plot-args
@@ -98,9 +97,9 @@
     (i, t.at(label-key))
   })
 
-  let y-unit = y-unit
-  if y-unit == auto {
-    y-unit = if mode == "stacked100" {[%]} else []
+  let y-format = y-format
+  if y-format == auto {
+    y-format = if mode == "stacked100" {plot.formats.decimal.with(suffix: [%])} else {auto}
   }
 
   data = data.enumerate().map(((i, d)) => {
@@ -117,6 +116,7 @@
               axis-style: "scientific-auto",
               y-grid: true,
               y-label: y-label,
+              y-format: y-format,
               x-min: -x-inset,
               x-max: data.len() + x-inset - 1,
               x-tick-step: none,

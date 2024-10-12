@@ -115,9 +115,6 @@
 ///   Number of decimals digits to display for tick labels, if the format is set
 ///   to `"float"`.
 /// ])
-/// #show-parameter-block("unit", ("none", "content"), default: "none", [
-///   Suffix to append to all tick labels.
-/// ])
 /// #show-parameter-block("mode", ("none", "string"), default: "none", [
 ///   The scaling function of the axis. Takes `lin` (default) for linear scaling,
 ///   and `log` for logarithmic scaling.])

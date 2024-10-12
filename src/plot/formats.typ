@@ -83,27 +83,29 @@
 ///   could be found, a real number with `digits` digits is used.
 /// - digits (int): Number of digits to use for rounding
 /// - eps (number): Epsilon used for comparison
+/// - prefix (content): Content to prefix
+/// - suffix (content): Content to append
 /// -> Content if a matching fraction could be found or none
-#let multiple-of(value, factor: calc.pi, symbol: $pi$, fraction: true, digits: 2, eps: 1e-6) = {
+#let multiple-of(value, factor: calc.pi, symbol: $pi$, fraction: true, digits: 2, eps: 1e-6, prefix: [], suffix: []) = {
   if _compare(value, 0, eps: eps) {
     return _block-eq($0$)
   }
 
   let a = value / factor
   if _compare(a, 1, eps: eps) {
-    return _block-eq(symbol)
+    return _block-eq(prefix + symbol + suffix)
   } else if _compare(a, -1, eps: eps) {
-    return _block-eq($-$ + symbol)
+    return _block-eq(prefix + $-$ + symbol + suffix)
   }
 
   if fraction != none {
     let frac = _find-fraction(a, denom: if fraction == true { auto } else { fraction })
     if frac != none {
-      return _block-eq(frac + symbol)
+      return _block-eq(prefix + frac + symbol + suffix)
     }
   }
 
-  return _block-eq($#calc.round(a, digits: digits)$ + symbol)
+  return _block-eq(prefix + $#calc.round(a, digits: digits)$ + symbol + suffix)
 }
 
 /// Scientific notation tick formatter
@@ -119,8 +121,10 @@
 ///
 /// - value (number): Value to format
 /// - digits (int): Number of digits for rounding the factor
+/// - prefix (content): Content to prefix
+/// - suffix (content): Content to append
 /// -> Content
-#let sci(value, digits: 2) = {
+#let sci(value, digits: 2, prefix: [], suffix: []) = {
   let exponent = if value != 0 {
     calc.floor(calc.log(calc.abs(value), base: 10))
   } else {
@@ -136,10 +140,10 @@
 
   value = calc.round(value, digits: digits)
   if exponent <= -1 or exponent >= 1 {
-    return _block-eq($#value times 10^#exponent$)
+    return _block-eq(prefix + $#value times 10^#exponent$ + suffix)
   }
 
-  return _block-eq($#value$)
+  return _block-eq(prefix + $#value$ + suffix)
 }
 
 /// Rounded decimal number formatter
@@ -155,7 +159,9 @@
 ///
 /// - value (number): Value to format
 /// - digits (int): Number of digits to round to
+/// - prefix (content): Content to prefix
+/// - suffix (content): Content to append
 /// -> Content
-#let decimal(value, digits: 2) = {
-  _block-eq($#calc.round(value, digits: digits)$)
+#let decimal(value, digits: 2, prefix: [], suffix: []) = {
+  _block-eq(prefix + $#calc.round(value, digits: digits)$ + suffix)
 }

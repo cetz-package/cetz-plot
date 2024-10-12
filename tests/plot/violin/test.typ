@@ -22,7 +22,6 @@
   let default-colors = (palette.blue-colors.at(3), palette.pink-colors.at(3))
 
   plot.plot(size: (9, 6),
-    
     y-label: [Age],
     y-min: -10, y-max: 20,
     y-tick-step: 10, y-minor-tick-step: 5,

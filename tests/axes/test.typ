@@ -36,7 +36,7 @@
     draw-unset: false,
     top: none,
     bottom: axes.axis(min: -1, max: 1, ticks: (step: 1, minor-step: auto,
-      grid: "both", unit: [ units])),
+      grid: "both", format: plot.formats.decimal.with(prefix: $<-$, suffix: $->$))),
     left: axes.axis(min: -1, max: 1, ticks: (step: .5, minor-step: auto,
       grid: false)),
     right: axes.axis(min: -10, max: 10, ticks: (step: auto, minor-step: auto,
