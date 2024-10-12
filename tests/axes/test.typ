@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto)
 #import "/tests/helper.typ": *
 #import cetz: draw
-#import cetz-plot: axes
+#import cetz-plot: axes, plot
 
 // Schoolbook Axis Styling
 #test-case({
@@ -49,11 +49,7 @@
 
   axes.scientific(size: (6, 1),
     bottom: axes.axis(min: -2*calc.pi, max: 2*calc.pi, ticks: (
-      step: calc.pi, minor-step: auto, format: v => {
-        let d = v / calc.pi
-        if d == 0 {return $0$}
-        {$#{d}pi$}
-      }
+      step: calc.pi, minor-step: auto, format: plot.formats.multiple-of.with(symbol: $pi$),
     )),
     left: axes.axis(min: -1, max: 1, ticks: (step: none, minor-step: none)))
 })
