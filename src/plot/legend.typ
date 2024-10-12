@@ -15,10 +15,10 @@
   spacing: .1,     // Spacing between anchor and legend
   item: (
     radius: 0,
-    spacing: .05,  // Spacing between items
+    spacing: 0,    // Extra spacing between items
     preview: (
       width: .75,  // Preview width
-      height: .35, // Preview height
+      height: .3,  // Preview height
       margin: .1   // Distance between preview and label
     )
   ),
@@ -186,7 +186,7 @@
 
           // Draw label
           content(label-west,
-            align(left + horizon, label),
+            text(top-edge: "ascender", bottom-edge: "descender", align(left + horizon, label)),
             name: "label", anchor: "west")
         }, name: "item", anchor: if style.orientation == ltr { "west" } else { "north-west" })
 
