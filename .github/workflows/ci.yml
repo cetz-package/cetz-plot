@@ -34,7 +34,7 @@ jobs:
           git clone --depth 1 --branch v0.3.0 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.3.0
       - uses: typst-community/setup-typst@v3
         with:
-          typst-version: '0.12.0-rc1'
+          typst-version: '0.12.0-rc2'
           cache-dependency-path: src/cetz.typ
       - run: |
           just install @local
