@@ -1,8 +1,6 @@
 #import "/src/cetz.typ": util, draw, vector, matrix, styles, process, drawable, path-util, process
 #import "/src/plot/formats.typ"
 
-#let typst-content = content
-
 /// Default axis style
 ///
 /// #show-parameter-block("tick-limit", "int", default: 100, [Upper major tick limit.])
@@ -243,11 +241,11 @@
   // to content! Typst has negative zero floats.
   if value == 0 { value = 0 }
 
-  if type(value) != typst-content {
+  if type(value) != std.content {
     let format = tic-options.at("format", default: "float")
     if format == none {
       value = []
-    } else if type(format) == typst-content {
+    } else if type(format) == std.content {
       value = format
     } else if type(format) == function {
       value = (format)(value)
@@ -256,7 +254,7 @@
     } else {
       value = formats.decimal(value, digits: tic-options.at("decimals", default: 2))
     }
-  } else if type(value) != typst-content {
+  } else if type(value) != std.content {
     value = str(value)
   }
 
@@ -902,7 +900,7 @@
         if shared-zero {
           let pt = (rel: (-style.tick.label.offset, -style.tick.label.offset),
                      to: (y-x, x-y))
-          let zero = if type(style.shared-zero) == typst-content {
+          let zero = if type(style.shared-zero) == std.content {
             style.shared-zero
           } else {
             $0$
