@@ -8,7 +8,7 @@
 
   plot.plot(size: (10, 10),
   {
-    plot.add(domain: (0, 4*calc.pi), calc.sin, axes: ("y", "x"))
+    plot.add(domain: (0, 4*calc.pi), calc.sin, axes: ("y", "x"), mark: "+")
   })
 })
 

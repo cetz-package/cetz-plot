@@ -110,6 +110,7 @@
   ) + (if "outliers" in data { (
     type: "boxwhisker-outliers",
     data: data.outliers.map(it => (data.x, it)),
+    axes: axes,
     mark: mark,
     mark-size: mark-size,
     mark-style: (:)
