@@ -3,7 +3,7 @@
 #import "/doc/example.typ": example
 #import "/doc/style.typ" as doc-style
 #import "/src/lib.typ": *
-#import "@preview/tidy:0.2.0"
+#import "@preview/tidy:0.3.0"
 
 
 // Usage:
