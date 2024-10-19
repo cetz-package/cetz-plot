@@ -204,7 +204,7 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
-  draw.assert-version(version(0, 3, 0))
+  draw.assert-version(version(0, 3, 1))
 
   // Create plot context object
   let make-ctx(x, y, size) = {
@@ -450,7 +450,14 @@
       })
 
       if "mark" in d and d.mark != none {
-        draw.group({
+        draw.scope({
+          if y.horizontal {
+            draw.set-ctx(ctx => {
+              ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
+              return ctx
+            })
+          }
+
           draw.set-style(..d.style, ..d.mark-style)
           mark.draw-mark(d.data, x, y, d.mark, d.mark-size, size)
         })

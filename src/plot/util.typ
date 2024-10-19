@@ -290,7 +290,7 @@
 
   for (name, axis) in axis-dict {
     if not "ticks" in axis { axis.ticks = () }
-    axis.label = get-axis-option(name, "label", math.equation(block: true, numbering: none, $#name$))
+    axis.label = get-axis-option(name, "label", $#name$)
 
     // Configure axis bounds
     axis.min = get-axis-option(name, "min", axis.min)

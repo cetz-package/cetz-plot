@@ -20,21 +20,21 @@ jobs:
           packages: imagemagick cargo parallel
           version: 1.0
       - name: Install just from crates.io
-        uses: baptiste0928/cargo-install@v2.2.0
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: just
       - name: Install typst-test from github
-        uses: baptiste0928/cargo-install@v2.2.0
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: typst-test
           git: https://github.com/tingerrr/typst-test.git
           tag: ci-semi-stable
       - run: |
           mkdir -p ~/.local/share/typst/packages/preview/cetz
-          git clone --depth 1 --branch v0.3.0 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.3.0
+          git clone --depth 1 --branch v0.3.1 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.3.1
       - uses: typst-community/setup-typst@v3
         with:
-          typst-version: '0.12.0-rc1'
+          typst-version: '0.12.0-rc2'
           cache-dependency-path: src/cetz.typ
       - run: |
           just install @local
