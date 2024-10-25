@@ -148,7 +148,7 @@
 /// - y-key: (auto,int,string,array): Key to use for retrieving a bars y-value. For clustered/stacked
 ///   data, this must be set to a list of keys (e.g. `range(1, 4)`). If set to `auto`, att but the first
 ///   array-values of a data item are used as y-values.
-/// - error-key: (none,int,string): Key to use for retrieving a bars y-error.
+/// - error-key: (none,int,string,array): Key(s) to use for retrieving a bars y-error.
 /// - mode (string): The mode on how to group data items into bars:
 ///   / basic: Add one bar per data value. If the data contains multiple values,
 ///     group those bars next to each other.
