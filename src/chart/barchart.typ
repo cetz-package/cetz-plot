@@ -41,7 +41,7 @@
 /// - value-key (int,string): Key(s) to access values of a data row.
 ///                           These keys are used as argument to the
 ///                           rows `.at(..)` function.
-/// - error-key (none,int,string): Key(s) to access error values of a data row.
+/// - error-key (none,int,string,array): Key(s) to access error values of a data row.
 ///                                These keys are used as argument to the
 ///                                rows `.at(..)` function.
 /// - mode (string): Chart mode:
