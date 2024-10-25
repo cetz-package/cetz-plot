@@ -108,3 +108,18 @@
   import draw: *
   piechart(range(1,4), clockwise: false, slice-style: (green, yellow, red))
 })
+
+// 0 Elements
+#test-case({
+  import draw: *
+  piechart(
+      (("A", 0), ("B", 0), ("C", 5), ("D", 10),),
+      start: 90deg,
+      stop: 450deg,
+      gap: 1deg,
+      value-key: 1,
+      label-key: 0,
+      radius: 3.5,
+      inner-radius: .5,
+    )
+})
