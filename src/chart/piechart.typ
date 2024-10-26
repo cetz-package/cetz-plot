@@ -215,7 +215,9 @@
     }
   ))
 
-  let sum = data.map(((value, ..)) => value).sum()
+  let visible-data = data.filter(((value, ..)) => value != 0)
+
+  let sum = visible-data.map(((value, ..)) => value).sum()
   if sum == 0 {
     sum = 1
   }
@@ -230,8 +232,8 @@
     if type(gap) != angle {
       gap = gap / (2 * calc.pi * style.radius) * 360deg
     }
-    assert(gap < 360deg / data.len(),
-      message: "Gap angle is too big for " + str(data.len()) + "items. Maximum gap angle: " + repr(360deg / data.len()))
+    assert(gap < 360deg / visible-data.len(),
+      message: "Gap angle is too big for " + str(visible-data.len()) + "items. Maximum gap angle: " + repr(360deg / visible-data.len()))
 
     let radius = style.radius
     assert(radius > 0,
@@ -256,7 +258,7 @@
         }
       }
     } else if type(slice-style) == gradient {
-      i => (fill: slice-style.sample(i / data.len() * 100%))
+      i => (fill: slice-style.sample(i / visible-data.len() * 100%))
     }
 
     let start-angle = style.start
@@ -277,13 +279,13 @@
     }
 
     let start = start-angle
-    let enum-items = if style.clockwise {
+    let enum-items = (if style.clockwise {
       data.enumerate().rev()
     } else {
       data.enumerate()
-    }
+    })
     group(name: "chart", {
-      for (i, item) in enum-items {
+      for (i, item) in enum-items.filter((value, ..) => value != 0) {
         let (value, label, outset) = item
         if value == 0 { continue }
 
@@ -370,7 +372,7 @@
         // Draw one segment
         let stroke = style-at(i).at("stroke", default: style.stroke)
         let fill = style-at(i).at("fill", default: style.fill)
-        if data.len() == 1 {
+        if visible-data.len() == 1 {
           // If the chart has only one segment, we may have to fake a path
           // with a hole in it by using a combination of multiple arcs.
           if inner-radius > 0 {
