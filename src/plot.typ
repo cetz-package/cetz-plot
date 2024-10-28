@@ -275,9 +275,9 @@
 
       let axis = axis-dict.at(name)
       let domain = if i == 0 {
-        d.at("x-domain", default: (0, 0))
+        d.at("x-domain", default: (none, none))
       } else {
-        d.at("y-domain", default: (0, 0))
+        d.at("y-domain", default: (none, none))
       }
       if domain != (none, none) {
         axis.min = util.min(axis.min, ..domain)

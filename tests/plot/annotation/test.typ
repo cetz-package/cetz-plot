@@ -44,3 +44,15 @@
     })
   })
 })
+
+#test-case({
+  import draw: *
+  set-style(rect: (stroke: none))
+
+  plot.plot(size: (6, 4), x-tick-step: 1, {
+    plot.add(domain: (100, 101), calc.sin)
+    plot.annotate(padding: .1, {
+      content( (101.5, 0), [A])
+    })
+  })
+})
