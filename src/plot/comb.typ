@@ -27,14 +27,6 @@
     for p in lines {
       draw.line(..p, fill: none, ..self.style, ..style)
     }
-    // if (line) == none {continue}
-    // let ((ax, ay),(bx, by)) = line
-    // if (ay == by) {continue}
-    // if (ax < ctx.x.min){continue}
-    // if (bx < ctx.x.min){continue}
-    // if (ax < ctx.x.min){continue}
-    // if (ax < ctx.x.min){continue}
-    // draw.line((ax, ay),(bx, by), fill: none, ..self.style, ..style)
   }
 }
 
@@ -102,7 +94,7 @@
     plot-prepare: _prepare,
     plot-fill: _fill,
     plot-stroke: _stroke,
-    plot-legend-preview: _legend-preview,
+    // plot-legend-preview: _legend-preview,
     mz-key: mz-key,
     intensity-key: intensity-key,
     label-key: label-key,

@@ -48,6 +48,7 @@
     let (x,y) = (calc.div-euclid(i, 3),calc.rem-euclid(i, 3))
     (table.cell( x: x, y: 3-y, test-case({
       plot.plot(
+        x-label: none, y-label: none,
         x-tick-step: none, y-tick-step: none,
         size: (3,3), 
         x-min: x * 50, x-max: (x+1) * 50,
@@ -109,14 +110,53 @@ Uniform marks across the series
     // y-max: 100,
     x-min: 35, x-max: 45,
     {
-      // plot.add-comb(
-      //   label: "Linalool, 70eV",
-      //   mark: "x",
-      //   mark-size: 0.1,
-        
-      //   data
-      // )
-      plot.add(domain: (0, 100), x=>x, mark: "x")
+      plot.add-comb(
+        label: "Linalool, 70eV",
+        mark: "-",
+        mark-size: 0.2,
+        data
+      )
+      // plot.add(domain: (0, 100), x=>x, mark: "x")
+    }
+  )
+})
+
+= Axis swap
+// Test pending upstream
+#test-case({
+  plot.plot(
+    size: (10,6), 
+    y-max: 0, y-min: 180,
+    // x-min: 35, x-max: 45,
+    {
+      plot.add-comb(
+        axes: ("y", "x"),
+        label: "Linalool, 70eV",
+        // mark: "-",
+        mark-size: 0.2,
+        data
+      )
+      // plot.add(domain: (0, 100), x=>x, mark: "x")
+    }
+  )
+})
+
+= Logarithym
+// Test pending upstream
+#test-case({
+  plot.plot(
+    size: (10,6), 
+    // x-min: 35, x-max: 45,
+    y-max: 100,
+    y-mode: "log", y-tick-step: 1, y-base: 10, y-format: "sci", y-minor-tick-step: 1,
+    {
+      plot.add-comb(
+        label: "Linalool, 70eV",
+        // mark: "-",
+        mark-size: 0.2,
+        data
+      )
+      // plot.add(domain: (0, 100), x=>x, mark: "x")
     }
   )
 })
