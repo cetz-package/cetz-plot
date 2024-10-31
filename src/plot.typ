@@ -13,6 +13,7 @@
 #import "/src/plot/errorbar.typ": add-errorbar
 #import "/src/plot/mark.typ"
 #import "/src/plot/violin.typ": add-violin
+#import "/src/plot/comb.typ": add-comb
 #import "/src/plot/formats.typ"
 #import plot-legend: add-legend
 
