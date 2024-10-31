@@ -459,7 +459,7 @@
           }
 
           draw.set-style(..d.style, ..d.mark-style)
-          mark.draw-mark(d.data, x, y, d.mark, d.mark-size, size)
+          mark.draw-mark(d.data, (x, y), d.mark, d.mark-size, size)
         })
       }
     }
