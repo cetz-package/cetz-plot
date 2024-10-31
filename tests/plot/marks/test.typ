@@ -24,3 +24,11 @@
     }
   )
 })
+
+#test-case({
+  import cetz-plot: plot
+
+  plot.plot(size: (5,5), x-min: 1, y-min: 1, x-max: 9, y-max: 9, {
+    plot.add(domain: (0, 10), samples: 11, x => x, mark: "square")
+  })
+})

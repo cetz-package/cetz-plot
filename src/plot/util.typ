@@ -370,3 +370,18 @@
 
   return axis-dict
 }
+
+/// Tests if point pt is contained in the
+/// axis interval of each axis in axes
+/// - pt (list): Data array
+/// - axes (list): List of axes
+#let point-in-range(pt, axes) = {
+  for i in range(0, axes.len()) {
+    let a = axes.at(i)
+    let v = pt.at(i)
+    if v < a.min or v > a.max {
+      return false
+    }
+  }
+  return true
+}
