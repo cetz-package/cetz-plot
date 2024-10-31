@@ -32,3 +32,17 @@
     plot.add(domain: (0, 10), samples: 11, x => x, mark: "square")
   })
 })
+
+#test-case({
+  import cetz-plot: plot
+  plot.plot(size: (5,6), {
+    plot.add(domain: (20, 30), x=>x, mark: "x", axes:("y", "x"))
+  })
+})
+
+#test-case({
+  import cetz-plot: plot
+  plot.plot(size: (5,6), y-horizontal: true, x-horizontal: false, {
+    plot.add(domain: (20, 30), x=>x, mark: "x")
+  })
+})
