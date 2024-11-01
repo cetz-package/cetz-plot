@@ -84,8 +84,7 @@
 }
 
 #let _draw-rects(filling, self, ctx, ..args) = {
-  let x-axis = ctx.x
-  let y-axis = ctx.y
+  let (x-axis, y-axis, ..) = ctx.axes
 
   let bars = ()
   let errors = ()
@@ -120,7 +119,7 @@
       draw.rect((left, y-min), (right, y-max))
 
       if not filling and err != 0 {
-        let y-whisker-size = self.whisker-size * ctx.x-scale
+        let y-whisker-size = self.whisker-size //* ctx.x-scale FIXME
         draw-errorbar(((left + right) / 2, y-max),
           0, err, 0, y-whisker-size / 2, self.style + self.error-style)
       }

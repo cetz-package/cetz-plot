@@ -20,7 +20,7 @@
     path = path.map(((x,y)) => (2 * violin.x-position - x,y))
   }
 
-  let stroke-paths = util.compute-stroke-paths(path, ctx.x, ctx.y)
+  let stroke-paths = util.compute-stroke-paths(path, ctx.axes)
 
   for p in stroke-paths{
     let args = arguments(..p, closed: self.side == "both")

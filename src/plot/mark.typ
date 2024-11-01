@@ -1,5 +1,6 @@
 #import "/src/cetz.typ": draw
 #import "/src/axes.typ"
+#import "/src/plot/util.typ"
 
 // Draw mark at point with size
 #let draw-mark-shape(pt, size, mark, style) = {
@@ -34,12 +35,11 @@
   }
 }
 
-#let draw-mark(pts, x, y, mark, mark-size, plot-size) = {
-  let pts = pts.map(pt => {
-    axes.transform-vec(plot-size, x, y, none, pt)
-  }).filter(pt => pt != none)
-
+#let draw-mark(pts, all-axes, mark, mark-size) = {
   for pt in pts {
-    draw-mark-shape(pt, mark-size, mark, (:))
+    if util.point-in-range(pt, all-axes) {
+      pt = axes.transform-vec(all-axes, pt)
+      draw-mark-shape(pt, mark-size, mark, (:))
+    }
   }
 }

@@ -232,7 +232,8 @@
                   format: "float"
                   ),
           mode: auto, base: auto) = (
-  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false, mode: mode, base: base
+  min: min, max: max, ticks: ticks, label: label, inset: (0, 0), show-break: false, mode: mode, base: base,
+  kind: "cartesian",
 )
 
 // Format a tick value
@@ -509,44 +510,50 @@
   return axis
 }
 
-// Transform a single vector along a x, y and z axis
-//
-// - size (vector): Coordinate system size
-// - x-axis (axis): X axis
-// - y-axis (axis): Y axis
-// - z-axis (axis): Z axis
-// - vec (vector): Input vector to transform
-// -> vector
-#let transform-vec(size, x-axis, y-axis, z-axis, vec) = {
-  let axes = (x-axis, y-axis)
+// Transform a single value along a cartesian axis
+#let transform-cartesian(axis, v) = {
+  let a = axis.origin
+  let b = axis.target
 
-  let (x, y,) = for (dim, axis) in axes.enumerate() {
-    let s = size.at(dim) - axis.inset.sum()
-    let o = axis.inset.at(0)
+  let length = vector.dist(a, b) - axis.inset.sum()
+  let offset = axis.inset.at(0)
 
-    let transform-func(n) = if axis.mode == "log" {
-      calc.log(calc.max(n, util.float-epsilon), base: axis.base)
-    } else {
-      n
-    }
-
-    let range = transform-func(axis.max) - transform-func(axis.min)
-
-    let f = s / range
-    ((transform-func(vec.at(dim)) - transform-func(axis.min)) * f + o,)
+  let transform-func(n) = if axis.mode == "log" {
+    calc.log(calc.max(n, util.float-epsilon), base: axis.base)
+  } else {
+    n
   }
 
-  return (x, y, 0)
+  let factor = length / (transform-func(axis.max) - transform-func(axis.min))
+  return vector.scale(
+    vector.norm(vector.sub(b, a)),
+    (transform-func(v) - transform-func(axis.min)) * factor + offset)
+}
+
+// Transform a single vector along a x, y and z axis
+//
+// - axes (list): List of axes
+// - vec (vector): Input vector to transform
+// -> vector
+#let transform-vec(axes, vec) = {
+  let res = (0, 0, 0)
+  for (dim, axis) in axes.enumerate() {
+    let v = vec.at(dim, default: 0)
+
+    if axis.kind == "cartesian" {
+      res = vector.add(res, transform-cartesian(axis, v))
+    } else {
+      panic("Unknown axit type " + repr(axis.kind))
+    }
+  }
+  return res
 }
 
 // Draw inside viewport coordinates of two axes
 //
-// - size (vector): Axis canvas size (relative to origin)
-// - x (axis): Horizontal axis
-// - y (axis): Vertical axis
-// - z (axis): Z axis
+// - axes (list): List of axes
 // - name (string,none): Group name
-#let axis-viewport(size, x, y, z, body, name: none) = {
+#let axis-viewport(axes, body, name: none) = {
   draw.group(name: name, (ctx => {
     let transform = ctx.transform
 
@@ -559,12 +566,12 @@
       if "segments" in d {
         d.segments = d.segments.map(((kind, ..pts)) => {
           (kind, ..pts.map(pt => {
-            transform-vec(size, x, y, none, pt)
+            transform-vec(axes, pt)
           }))
         })
       }
       if "pos" in d {
-        d.pos = transform-vec(size, x, y, none, d.pos)
+        d.pos = transform-vec(axes, d.pos)
       }
       return d
     })

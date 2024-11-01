@@ -206,13 +206,11 @@
 
 // Prepare line data
 #let _prepare(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
   self.contours = self.contours.map(c => {
-    c.stroke-paths = util.compute-stroke-paths(c.line-data, x, y)
+    c.stroke-paths = util.compute-stroke-paths(c.line-data, ctx.axes)
 
     if self.fill {
-      c.fill-paths = util.compute-fill-paths(c.line-data, x, y)
+      c.fill-paths = util.compute-fill-paths(c.line-data, ctx.axes)
     }
     return c
   })

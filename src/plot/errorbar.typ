@@ -47,8 +47,8 @@
 }
 
 #let _stroke(self, ctx) = {
-  let x-whisker-size = self.whisker-size * ctx.y-scale
-  let y-whisker-size = self.whisker-size * ctx.x-scale
+  let x-whisker-size = self.whisker-size //* ctx.y-scale FIXME
+  let y-whisker-size = self.whisker-size //* ctx.x-scale FIXME
 
   draw-errorbar((self.x, self.y),
     self.x-error, self.y-error,

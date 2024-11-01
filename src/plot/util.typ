@@ -1,5 +1,6 @@
 #import "/src/cetz.typ"
 #import cetz.util: bezier
+#import cetz: vector
 
 /// Clip line-strip in rect
 ///
@@ -173,20 +174,20 @@
 /// Compute clipped stroke paths
 ///
 /// - points (array): X/Y data points
-/// - x (axis): X-Axis
-/// - y (axis): Y-Axis
+/// - axes (list): List of axes
 /// -> array List of stroke paths
-#let compute-stroke-paths(points, x, y) = {
+#let compute-stroke-paths(points, axes) = {
+  let (x, y, ..) = axes
   clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: false)
 }
 
 /// Compute clipped fill path
 ///
 /// - points (array): X/Y data points
-/// - x (axis): X-Axis
-/// - y (axis): Y-Axis
+/// - axes (list): List of axes
 /// -> array List of fill paths
-#let compute-fill-paths(points, x, y) = {
+#let compute-fill-paths(points, axes) = {
+  let (x, y, ..) = axes
   clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
 }
 
@@ -344,15 +345,13 @@
       let other = axis-dict.at(equal-to, default: none)
       assert(other != none,
         message: "Other axis must exist.")
-      assert(other.horizontal != axis.horizontal,
-        message: "Equal axes must have opposing orientation.")
+      assert(axis.kind == "cartesian" and other.kind == "cartesian",
+        message: "Bothe axes must be cartesian.")
 
-      let (w, h) = plot-size
-      let ratio = if other.horizontal {
-        h / w
-      } else {
-        w / h
-      }
+      let dir = vector.sub(axis.target, axis.origin)
+      let other-dir = vector.sub(other.target, other.origin)
+      let ratio = vector.len(dir) / vector.len(other-dir)
+
       axis.min = other.min * ratio
       axis.max = other.max * ratio
 
@@ -369,4 +368,19 @@
   }
 
   return axis-dict
+}
+
+/// Tests if point pt is contained in the
+/// axis interval of each axis in axes
+/// - pt (list): Data array
+/// - axes (list): List of axes
+#let point-in-range(pt, axes) = {
+  for i in range(0, axes.len()) {
+    let a = axes.at(i)
+    let v = pt.at(i)
+    if v < a.min or v > a.max {
+      return false
+    }
+  }
+  return true
 }
