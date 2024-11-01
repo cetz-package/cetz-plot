@@ -1,0 +1,11 @@
+{
+	"build": { "dockerfile": "Dockerfile" },
+  
+	"customizations": {
+	  "vscode": {
+		"extensions": ["myriad-dreamin.tinymist"]
+	  }
+	},
+  
+	"forwardPorts": [3000]
+  }
