@@ -38,7 +38,7 @@
       target: target,
       min: none,
       max: none,
-      ticks: (step: auto, minor-step: none, format: none, list: ())
+      ticks: (step: auto, minor-step: none, format: "float", list: ())
     )
     ctx.axes.insert(name, axis)
     return ctx
@@ -296,13 +296,6 @@
       }
 
       ctx.axes.at(name) = axis
-    }
-  }
-
-  // Remove unused axes
-  for (k, v) in ctx.axes {
-    if not v.at("used", default: false) {
-      let _ = ctx.axes.remove(k)
     }
   }
 

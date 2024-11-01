@@ -136,6 +136,10 @@
     yb-min: -1.5, yb-max: .5,
     yt-min: -.5, yt-max: 1.5,
     {
+      plot.add-cartesian-axis("xl", (0, 0), (4, 0))
+      plot.add-cartesian-axis("xr", (0, 4), (4, 4))
+      plot.add-cartesian-axis("yt", (0, 0), (0, 4))
+      plot.add-cartesian-axis("yb", (4, 0), (4, 4))
       plot.add(circle-data)
       plot.add(circle-data, axes: ("xl", "y"), style: (stroke: green))
       plot.add(circle-data, axes: ("xr", "y"), style: (stroke: red))
@@ -155,6 +159,10 @@
     yb-min: -1.75, yb-max: .25,
     yt-min: -.25, yt-max: 1.75,
     {
+      plot.add-cartesian-axis("xl", (0, 0), (4, 0))
+      plot.add-cartesian-axis("xr", (0, 4), (4, 4))
+      plot.add-cartesian-axis("yt", (0, 0), (0, 4))
+      plot.add-cartesian-axis("yb", (4, 0), (4, 4))
       plot.add(circle-data)
       plot.add(circle-data, axes: ("xl", "y"), style: (stroke: green))
       plot.add(circle-data, axes: ("xr", "y"), style: (stroke: red))
