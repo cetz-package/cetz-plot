@@ -77,12 +77,15 @@
   data
 ) = {
 
+  // Convert the input data into a sanitized format so that it isn't needed
+  // to store those keys in the element dictionary
   let line-data = data.map(d=>(
     x: d.at(x-key), 
     y: d.at(y-key),
     style: if style-key != none {d.at(style-key, default: none)} else {style},
   ))
 
+  // Calculate the domains along both axes
   let x-domain = (
     calc.min(..line-data.map(t => t.x)),
     calc.max(..line-data.map(t => t.x))
@@ -94,7 +97,7 @@
   )}
 
   ((:
-    type: "comb",
+    type: "comb", // internal type indentifier
     label: label,
     data: line-data.map(((x, y,..))=>(x,y)), /* X-Y data */
     line-data: line-data, /* formatted data */
@@ -107,7 +110,6 @@
     mark-style: mark-style,
     plot-prepare: _prepare,
     plot-stroke: _stroke,
-    width: 0.5,
   ),)
 
 }
