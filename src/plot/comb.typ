@@ -3,23 +3,21 @@
 #import "line.typ"
 #import "annotation.typ"
 
+// Internal: This function takes the line-data (a sanitized input) and calculates
+//  which points should be visible, and if they are partially clipped, recalcuates
+//  positions
 #let _prepare(self, ctx) = {
   self.stroke-paths = self.line-data
-    .map(((x, y, s, ..)) => {
-        (
-          lines: util.compute-stroke-paths(
-            ((x, 0), (x,y)), 
-            ctx.axes
-          ),
-          style: s,
-        )
-        
-      })
+    .map(
+      ((x, y, style, ..)) => {(
+        lines: util.compute-stroke-paths( ((x, 0), (x,y)), ctx.axes),
+        style: style,
+      )})
   self
 }
 
-#let _fill(self, ctx) = {}
-
+// Visible: Draw the lines using the pre-calculated stroke paths from earlier.
+//  The overall style is first applied, and then overriden
 #let _stroke(self, ctx) = {
   for (lines, style) in self.stroke-paths {
     for p in lines {
@@ -28,15 +26,47 @@
   }
 }
 
-#let _legend-preview(self) = {
-  draw.line((0,.5), (1,.5), ..self.style)
-}
-
+/// Add a comb plot to a plot environment.
+///
+/// Must be called from the body of a `plot(..)` command.
+/// 
+/// #example(```
+///   let points = (
+///     (0,4), 
+///     (1,2), 
+///     (2,5, (stroke: red)), 
+///     (3,1), 
+///     (4,3)
+///   )
+///   plot.plot(size: (12, 3), y-min: 0, x-inset: 0.5, y-inset: (0,0.5), {
+///     plot.add-comb(
+///       points, 
+///       style-key: 2 // Indicate which key sfor tyle overrides (optional)
+///     )
+///   })
+///   ```, vertical: true)
+///
+/// - data (array,dictionary): Array of 2D data points (and optionally a style
+///   override)
+/// - x-key (int,string): Key to use for retrieving an x-value from 
+///   a single data entry. This value gets passed to the `.at(...)` 
+///   function of a data item. Resulting value must be a number.
+/// - y-key (int,string): Key to use for retrieving a 
+///   y-value. Resulting value must be a number.
+/// - style (style): Style to use, can be used with a `palette` function
+/// - style-key (int,string,none): Key to use for retrieving a `style` 
+///   with which to override the current style. Resulting value must 
+///   be either a `style` or `none`
+/// - mark (string): Mark symbol to place at each distinct value of the
+///   graph. Uses the `mark` style key of `style` for drawing.
+/// - mark-size (float): Mark size in cavas units
+/// - mark-style (style): Style override for marks.
+/// - axes (axes): Name of the axes to use for plotting. Reversing the axes
+///   means rotating the plot by 90 degrees
+/// - label (none, content): The name of the category to be shown in the legend.
 #let add-comb(
-  domain: auto,
-  mz-key: 0,
-  intensity-key: 1,
-  label-key: none,
+  x-key: 0,
+  y-key: 1,
   style-key: none,
   style: (:),
   mark: none,
@@ -44,44 +74,30 @@
   mark-style: (:),
   axes: ("x", "y"),
   label: none,
-  label-padding: none,
-  annotations: auto,
   data
 ) = {
 
   let line-data = data.map(d=>(
-    d.at(mz-key), 
-    d.at(intensity-key),
-    if style-key != none {d.at(style-key, default: none)} else {style}
+    x: d.at(x-key), 
+    y: d.at(y-key),
+    style: if style-key != none {d.at(style-key, default: none)} else {style},
   ))
 
   let x-domain = (
-    calc.min(..line-data.map(t => t.at(0))),
-    calc.max(..line-data.map(t => t.at(0)))
+    calc.min(..line-data.map(t => t.x)),
+    calc.max(..line-data.map(t => t.x))
   )
 
   let y-domain = if line-data != none {(
-    calc.min(..line-data.map(t => t.at(1))),
-    calc.max(..line-data.map(t => t.at(1)))
+    calc.min(..line-data.map(t => t.y)),
+    calc.max(..line-data.map(t => t.y))
   )}
-
-  let annotations = if annotations == auto {
-    if (label-key == none) {
-      ()
-    } else {
-      data.filter(it=>it.at(label-key, default: none) != none)
-    }
-  } else if annotations == none {
-    ()
-  } else {
-    annotations
-  }
 
   ((:
     type: "comb",
     label: label,
-    data: data, /* Raw data */
-    line-data: line-data, /* Transformed data */
+    data: line-data.map(((x, y,..))=>(x,y)), /* X-Y data */
+    line-data: line-data, /* formatted data */
     axes: axes,
     x-domain: x-domain,
     y-domain: y-domain,
@@ -90,23 +106,8 @@
     mark-size: mark-size,
     mark-style: mark-style,
     plot-prepare: _prepare,
-    plot-fill: _fill,
     plot-stroke: _stroke,
-    // plot-legend-preview: _legend-preview,
-    mz-key: mz-key,
-    intensity-key: intensity-key,
-    label-key: label-key,
     width: 0.5,
   ),)
-
-  for (x, y, a) in annotations {
-    annotation.annotate(
-      draw.content((x,y), [#a], anchor: "south"),
-      axes: ("x", "y"), 
-      resize: true, 
-      padding: none, 
-      background: false
-    )
-  }
 
 }
