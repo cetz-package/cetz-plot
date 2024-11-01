@@ -96,7 +96,7 @@
 /// - mark: (none,string): Legend mark symbol
 /// - mark-style: (none,dictionary): Mark style
 /// - mark-size: (number): Mark size
-/// - style (styles): Style keys for the single item
+/// - ..style (styles): Style keys for the single item
 #let item(label, preview, mark: none, mark-style: (:), mark-size: 1, ..style) = {
   assert.eq(style.pos().len(), 0,
     message: "Unexpected positional arguments")
@@ -217,8 +217,14 @@
 ///     If set to `auto`, a straight line is drawn.
 ///
 /// ```example
-/// add-legend([Custom item], preview _ => {
-///   draw.rect((0,0), (1,1)) // Draw a rect as preview
+/// plot.plot(size: (1,1), x-tick-step: none, y-tick-step: none, {
+///   plot.add(((0,0), (1,1))) // Some data
+///   plot.add-legend([Custom item], preview: () => {
+///     import cetz.draw: *
+///     circle((.5,.5), radius: .5) // Draw a custom preview
+///                                 // between (0,0) and (1,1)
+///   })
+///   plot.add-legend([Another item])
 /// })
 /// ```
 #let add-legend(label, preview: auto) = {
