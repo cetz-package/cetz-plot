@@ -152,11 +152,28 @@ Uniform marks across the series
     {
       plot.add-comb(
         label: "Linalool, 70eV",
-        // mark: "-",
+        mark: "o",
         mark-size: 0.2,
         data
       )
       // plot.add(domain: (0, 100), x=>x, mark: "x")
+    }
+  )
+})
+
+#test-case({
+  plot.plot(
+    size: (10,6), 
+    x-min: 10, x-max: 1000,
+    y-max: 100, y-tick-step: 20,
+    x-mode: "log", x-tick-step: 1, x-base: 10, x-format: "sci",
+    {
+      plot.add-comb(
+        label: "Linalool, 70eV",
+        mark: "x",
+        mark-size: 0.2,
+        data
+      )
     }
   )
 })
