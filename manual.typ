@@ -54,7 +54,8 @@ module imported into the namespace.
 = Plot
 
 #doc-style.parse-show-module("/src/plot.typ")
-#for m in ("line", "bar", "boxwhisker", "contour", "errorbar", "annotation", "formats", "violin", "legend") {
+
+#for m in ("line", "bar", "boxwhisker", "contour", "errorbar", "annotation", "formats", "violin", "comb", "legend") {
   doc-style.parse-show-module("/src/plot/" + m + ".typ")
 }
 
