@@ -1,4 +1,4 @@
-#import "/src/cetz.typ": draw
+#import "/src/cetz.typ": canvas, draw
 
 #import "util.typ"
 #import "sample.typ"
@@ -7,7 +7,7 @@
 //
 // - data (array): Data points
 // - line (str,dictionary): Line line
-#let transform-lines(data, line) = {
+#let _transform-lines(data, line) = {
   let hvh-data(t) = {
     if type(t) == ratio {
       t = t / 1%
@@ -48,8 +48,8 @@
     return util.linearized-data(data, line.at("epsilon", default: 0))
   } else if line-type == "spline" {
     return util.sampled-spline-data(data,
-                                    line.at("tension", default: .5),
-                                    line.at("samples", default: 15))
+      line.at("tension", default: .5),
+      line.at("samples", default: 15))
   } else if line-type == "vh" {
     return hvh-data(0)
   } else if line-type == "hv" {
@@ -62,7 +62,7 @@
 }
 
 // Fill a plot by generating a fill path to y value `to`
-#let fill-segments-to(segments, to) = {
+#let _fill-segments-to(segments, to) = {
   for s in segments {
     let low  = calc.min(..s.map(v => v.at(0)))
     let high = calc.max(..s.map(v => v.at(0)))
@@ -75,52 +75,9 @@
 }
 
 // Fill a shape by generating a fill path for each segment
-#let fill-shape(paths) = {
+#let _fill-shape(paths) = {
   for p in paths {
     draw.line(..p, stroke: none)
-  }
-}
-
-// Prepare line data
-#let _prepare(self, ctx) = {
-  // Generate stroke paths
-  self.stroke-paths = util.compute-stroke-paths(self.line-data, ctx.axes)
-
-  // Compute fill paths if filling is requested
-  self.hypograph = self.at("hypograph", default: false)
-  self.epigraph = self.at("epigraph", default: false)
-  self.fill = self.at("fill", default: false)
-  if self.hypograph or self.epigraph or self.fill {
-    self.fill-paths = util.compute-fill-paths(self.line-data, ctx.axes)
-  }
-
-  return self
-}
-
-// Stroke line data
-#let _stroke(self, ctx) = {
-  for p in self.stroke-paths {
-    draw.line(..p, fill: none)
-  }
-}
-
-// Fill line data
-#let _fill(self, ctx) = {
-  let (x, y, ..) = ctx.axes
-
-  if self.hypograph {
-    fill-segments-to(self.fill-paths, y.min)
-  }
-  if self.epigraph {
-    fill-segments-to(self.fill-paths, y.max)
-  }
-  if self.fill {
-    if self.at("fill-type", default: "axis") == "shape" {
-      fill-shape(self.fill-paths)
-    } else {
-      fill-segments-to(self.fill-paths,
-        calc.max(calc.min(y.max, 0), y.min))
-    }
   }
 }
 
@@ -219,7 +176,7 @@
   }
 
   // Transform data
-  let line-data = transform-lines(data, line)
+  let line-data = _transform-lines(data, line)
 
   // Get x-domain
   let x-domain = (
@@ -233,31 +190,54 @@
     calc.max(..line-data.map(t => t.at(1)))
   )}
 
-  ((
-    type: "line",
-    label: label,
-    data: data, /* Raw data */
-    line-data: line-data, /* Transformed data */
-    axes: axes,
-    x-domain: x-domain,
-    y-domain: y-domain,
-    epigraph: epigraph,
-    hypograph: hypograph,
-    fill: fill,
-    fill-type: fill-type,
-    style: style,
-    mark: mark,
-    mark-size: mark-size,
-    mark-style: mark-style,
-    plot-prepare: _prepare,
-    plot-stroke: _stroke,
-    plot-fill: _fill,
-    plot-legend-preview: self => {
-      if self.fill or self.epigraph or self.hypograph {
-        draw.rect((0,0), (1,1), ..self.style)
-      } else {
-        draw.line((0,.5), (1,.5), ..self.style)
-      }
+  return ((
+    priority: 0,
+    fn: ptx => {
+      ptx = util.set-auto-domain(ptx, axes, (x-domain, y-domain))
+
+      ptx.data.push((
+        label: label,
+        axes: axes,
+        fill: (ptx, proj) => {
+          let (x, y) = axes.map(name => ptx.axes.at(name))
+
+          if hypograph or epigraph or fill {
+            let (min-y, max-y) = proj((0, y.min), (0, y.max)).map(v => v.at(1))
+            let fill-paths = util.compute-fill-paths(line-data, (x, y))
+              .map(path => proj(..path))
+            if hypograph {
+              _fill-segments-to(fill-paths, min-y)
+            }
+            if epigraph {
+              _fill-segments-to(fill-paths, max-y)
+            }
+            if fill {
+              if fill-type == "shape" {
+                _fill-shape(fill-paths)
+              } else {
+                _fill-segments-to(fill-paths,
+                  calc.max(calc.min(max-y, 0), min-y))
+              }
+            }
+          }
+        },
+        stroke: (ptx, proj) => {
+          let (x, y) = axes.map(name => ptx.axes.at(name))
+
+          let stroke-paths = util.compute-stroke-paths(line-data, (x, y))
+            .map(path => proj(..path))
+          for path in stroke-paths {
+            draw.line(..path, fill: none)
+          }
+        },
+        preview: () => {
+          // TODO
+          draw.rect((0,0), (2,1.5))
+        },
+        style: style,
+      ))
+
+      return ptx
     }
   ),)
 }
@@ -290,37 +270,33 @@
          message: "Specify at least one y value")
   assert(y.named().len() == 0)
 
-  let prepare(self, ctx) = {
-    let (x, y, ..) = ctx.axes
-    let (x-min, x-max) = (x.min, x.max)
-    let (y-min, y-max) = (y.min, y.max)
-    let x-min = if min == auto { x-min } else { min }
-    let x-max = if max == auto { x-max } else { max }
+  return ((
+    priority: 0,
+    fn: ptx => {
+      let pts = y.pos()
 
-    self.lines = self.y.filter(y => y >= y-min and y <= y-max)
-      .map(y => ((x-min, y), (x-max, y)))
-    return self
-  }
+      ptx.data.push((
+        label: label,
+        axes: axes,
+        fill: (ptx, proj) => {
+        },
+        stroke: (ptx, proj) => {
+          let (x, y) = axes.map(name => ptx.axes.at(name))
 
-  let stroke(self, ctx) = {
-    for (a, b) in self.lines {
-      draw.line(a, b, fill: none)
+          let min = if min == auto { x.min } else { min }
+          let max = if max == auto { x.max } else { max }
+          for pt in pts.filter(v => y.min <= v and v <= y.max) {
+            draw.line(..proj((min, pt), (max, pt)))
+          }
+        },
+        preview: () => {
+          // TODO
+        },
+        style: style,
+      ))
+
+      return ptx
     }
-  }
-
-  let x-min = if min == auto { none } else { min }
-  let x-max = if max == auto { none } else { max }
-
-  ((
-    type: "hline",
-    label: label,
-    y: y.pos(),
-    x-domain: (x-min, x-max),
-    y-domain: (calc.min(..y.pos()), calc.max(..y.pos())),
-    axes: axes,
-    style: style,
-    plot-prepare: prepare,
-    plot-stroke: stroke,
   ),)
 }
 
@@ -353,37 +329,33 @@
          message: "Specify at least one x value")
   assert(x.named().len() == 0)
 
-  let prepare(self, ctx) = {
-    let (x, y, ..) = ctx.axes
-    let (x-min, x-max) = (x.min, x.max)
-    let (y-min, y-max) = (y.min, y.max)
-    let y-min = if min == auto { y-min } else { min }
-    let y-max = if max == auto { y-max } else { max }
+  return ((
+    priority: 0,
+    fn: ptx => {
+      let pts = x.pos()
 
-    self.lines = self.x.filter(x => x >= x-min and x <= x-max)
-      .map(x => ((x, y-min), (x, y-max)))
-    return self
-  }
+      ptx.data.push((
+        label: label,
+        axes: axes,
+        fill: (ptx, proj) => {
+        },
+        stroke: (ptx, proj) => {
+          let (x, y) = axes.map(name => ptx.axes.at(name))
 
-  let stroke(self, ctx) = {
-    for (a, b) in self.lines {
-      draw.line(a, b, fill: none)
+          let min = if min == auto { y.min } else { min }
+          let max = if max == auto { y.max } else { max }
+          for pt in pts.filter(v => x.min <= v and v <= x.max) {
+            draw.line(..proj((pt, min), (pt, max)))
+          }
+        },
+        preview: () => {
+          // TODO
+        },
+        style: style,
+      ))
+
+      return ptx
     }
-  }
-
-  let y-min = if min == auto { none } else { min }
-  let y-max = if max == auto { none } else { max }
-
-  ((
-    type: "vline",
-    label: label,
-    x: x.pos(),
-    x-domain: (calc.min(..x.pos()), calc.max(..x.pos())),
-    y-domain: (y-min, y-max),
-    axes: axes,
-    style: style,
-    plot-prepare: prepare,
-    plot-stroke: stroke
   ),)
 }
 
@@ -433,8 +405,8 @@
   }
 
   // Transform data
-  let line-a-data = transform-lines(data-a, line)
-  let line-b-data = transform-lines(data-b, line)
+  let line-a-data = _transform-lines(data-a, line)
+  let line-b-data = _transform-lines(data-b, line)
 
   // Get x-domain
   let x-domain = (
@@ -475,7 +447,7 @@
   }
 
   let fill(self, ctx) = {
-    fill-shape(self.fill-paths)
+    _fill-shape(self.fill-paths)
   }
 
   ((

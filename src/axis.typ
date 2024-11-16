@@ -1,9 +1,11 @@
+#import "/src/ticks.typ"
+#import "/src/plot/util.typ"
 
 /// Transform linear axis value to linear space (low, high)
 #let _transform-lin(ax, value, low, high) = {
   let range = high - low
 
-  return (value - ax.low) * (range / (ax.high - ax.low))
+  return low + (value - ax.min) * (range / (ax.max - ax.min))
 }
 
 /// Transform log axis value to linear space (low, high)
@@ -14,16 +16,36 @@
     calc.log(calc.max(x, util.float-epsilon), base: ax.base)
   }
 
-  return (value - f(ax.low)) * (range / (f(ax.high) - f(ax.low)))
+  return low + (f(value) - f(ax.min)) * (range / (f(ax.max) - f(ax.min)))
 }
 
-#let linear(low, high) = (
-  low: low, high: high, transform: _transform-lin,
+/// Linear Axis Constructor
+#let linear(name, min, max) = (
+  label: [#name],
+  name: name, min: min, max: max, base: 10, transform: _transform-lin,
+  auto-domain: (none, none),
+  ticks: (step: auto, minor-step: none, format: auto, list: none),
+  grid: none,
+  compute-ticks: ticks.compute-ticks.with("lin"),
 )
 
-#let logarithmic(low, high, base) = (
-  low: low, high: high, base: base, transform: _transform-log,
+/// Log Axis Constructor
+#let logarithmic(name, min, max, base) = (
+  label: [#name],
+  name: name, min: min, max: max, base: base, transform: _transform-log,
+  auto-domain: (none, none),
+  ticks: (step: auto, minor-step: none, format: auto, list: none),
+  grid: none,
+  compute-ticks: ticks.compute-ticks.with("log"),
 )
+
+// Prepare axis
+#let prepare(ptx, ax) = {
+  if ax.min == none { ax.min = ax.auto-domain.at(0) }
+  if ax.max == none { ax.max = ax.auto-domain.at(1) }
+  if "compute-ticks" in ax { ax.computed-ticks = (ax.compute-ticks)(ax) }
+  return ax
+}
 
 /// Transform an axis value to a linear value between low and high
 /// - ax (axis): Axis
