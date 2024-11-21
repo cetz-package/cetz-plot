@@ -61,6 +61,6 @@ module imported into the namespace.
 = Chart
 
 #doc-style.parse-show-module("/src/chart.typ")
-#for m in ("barchart", "boxwhisker", "columnchart", "piechart") {
+#for m in ("barchart", "boxwhisker", "columnchart", "piechart", "pyramid") {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }

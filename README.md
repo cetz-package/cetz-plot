@@ -28,6 +28,15 @@ CeTZ-Plot requires CeTZ version ≥ 0.3.1!
   <td>Pie Chart</td>
   <td>Clustered Barchart</td>
 </tr>
+<tr>
+  <td>
+    <a href="gallery/pyramid.typ">
+      <img src="gallery/pyramid.png" width="250px">
+    </a>
+  </td>
+</tr><tr>
+  <td>Pyramid</td>
+</tr>
 </table>
 
 *Click on the example image to jump to the code.*
