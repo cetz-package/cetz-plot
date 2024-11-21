@@ -1,6 +1,6 @@
 #import "/src/cetz.typ": draw, styles, palette, coordinate
 
-// Piechart Label Kind
+// Pyramid Chart Label Kind
 #let label-kind = (value: "VALUE", percentage: "%", label: "LABEL")
 
 // Pyramid Chart Default Style
