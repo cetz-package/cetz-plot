@@ -8,18 +8,24 @@
 /// - fn (function): Function to sample of the form `(x) => y` or `(t) => (x, y)`, where
 ///   `x` or `t` are `float` values within the domain specified by `domain`.
 /// - domain (domain): Domain of `fn` used as bounding interval for the sampling points.
-/// - samples (int): Number of samples in domain.
+/// - samples (int,str): Number of samples in domain or "INT" to use $"diam"("domain")$
+///                      number of samples (passed as int).
 /// - sample-at (array): List of x values the function gets sampled at in addition
 ///                      to the `samples` number of samples. Values outsides the
 ///                      specified domain are legal.
 /// -> array: Array of (x, y) tuples
 #let sample-fn(fn, domain, samples, sample-at: ()) = {
-  assert(samples + sample-at.len() >= 2,
-    message: "You must at least sample 2 values")
   assert(type(domain) == array and domain.len() == 2,
     message: "Domain must be a tuple")
 
   let (lo, hi) = domain
+  if samples in ("int", "INT") {
+    samples = hi - lo + 1
+    fn = n => { fn(int(n)) }
+  }
+
+  assert(samples + sample-at.len() >= 2,
+    message: "You must at least sample 2 values")
 
   let y0 = (fn)(lo)
   let is-vector = type(y0) == array
@@ -28,6 +34,7 @@
   } else {
     y0 = (y0, )
   }
+
 
   let pts = sample-at + range(0, samples).map(t => lo + t / (samples - 1) * (hi - lo))
   pts = pts.sorted()
