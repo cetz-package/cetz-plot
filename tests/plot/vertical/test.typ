@@ -6,8 +6,7 @@
 #test-case({
   import draw: *
 
-  plot.plot(size: (10, 10),
-  {
+  plot.plot(size: (10, 10), {
     plot.add(domain: (0, 4*calc.pi), calc.sin, axes: ("y", "x"), mark: "+")
   })
 })
@@ -15,8 +14,7 @@
 #test-case({
   import draw: *
 
-  plot.plot(size: (10, 10),
-  {
+  plot.plot(size: (10, 10), {
     plot.add-contour(x-domain: (0, 4), y-domain: (-2, 2),
       (x, y) => x - .5 * y, op: ">=", z: 2, axes: ("y", "x"), fill: true)
   })

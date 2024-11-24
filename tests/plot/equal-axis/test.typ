@@ -10,9 +10,10 @@
     x-tick-step: none,
     y-tick-step: none,
     x-equal: "y",
-    a-equal: "b",
-    b-horizontal: true,
+    b-equal: "a",
   {
+    plot.add-cartesian-axis("a", (0,0), (6,0))
+    plot.add-cartesian-axis("b", (0,0), (0,3))
     plot.add(domain: (0, 2 * calc.pi), t => (calc.cos(t), calc.sin(t)))
     plot.add(domain: (0, 2 * calc.pi), t => (calc.cos(t), calc.sin(t)),
       axes: ("a", "b"))
@@ -26,9 +27,10 @@
     x-tick-step: none,
     y-tick-step: none,
     x-equal: "y",
-    a-equal: "b",
-    b-horizontal: true,
+    b-equal: "a",
   {
+    plot.add-cartesian-axis("a", (0,0), (3,0))
+    plot.add-cartesian-axis("b", (0,0), (0,6))
     plot.add(domain: (0, 2 * calc.pi), t => (calc.cos(t), calc.sin(t)))
     plot.add(domain: (0, 2 * calc.pi), t => (calc.cos(t), calc.sin(t)),
       axes: ("a", "b"))

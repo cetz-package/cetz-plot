@@ -1,5 +1,6 @@
 #import "/src/cetz.typ"
 #import cetz.util: bezier
+#import cetz: vector
 
 /// Clip line-strip in rect
 ///
@@ -173,20 +174,20 @@
 /// Compute clipped stroke paths
 ///
 /// - points (array): X/Y data points
-/// - x (axis): X-Axis
-/// - y (axis): Y-Axis
+/// - axes (list): List of axes
 /// -> array List of stroke paths
-#let compute-stroke-paths(points, x, y) = {
+#let compute-stroke-paths(points, axes) = {
+  let (x, y, ..) = axes
   clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: false)
 }
 
 /// Compute clipped fill path
 ///
 /// - points (array): X/Y data points
-/// - x (axis): X-Axis
-/// - y (axis): Y-Axis
+/// - axes (list): List of axes
 /// -> array List of fill paths
-#let compute-fill-paths(points, x, y) = {
+#let compute-fill-paths(points, axes) = {
+  let (x, y, ..) = axes
   clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
 }
 
@@ -289,16 +290,22 @@
   }
 
   for (name, axis) in axis-dict {
+    let used = axis.at("used", default: false)
+
     if not "ticks" in axis { axis.ticks = () }
-    axis.label = get-axis-option(name, "label", $#name$)
+    axis.label = get-axis-option(name, "label", if used { $#name$ } else { axis.at("label", default: none) })
 
     // Configure axis bounds
     axis.min = get-axis-option(name, "min", axis.min)
     axis.max = get-axis-option(name, "max", axis.max)
 
-    assert(axis.min not in (none, auto) and
-           axis.max not in (none, auto),
-      message: "Axis min and max must be set.")
+    if axis.min == none {
+      axis.min = 0
+      axis.ticks.step = none
+      axis.ticks.minor-step = none
+      axis.ticks.format = none
+    }
+    if axis.max == none { axis.max = axis.min }
     if axis.min == axis.max {
       axis.min -= 1; axis.max += 1
     }
@@ -344,15 +351,13 @@
       let other = axis-dict.at(equal-to, default: none)
       assert(other != none,
         message: "Other axis must exist.")
-      assert(other.horizontal != axis.horizontal,
-        message: "Equal axes must have opposing orientation.")
+      assert(axis.kind == "cartesian" and other.kind == "cartesian",
+        message: "Bothe axes must be cartesian.")
 
-      let (w, h) = plot-size
-      let ratio = if other.horizontal {
-        h / w
-      } else {
-        w / h
-      }
+      let dir = vector.sub(axis.target, axis.origin)
+      let other-dir = vector.sub(other.target, other.origin)
+      let ratio = vector.len(dir) / vector.len(other-dir)
+
       axis.min = other.min * ratio
       axis.max = other.max * ratio
 
@@ -369,4 +374,19 @@
   }
 
   return axis-dict
+}
+
+/// Tests if point pt is contained in the
+/// axis interval of each axis in axes
+/// - pt (list): Data array
+/// - axes (list): List of axes
+#let point-in-range(pt, axes) = {
+  for i in range(0, axes.len()) {
+    let a = axes.at(i)
+    let v = pt.at(i)
+    if v < a.min or v > a.max {
+      return false
+    }
+  }
+  return true
 }

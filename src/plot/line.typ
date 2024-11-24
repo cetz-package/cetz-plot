@@ -83,17 +83,15 @@
 
 // Prepare line data
 #let _prepare(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
   // Generate stroke paths
-  self.stroke-paths = util.compute-stroke-paths(self.line-data, x, y)
+  self.stroke-paths = util.compute-stroke-paths(self.line-data, ctx.axes)
 
   // Compute fill paths if filling is requested
   self.hypograph = self.at("hypograph", default: false)
   self.epigraph = self.at("epigraph", default: false)
   self.fill = self.at("fill", default: false)
   if self.hypograph or self.epigraph or self.fill {
-    self.fill-paths = util.compute-fill-paths(self.line-data, x, y)
+    self.fill-paths = util.compute-fill-paths(self.line-data, ctx.axes)
   }
 
   return self
@@ -101,8 +99,6 @@
 
 // Stroke line data
 #let _stroke(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
-
   for p in self.stroke-paths {
     draw.line(..p, fill: none)
   }
@@ -110,7 +106,7 @@
 
 // Fill line data
 #let _fill(self, ctx) = {
-  let (x, y) = (ctx.x, ctx.y)
+  let (x, y, ..) = ctx.axes
 
   if self.hypograph {
     fill-segments-to(self.fill-paths, y.min)
@@ -295,8 +291,9 @@
   assert(y.named().len() == 0)
 
   let prepare(self, ctx) = {
-    let (x-min, x-max) = (ctx.x.min, ctx.x.max)
-    let (y-min, y-max) = (ctx.y.min, ctx.y.max)
+    let (x, y, ..) = ctx.axes
+    let (x-min, x-max) = (x.min, x.max)
+    let (y-min, y-max) = (y.min, y.max)
     let x-min = if min == auto { x-min } else { min }
     let x-max = if max == auto { x-max } else { max }
 
@@ -357,8 +354,9 @@
   assert(x.named().len() == 0)
 
   let prepare(self, ctx) = {
-    let (x-min, x-max) = (ctx.x.min, ctx.x.max)
-    let (y-min, y-max) = (ctx.y.min, ctx.y.max)
+    let (x, y, ..) = ctx.axes
+    let (x-min, x-max) = (x.min, x.max)
+    let (y-min, y-max) = (y.min, y.max)
     let y-min = if min == auto { y-min } else { min }
     let y-max = if max == auto { y-max } else { max }
 
@@ -455,16 +453,14 @@
   )}
 
   let prepare(self, ctx) = {
-    let (x, y) = (ctx.x, ctx.y)
-
     // Generate stroke paths
     self.stroke-paths = (
-      a: util.compute-stroke-paths(self.line-data.a, x, y),
-      b: util.compute-stroke-paths(self.line-data.b, x, y),
+      a: util.compute-stroke-paths(self.line-data.a, ctx.axes),
+      b: util.compute-stroke-paths(self.line-data.b, ctx.axes),
     )
 
     // Generate fill paths
-    self.fill-paths = util.compute-fill-paths(self.line-data.a + self.line-data.b.rev(), x, y)
+    self.fill-paths = util.compute-fill-paths(self.line-data.a + self.line-data.b.rev(), ctx.axes)
 
     return self
   }

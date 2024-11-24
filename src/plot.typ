@@ -12,6 +12,7 @@
 #import "/src/plot/bar.typ": add-bar
 #import "/src/plot/errorbar.typ": add-errorbar
 #import "/src/plot/mark.typ"
+#import "/src/plot/comb.typ": add-comb
 #import "/src/plot/violin.typ": add-violin
 #import "/src/plot/formats.typ"
 #import plot-legend: add-legend
@@ -26,6 +27,23 @@
 
 #let default-mark-style(i) = {
   return default-plot-style(i)
+}
+
+/// Add a cartesian axis to a plot
+#let add-cartesian-axis(name, origin, target) = {
+  ((type: "context", fn: (ctx) => {
+    let axis = (
+      name: name,
+      kind: "cartesian",
+      origin: origin,
+      target: target,
+      min: none,
+      max: none,
+      ticks: (step: auto, minor-step: none, format: "float", list: ())
+    )
+    ctx.axes.insert(name, axis)
+    return ctx
+  }),)
 }
 
 /// Create a plot environment. Data to be plotted is given by passing it to the
@@ -54,8 +72,7 @@
 /// #show-parameter-block("max", ("auto", "float"), default: "auto", [
 ///   Axis upper domain value. If this is set to a lower value than `min`, the axis' direction is swapped])
 /// #show-parameter-block("equal", ("string"), default: "none", [
-///   Set the axis domain to keep a fixed aspect ratio by multiplying the other axis domain by the plots aspect ratio,
-///   depending on the other axis orientation (see `horizontal`).
+///   Set the axis domain to keep a fixed aspect ratio by multiplying the other axis domain by the plots aspect ratio.
 ///   This can be useful to force one axis to grow or shrink with another one.
 ///   You can only "lock" two axes of different orientations.
 ///   #example(```
@@ -66,12 +83,6 @@
 ///       t => (calc.cos(t), calc.sin(t)))
 ///   })
 ///   ```)
-/// ])
-/// #show-parameter-block("horizontal", ("bool"), default: "axis name dependant", [
-///   If true, the axis is considered an axis that gets drawn horizontally, vertically otherwise.
-///   The default value depends on the axis name on axis creation. Axes which name start with `x` have this
-///   set to `true`, all others have it set to `false`. Each plot has to use one horizontal and one
-///   vertical axis for plotting, a combination of two y-axes will panic: ("y", "y2").
 /// ])
 /// #show-parameter-block("tick-step", ("none", "auto", "float"), default: "auto", [
 ///   The increment between tick marks on the axis. If set to `auto`, an
@@ -203,45 +214,45 @@
           legend-anchor: auto,
           legend-style: (:),
           ..options
-          ) = draw.group(name: name, ctx => {
+          ) = draw.group(name: name, cetz-ctx => {
   draw.assert-version(version(0, 3, 1))
 
+  // Plot local context
+  let ctx = (
+    origin: (0, 0),
+    size: size,
+    axes: (:)
+  )
+
+  // Setup default axes
+  let default-axes = (
+    if axis-style in (none, "scientific", "scientific-auto") {
+      add-cartesian-axis("x",  (0,0), (size.at(0),0))
+      add-cartesian-axis("x2", (0,size.at(1)), (size.at(0),size.at(1)))
+      add-cartesian-axis("y",  (0,0), (0,size.at(1)))
+      add-cartesian-axis("y2", (size.at(0),0), (size.at(0),size.at(1)))
+    } else if axis-style in ("school-book", "left") {
+      add-cartesian-axis("x",  (0,0), (size.at(0),0))
+      add-cartesian-axis("y",  (0,0), (0,size.at(1)))
+    }
+  )
+
+  let body = default-axes + body
+
   // Create plot context object
-  let make-ctx(x, y, size) = {
-    assert(x != none, message: "X axis does not exist")
-    assert(y != none, message: "Y axis does not exist")
+  let make-ctx(axes, size) = {
+    assert(axes.len() >= 1, message: "At least one axis must exist")
     assert(size.at(0) > 0 and size.at(1) > 0, message: "Plot size must be > 0")
 
-    let x-scale =  ((x.max - x.min) / size.at(0))
-    let y-scale =  ((y.max - y.min) / size.at(1))
-
-    if y.horizontal {
-      (x-scale, y-scale) = (y-scale, x-scale)
-    }
-
-    return (x: x, y: y, size: size, x-scale: x-scale, y-scale: y-scale)
+    return (axes: axes, size: size)
   }
 
   // Setup data viewport
-  let data-viewport(data, x, y, size, body, name: none) = {
+  let data-viewport(data, all-axes, body, name: none) = {
     if body == none or body == () { return }
 
-    assert.ne(x.horizontal, y.horizontal,
-      message: "Data must use one horizontal and one vertical axis!")
-
-    // If y is the horizontal axis, swap x and y
-    // coordinates by swapping the transformation
-    // matrix columns.
-    if y.horizontal {
-      (x, y) = (y, x)
-      body = draw.set-ctx(ctx => {
-        ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
-        return ctx
-      }) + body
-    }
-
     // Setup the viewport
-    axes.axis-viewport(size, x, y, none, body, name: name)
+    axes.axis-viewport(all-axes, body, name: name)
   }
 
   let data = ()
@@ -256,24 +267,25 @@
       anchors.push(cmd)
     } else if cmd.type == "annotation" {
       annotations.push(cmd)
+    } else if cmd.type == "context" {
+      ctx = (cmd.fn)(ctx)
     } else { data.push(cmd) }
   }
 
   assert(axis-style in (none, "scientific", "scientific-auto", "school-book", "left"),
     message: "Invalid plot style")
 
+
   // Create axes for data & annotations
-  let axis-dict = (:)
   for d in data + annotations {
     if "axes" not in d { continue }
 
     for (i, name) in d.axes.enumerate() {
-      if not name in axis-dict {
-        axis-dict.insert(name, axes.axis(
-          min: none, max: none))
-      }
+      assert(name in ctx.axes, message: "Undefined axis " + name)
 
-      let axis = axis-dict.at(name)
+      let axis = ctx.axes.at(name)
+      axis.used = true
+
       let domain = if i == 0 {
         d.at("x-domain", default: (none, none))
       } else {
@@ -284,29 +296,12 @@
         axis.max = util.max(axis.max, ..domain)
       }
 
-      axis-dict.at(name) = axis
+      ctx.axes.at(name) = axis
     }
-  }
-
-  // Create axes for anchors
-  for a in anchors {
-    for (i, name) in a.axes.enumerate() {
-      if not name in axis-dict {
-        axis-dict.insert(name, axes.axis(min: none, max: none))
-      }
-    }
-  }
-
-  // Adjust axis bounds for annotations
-  for a in annotations {
-    let (x, y) = a.axes.map(name => axis-dict.at(name))
-    (x, y) = calc-annotation-domain(ctx, x, y, a)
-    axis-dict.at(a.axes.at(0)) = x
-    axis-dict.at(a.axes.at(1)) = y
   }
 
   // Set axis options
-  axis-dict = plot-util.setup-axes(ctx, axis-dict, options.named(), size)
+  ctx.axes = plot-util.setup-axes(cetz-ctx, ctx.axes, options.named(), size)
 
   // Prepare styles
   for i in range(data.len()) {
@@ -356,8 +351,7 @@
     for i in range(data.len()) {
       if "axes" not in data.at(i) { continue }
 
-      let (x, y) = data.at(i).axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(x, y, size)
+      let plot-ctx = make-ctx(data.at(i).axes.map(name => ctx.axes.at(name)), size)
 
       if "plot-prepare" in data.at(i) {
         data.at(i) = (data.at(i).plot-prepare)(data.at(i), plot-ctx)
@@ -368,10 +362,9 @@
 
     // Background Annotations
     for a in annotations.filter(a => a.background) {
-      let (x, y) = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(x, y, size)
+      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
 
-      data-viewport(a, x, y, size, {
+      data-viewport(a, plot-ctx.axes, {
         draw.anchor("default", (0, 0))
         a.body
       })
@@ -382,10 +375,9 @@
       for d in data {
         if "axes" not in d { continue }
 
-        let (x, y) = d.axes.map(name => axis-dict.at(name))
-        let plot-ctx = make-ctx(x, y, size)
+        let plot-ctx = make-ctx(d.axes.map(name => ctx.axes.at(name)), size)
 
-        data-viewport(d, x, y, size, {
+        data-viewport(d, plot-ctx.axes, {
           draw.anchor("default", (0, 0))
           draw.set-style(..d.style)
 
@@ -412,32 +404,31 @@
       axes.scientific(
         size: size,
         draw-unset: draw-unset,
-        bottom: axis-dict.at("x", default: none),
-        top: axis-dict.at("x2", default: mirror),
-        left: axis-dict.at("y", default: none),
-        right: axis-dict.at("y2", default: mirror),)
+        bottom: ctx.axes.at("x", default: none),
+        top: ctx.axes.at("x2", default: mirror),
+        left: ctx.axes.at("y", default: none),
+        right: ctx.axes.at("y2", default: mirror),)
     } else if axis-style == "left" {
       axes.school-book(
         size: size,
-        axis-dict.x,
-        axis-dict.y,
-        x-position: axis-dict.y.min,
-        y-position: axis-dict.x.min)
+        ctx.axes.x,
+        ctx.axes.y,
+        x-position: ctx.axes.y.min,
+        y-position: ctx.axes.x.min)
     } else if axis-style == "school-book" {
       axes.school-book(
         size: size,
-        axis-dict.x,
-        axis-dict.y,)
+        ctx.axes.x,
+        ctx.axes.y,)
     }
 
     // Stroke + Mark data
     for d in data {
       if "axes" not in d { continue }
 
-      let (x, y) = d.axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(x, y, size)
+      let plot-ctx = make-ctx(d.axes.map(name => ctx.axes.at(name)), size)
 
-      data-viewport(d, x, y, size, {
+      data-viewport(d, plot-ctx.axes, {
         draw.anchor("default", (0, 0))
         draw.set-style(..d.style)
 
@@ -451,25 +442,17 @@
 
       if "mark" in d and d.mark != none {
         draw.scope({
-          if y.horizontal {
-            draw.set-ctx(ctx => {
-              ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
-              return ctx
-            })
-          }
-
           draw.set-style(..d.style, ..d.mark-style)
-          mark.draw-mark(d.data, x, y, d.mark, d.mark-size, size)
+          mark.draw-mark(d.data, plot-ctx.axes, d.mark, d.mark-size)
         })
       }
     }
 
     // Foreground Annotations
     for a in annotations.filter(a => not a.background) {
-      let (x, y) = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(x, y, size)
+      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
 
-      data-viewport(a, x, y, size, {
+      data-viewport(a, plot-ctx.axes, {
         draw.anchor("default", (0, 0))
         a.body
       })
@@ -477,15 +460,14 @@
 
     // Place anchors
     for a in anchors {
-      let (x, y) = a.axes.map(name => axis-dict.at(name))
-      let plot-ctx = make-ctx(x, y, size)
+      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
 
       let pt = a.position.enumerate().map(((i, v)) => {
-        if v == "min" { return axis-dict.at(a.axes.at(i)).min }
-        if v == "max" { return axis-dict.at(a.axes.at(i)).max }
+        if v == "min" { return plot-ctx.axes.at(i).min }
+        if v == "max" { return plot-ctx.axes.at(i).max }
         return v
       })
-      pt = axes.transform-vec(size, x, y, none, pt)
+      pt = axes.transform-vec(plot-ctx.axes, pt)
       if pt != none {
         draw.anchor(a.name, pt)
       }
@@ -496,7 +478,7 @@
   if legend != none {
     let items = data.filter(d => "label" in d and d.label != none)
     if items.len() > 0 {
-      let legend-style = styles.resolve(ctx.style,
+      let legend-style = styles.resolve(cetz-ctx.style,
         base: plot-legend.default-style, merge: legend-style, root: "legend")
 
       plot-legend.add-legend-anchors(legend-style, "plot", size)
