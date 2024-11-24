@@ -1,8 +1,9 @@
+#import "/src/cetz.typ": vector
 
-/// Create a new cartesian projection between two vectors, low and high
+/// Create a new cartesian projection
 ///
-/// - low (vector): Low vector
-/// - high (vector): High vector
+/// - low (vector): Lower viewport corner
+/// - high (vector): Upper viewport corner
 /// - axes (list): List of axes
 /// -> function Transformation for one or more vectors
 #let cartesian(low, high, axes) = {
@@ -23,19 +24,27 @@
   )
 }
 
-/// - center (vector): Center vector
+/// Create a new polar projection
+///
+/// - low (vector): Lower viewport corner
+/// - high (vector): Upper viewport corner
 /// - start (angle): Start angle (0deg for full circle)
 /// - stop (angle): Stop angle (360deg for full circle)
-/// - theta (axis): Theta axis
-/// - r (axis): R axis
+/// - axes (list): Axis array (angular, distal)
 /// -> function Transformation for one or more vectors
-#let polar(center, radius, start, stop, theta, r) = {
+#let polar(low, high, (angular, distal, ..), start: 0deg, stop: 360deg) = {
+  let center = vector.lerp(low, high, .5)
+  let radius = calc.min(..vector.sub(high, low).slice(0, 2)) / 2
+
   return (
-    axes: axes,
+    axes: (angular, distal),
     transform: (..v) => {
-      let v = v.pos()
-      // TODO
-      return v
+      return v.pos().map(v => {
+        let theta = (angular.transform)(angular, v.at(0), start, stop)
+        let r = (distal.transform)(distal, v.at(1), 0, radius)
+
+        vector.add(center, (calc.cos(theta) * r, calc.sin(theta) * r, 0))
+      })
     },
   )
 }

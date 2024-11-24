@@ -20,6 +20,10 @@
     } else {
       max = calc.max(max, dom.at(i).at(1))
     }
+    if min == max {
+      min -= float-epsilon
+      max += float-epsilon
+    }
     ptx.axes.at(ax.name).auto-domain = (min, max)
   }
   return ptx

@@ -106,6 +106,14 @@
       ),
     ),
   ),
+  distal: (
+    tick: (
+      flip: true,
+      label: (
+        anchor: "east",
+      )
+    )
+  ),
 )
 
 /// Default schoolbook style
@@ -160,9 +168,9 @@
 
 
 ///
-#let cartesian-scientific(projections: none, style: (:)) = {
+#let cartesian-scientific(projections: none, name: none, style: (:)) = {
   return (
-    name: none,
+    name: name,
     draw: (ptx) => {
       let proj = projections.at(0)
       let axes = proj.axes
@@ -224,9 +232,9 @@
 }
 
 ///
-#let schoolbook(projections: none, zero: (0, 0), ..style) = {
+#let schoolbook(projections: none, name: none, zero: (0, 0), ..style) = {
   return (
-    name: none,
+    name: name,
     draw: (ptx) => {
       let proj = projections.at(0)
       let axes = proj.axes
@@ -286,5 +294,43 @@
         ticks.draw-cartesian(min-y, max-y, y.computed-ticks, y-style)
       }
     }
+  )
+}
+
+/// Polar frame
+#let polar(projections: none, name: none, ..style) = {
+  assert(projections.len() == 1,
+    message: "Unexpected number of projections!")
+
+  return (
+    name: name,
+    draw: (ptx) => {
+      let proj = projections.first()
+      let angular = proj.axes.at(0)
+      let distal = proj.axes.at(1)
+
+      let (origin, outer) = (proj.transform)((0, distal.min), (0, distal.max))
+      let radius = vector.dist(origin, outer)
+
+      let style = _prepare-style(ptx, cetz.styles.resolve(ptx.cetz-ctx.style,
+        root: "axes", merge: style.named(), base: default-style))
+      let angular-style = _get-axis-style(ptx, style, "angular")
+      let distal-style = _get-axis-style(ptx, style, "distal")
+
+      let r-start = origin
+      let r-end = vector.add(origin, (0, radius))
+      draw.line(r-start, r-end, stroke: distal-style.stroke)
+      if "computed-ticks" in distal {
+        //ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
+        ticks.draw-cartesian(r-start, r-end, distal.computed-ticks, distal-style)
+      }
+
+      let padding = angular-style.padding.first()
+      draw.circle(origin, radius: radius + padding,
+        stroke: angular-style.stroke)
+      if "computed-ticks" in angular {
+        // TODO
+      }
+    },
   )
 }
