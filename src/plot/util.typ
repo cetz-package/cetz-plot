@@ -204,8 +204,24 @@
 /// - axes (list): List of axes
 /// -> array List of stroke paths
 #let compute-stroke-paths(points, axes) = {
+  if not axes.any(ax => ax.at("clip", default: true)) {
+    return (points,)
+  }
+
   let (x, y, ..) = axes
-  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: false)
+  let (x-min, x-max) = if x.at("clip", default: true) {
+    (x.min, x.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  let (y-min, y-max) = if y.at("clip", default: true) {
+    (y.min, y.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  clipped-paths(points, (x-min, y-min), (x-max, y-max), fill: false)
 }
 
 /// Compute clipped fill path
@@ -214,7 +230,23 @@
 /// - axes (list): List of axes
 /// -> array List of fill paths
 #let compute-fill-paths(points, axes) = {
+  if not axes.any(ax => ax.at("clip", default: true)) {
+    return (points,)
+  }
+
   let (x, y, ..) = axes
+  let (x-min, x-max) = if x.at("clip", default: true) {
+    (x.min, x.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  let (y-min, y-max) = if y.at("clip", default: true) {
+    (y.min, y.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
   clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
 }
 
@@ -354,6 +386,7 @@
   for (name, ax) in axes {
     ax.min = get-opt(name, "min", ax.min)
     ax.max = get-opt(name, "max", ax.max)
+    ax.clip = get-opt(name, "clip", ax.at("clip", default: true))
     ax.label = get-opt(name, "label", ax.label)
     ax.transform = get-opt(name, "transform", ax.transform)
     ax.ticks.list = get-opt(name, "list", ax.ticks.list)

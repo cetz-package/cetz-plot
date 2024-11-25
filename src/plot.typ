@@ -39,9 +39,9 @@
 /// - name (str): Axis name
 /// - min: (none, float): Minimum
 /// - max: (none, float): Maximum
-#let lin-axis(name, min: none, max: none) = {
+#let lin-axis(name, min: none, max: none, ..options) = {
   ((priority: -100, fn: (ptx) => {
-    ptx.axes.insert(name, axis.linear(name, min, max))
+    ptx.axes.insert(name, axis.linear(name, min, max, ..options))
     return ptx
   }),)
 }
@@ -51,9 +51,9 @@
 /// - min: (none, float): Minimum
 /// - max: (none, float): Maximum
 /// - base: (int): Log base
-#let log-axis(name, min: none, max: none, base: 10) = {
+#let log-axis(name, min: none, max: none, base: 10, ..options) = {
   ((priority: -100, fn: (ptx) => {
-    ptx.axes.insert(name, axis.logarithmic(name, min, max, base))
+    ptx.axes.insert(name, axis.logarithmic(name, min, max, base, ..options))
     return ptx
   }),)
 }
@@ -63,7 +63,9 @@
   scientific: (ptx) => {
     lin-axis("x")
     lin-axis("y")
-    sub-plot.new("x", "y")
+    lin-axis("u")
+    lin-axis("v")
+    sub-plot.new("x", "y", "u", "v")
   },
   school-book: (ptx) => {
     lin-axis("x")

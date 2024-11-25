@@ -20,30 +20,33 @@
 }
 
 /// Linear Axis Constructor
-#let linear(name, min, max) = (
+#let linear(name, min, max, ..options) = (
   label: [#name],
   name: name, min: min, max: max, base: 10, transform: _transform-lin,
   auto-domain: (none, none),
   ticks: (step: auto, minor-step: none, format: auto, list: none),
   grid: none,
   compute-ticks: ticks.compute-ticks.with("lin"),
-)
+) + options.named()
 
 /// Log Axis Constructor
-#let logarithmic(name, min, max, base) = (
+#let logarithmic(name, min, max, base, ..options) = (
   label: [#name],
   name: name, min: min, max: max, base: base, transform: _transform-log,
   auto-domain: (none, none),
   ticks: (step: auto, minor-step: none, format: auto, list: none),
   grid: none,
   compute-ticks: ticks.compute-ticks.with("log"),
-)
+) + options.named()
 
 // Prepare axis
 #let prepare(ptx, ax) = {
   if ax.min == none { ax.min = ax.auto-domain.at(0) }
   if ax.max == none { ax.max = ax.auto-domain.at(1) }
-  if "compute-ticks" in ax { ax.computed-ticks = (ax.compute-ticks)(ax) }
+  if ax.min == none or ax.max == none { ax.min = -1e-6; ax.max = +1e-6 }
+  if "compute-ticks" in ax {
+    ax.computed-ticks = (ax.compute-ticks)(ax)
+  }
   return ax
 }
 

@@ -3,6 +3,7 @@
 
 #import "/src/ticks.typ"
 #import "/src/projection.typ"
+#import "/src/axis.typ"
 
 /// Default axis style
 ///
@@ -85,21 +86,19 @@
   ),
   y: (
     tick: (
-      flip: true,
       label: (
         anchor: "east",
       ),
     ),
   ),
-  x2: (
+  u: (
     tick: (
-      flip: true,
       label: (
         anchor: "south",
       ),
     ),
   ),
-  y2: (
+  v: (
     tick: (
       label: (
         anchor: "west",
@@ -108,7 +107,6 @@
   ),
   distal: (
     tick: (
-      flip: true,
       label: (
         anchor: "east",
       )
@@ -160,10 +158,19 @@
 
 #let _get-axis-style(ptx, style, name) = {
   return _prepare-style(ptx, if name in style {
-    cetz.util.merge-dictionary(style, style.at(name))
+    cetz.util.merge-dictionary(style, style.at(name, default: (:)))
   } else {
     style
   })
+}
+
+///
+#let cartesian-axis-projection(ax, start, stop) = {
+  let dir = vector.norm(vector.sub(stop, start))
+  let dist = vector.dist(start, stop)
+  return (value) => {
+    vector.add(start, vector.scale(dir, axis.transform(ax, value, 0, dist)))
+  }
 }
 
 
@@ -172,61 +179,76 @@
   return (
     name: name,
     draw: (ptx) => {
-      let proj = projections.at(0)
-      let axes = proj.axes
-      let x = axes.at(0)
-      let y = axes.at(1)
+      let xy-proj = projections.at(0)
+      let uv-proj = projections.at(1, default: xy-proj)
+      let has-uv = projections.len() > 1
+      let (x, y) = xy-proj.axes
+      let (u, v) = uv-proj.axes
 
       let style = _prepare-style(ptx, cetz.styles.resolve(ptx.cetz-ctx.style,
         root: "axes", merge: style, base: default-style))
       let x-style = _get-axis-style(ptx, style, "x")
       let y-style = _get-axis-style(ptx, style, "y")
-      let x2-style = _get-axis-style(ptx, style, "x2")
-      let y2-style = _get-axis-style(ptx, style, "y2")
+      let u-style = _get-axis-style(ptx, style, "u")
+      let v-style = _get-axis-style(ptx, style, "v")
 
-      let (south-west, south-east, north-west, north-east) = (proj.transform)(
+      let (x-low, x-high, y-low, y-high) = (xy-proj.transform)(
         (x.min, y.min), (x.max, y.min),
-        (x.min, y.max), (x.max, y.max),
+        (x.min, y.min), (x.min, y.max),
+      )
+      let (u-low, u-high, v-low, v-high) = (uv-proj.transform)(
+        (u.min, v.max), (u.max, v.max),
+        (u.max, v.min), (u.max, v.max),
       )
 
-      let x-padding = x-style.padding
-      let y-padding = y-style.padding
+      let move-vec(v, direction, length) = {
+        vector.add(v, direction.enumerate().map(((i, v)) => v * length.at(i)))
+      }
 
-      let x-low = vector.add(south-west, (-x-padding.at(0), -y-padding.at(0)))
-      let x-high = vector.add(south-east, (+x-padding.at(1), -y-padding.at(0)))
-      let y-low = vector.add(south-west, (-x-padding.at(0), -y-padding.at(0)))
-      let y-high = vector.add(north-west, (-x-padding.at(0), y-padding.at(1)))
+      // Outset axes
+      x-low = move-vec(x-low, (0, -1), x-style.padding)
+      x-high = move-vec(x-high, (0, -1), x-style.padding)
+      y-low = move-vec(y-low, (-1, 0), y-style.padding)
+      y-high = move-vec(y-high, (-1, 0), y-style.padding)
+      u-low = move-vec(u-low, (0, 1), u-style.padding)
+      u-high = move-vec(u-high, (0, 1), u-style.padding)
+      v-low = move-vec(v-low, (1, 0), v-style.padding)
+      v-high = move-vec(v-high, (1, 0), v-style.padding)
 
-      let x2-low = vector.add(north-west, (-x-padding.at(0), y-padding.at(1)))
-      let x2-high = vector.add(north-east, (+x-padding.at(1), y-padding.at(1)))
-      let y2-low = vector.add(south-east, (x-padding.at(1), -y-padding.at(0)))
-      let y2-high = vector.add(north-east, (x-padding.at(1), y-padding.at(1)))
+      // Frame corners (FIX for uv axes)
+      let south-west = move-vec(x-low, (-1, 0), x-style.padding)
+      let south-east = move-vec(x-high, (+1, 0), x-style.padding)
+      let north-west = move-vec(u-low, (-1, 0), u-style.padding)
+      let north-east = move-vec(u-high, (+1, 0), u-style.padding)
+
+      // Grid lengths
+      let x-grid-length = u-low.at(1) - x-low.at(1)
+      let y-grid-length = v-low.at(0) - y-low.at(0)
+      let u-grid-length = x-low.at(1) - u-low.at(1)
+      let v-grid-length = y-low.at(0) - v-low.at(0)
 
       let axes = (
-        (x, 0, south-west, south-east, x-low, x-high, x-style, false),
-        (y, 1, south-west, north-west, y-low, y-high, y-style, false),
-        (x, 0, north-west, north-east, x2-low, x2-high, x2-style, true),
-        (y, 1, south-east, north-east, y2-low, y2-high, y2-style, true),
+        (x, (0,+1), (0,x-grid-length), cartesian-axis-projection(x, x-low, x-high), x-style, false),
+        (y, (+1,0), (y-grid-length,0), cartesian-axis-projection(y, y-low, y-high), y-style, false),
+        (u, (0,-1), (0,u-grid-length), cartesian-axis-projection(u, u-low, u-high), u-style, not has-uv),
+        (v, (-1,0), (v-grid-length,0), cartesian-axis-projection(v, v-low, v-high), v-style, not has-uv),
       )
 
-      for (ax, component, low, high, frame-low, frame-high, style, mirror) in axes {
-        draw.on-layer(style.axis-layer, {
-          draw.line(frame-low, frame-high, stroke: style.stroke, mark: style.mark)
-        })
-        if "computed-ticks" in ax {
-          let low = low.enumerate().map(((i, v)) => {
-            if i == component { v } else { frame-low.at(i) }
+      draw.group(name: "spine", {
+        for (ax, dir, grid-dir, proj, style, mirror) in axes {
+          draw.on-layer(style.axis-layer, {
+            draw.line(proj(ax.min), proj(ax.max), stroke: style.stroke, mark: style.mark)
           })
-          let high = high.enumerate().map(((i, v)) => {
-            if i == component { v } else { frame-low.at(i) }
-          })
-
-          if not mirror {
-            ticks.draw-cartesian-grid(low, high, component, ax, ax.computed-ticks, (0,0), (1,0), style)
+          if "computed-ticks" in ax {
+            if not mirror {
+              ticks.draw-cartesian-grid(proj, grid-dir, ax, ax.computed-ticks, style)
+            }
+            ticks.draw-cartesian(proj, dir, ax.computed-ticks, style, is-mirror: mirror)
           }
-          ticks.draw-cartesian(low, high, ax.computed-ticks, style, is-mirror: mirror)
         }
-      }
+      })
+
+      // TODO: Draw labels
     },
   )
 }
@@ -247,10 +269,17 @@
       let x-style = _get-axis-style(ptx, style, "x")
       let y-style = _get-axis-style(ptx, style, "y")
 
+      let zero-x = calc.max(x.min, calc.min(0, x.max))
+      let zero-y = calc.max(y.min, calc.min(0, y.max))
+      let zero-pt = (
+        calc.max(x.min, calc.min(zero.at(0), x.max)),
+        calc.max(y.min, calc.min(zero.at(1), y.max)),
+      )
+
       let (zero, min-x, max-x, min-y, max-y) = (proj.transform)(
-        zero,
-        vector.add(zero, (x.min, 0)), vector.add(zero, (x.max, 0)),
-        vector.add(zero, (0, y.min)), vector.add(zero, (0, y.max)),
+        zero-pt,
+        vector.add(zero-pt, (x.min, zero-y)), vector.add(zero-pt, (x.max, zero-y)),
+        vector.add(zero-pt, (zero-x, y.min)), vector.add(zero-pt, (zero-x, y.max)),
       )
 
       let x-padding = x-style.padding
@@ -272,6 +301,7 @@
       let outset-min-y = vector.scale(outset-lo-y, -1)
       let outset-max-y = vector.scale(outset-hi-y, +1)
 
+
       draw.on-layer(x-style.axis-layer, {
         draw.line((rel: outset-min-x, to: min-x),
                   (rel: outset-max-x, to: max-x),
@@ -279,8 +309,9 @@
           stroke: x-style.stroke)
       })
       if "computed-ticks" in x {
-        ticks.draw-cartesian-grid(min-x, max-x, 0, x, x.computed-ticks, min-y, max-y, x-style)
-        ticks.draw-cartesian(min-x, max-x, x.computed-ticks, x-style)
+        //ticks.draw-cartesian-grid(grid-proj, grid-dir, ax, ax.computed-ticks, style)
+        let tick-proj = cartesian-axis-projection(x, min-x, max-x)
+        ticks.draw-cartesian(tick-proj, (0,+1), x.computed-ticks, x-style)
       }
 
       draw.on-layer(y-style.axis-layer, {
@@ -290,8 +321,9 @@
           stroke: y-style.stroke)
       })
       if "computed-ticks" in y {
-        ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
-        ticks.draw-cartesian(min-y, max-y, y.computed-ticks, y-style)
+        //ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
+        let tick-proj = cartesian-axis-projection(y, min-y, max-y)
+        ticks.draw-cartesian(tick-proj, (+1,0), y.computed-ticks, y-style)
       }
     }
   )
@@ -332,7 +364,7 @@
       if "computed-ticks" in distal {
         // TODO
         ticks.draw-distal-grid(proj, distal.computed-ticks, distal-style)
-        ticks.draw-cartesian(r-start, r-end, distal.computed-ticks, distal-style)
+        //ticks.draw-cartesian(r-start, r-end, distal.computed-ticks, distal-style)
       }
 
       if start == stop {

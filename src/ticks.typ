@@ -45,77 +45,81 @@
   return value
 }
 
-// Compute list of linear ticks for axis
-//
-// - axis (axis): Axis
-#let compute-linear-ticks(axis, add-zero: true) = {
+#let clip-ticks(axis, ticks) = {
   let (min, max) = (axis.min, axis.max)
-  let dt = max - min; if (dt == 0) { dt = 1 }
-  let ticks = axis.ticks
-  let ferr = util.float-epsilon
-  let tick-limit = axis.at("tick-limit", default: 100)
-  let minor-tick-limit = axis.at("minor-tick-limit", default: 1000)
+  let err = util.float-epsilon
+  /*
+  return ticks.filter(((value, ..)) => {
+    min - err <= value and value <= max + err
+  })
+  */
+  return ticks
+}
 
-  let l = ()
-  if ticks != none {
-    let major-tick-values = ()
-    if "step" in ticks and ticks.step != none {
-      assert(ticks.step >= 0,
-             message: "Axis tick step must be positive and non 0.")
-      if axis.min > axis.max { ticks.step *= -1 }
-
-      let s = 1 / ticks.step
-
-      let num-ticks = int(max * s + 1.5)  - int(min * s)
-      assert(num-ticks <= tick-limit,
-             message: "Number of major ticks exceeds limit " + str(tick-limit))
-
-      let n = range(int(min * s), int(max * s + 1.5))
-      for t in n {
-        let v = (t / s - min) / dt
-        if t / s == 0 and not add-zero { continue }
-
-        if v >= 0 - ferr and v <= 1 + ferr {
-          l.push((v, format-tick-value(t / s, ticks), true))
-          major-tick-values.push(v)
-        }
-      }
+/// Compute list of linear ticks
+///
+/// - ax (axis): Axes
+/// -> List of ticks
+#let compute-linear-ticks(ax) = {
+  let compute-list(min, max, step, limit) = {
+    if step == none or step <= 0 or min == none or max == none {
+      return ()
     }
 
-    if "minor-step" in ticks and ticks.minor-step != none {
-      assert(ticks.minor-step >= 0,
-             message: "Axis minor tick step must be positive")
-      if axis.min > axis.max { ticks.minor-step *= -1 }
+    let num-negative = int((0 - min) / step)
+    let num-positive = int((max - 0) / step)
 
-      let s = 1 / ticks.minor-step
-
-      let num-ticks = int(max * s + 1.5) - int(min * s)
-      assert(num-ticks <= minor-tick-limit,
-             message: "Number of minor ticks exceeds limit " + str(minor-tick-limit))
-
-      let n = range(int(min * s), int(max * s + 1.5))
-      for t in n {
-        let v = (t / s - min) / dt
-        if v in major-tick-values {
-          // Prefer major ticks over minor ticks
-          continue
-        }
-
-        if v != none and v >= 0 and v <= 1 + ferr {
-          l.push((v, none, false))
-        }
-      }
-    }
-
+    return range(-num-negative, num-positive + 1).map(t => {
+      t * step
+    })
   }
 
-  return l
+  let major-limit = ax.at("tick-limit", default: 100)
+  let minor-limit = ax.at("minor-tick-limit", default: 1000)
+
+  let major = compute-list(ax.min, ax.max, ax.ticks.step, major-limit)
+  let minor = compute-list(ax.min, ax.max, ax.ticks.minor-step, minor-limit)
+
+  minor.map(value => {
+    (value, none, false)
+  }) + major.map(value => {
+    (value, format-tick-value(value, ax.ticks), true)
+  })
+}
+
+/// Compute list of logarithmic ticks
+///
+/// - ax (axis): Axis
+/// -> List of ticks
+#let compute-logarithmic-ticks(ax) = {
+  let min = calc.log(calc.max(axis.min, util.float-epsilon), base: ax.base)
+  let max = calc.log(calc.max(axis.max, util.float-epsilon), base: ax.base)
+
+  let compute-list(min, max, step, limit) = {
+    let num-positive = int((max - 0) / step)
+
+    // TODO
+
+    return ()
+  }
+
+  let major-limit = ax.at("tick-limit", default: 100)
+  let minor-limit = ax.at("minor-tick-limit", default: 1000)
+
+  let major = compute-list(ax.min, ax.max, ax.ticks.step, major-limit)
+  let minor = compute-list(ax.min, ax.max, ax.ticks.minor-step, minor-limit)
+
+  minor.map(value => {
+    (value, none, false)
+  }) + major.map(value => {
+    (value, format-tick-value(value, ax.ticks), true)
+  })
 }
 
 // Compute list of linear ticks for axis
 //
 // - axis (axis): Axis
-#let compute-logarithmic-ticks(axis, add-zero: true) = {
+#let compute-logarithmic-ticks__(axis, add-zero: true) = {
   let ferr = util.float-epsilon
   let (min, max) = (
     calc.log(calc.max(axis.min, ferr), base: axis.base),
@@ -141,20 +145,6 @@
       assert(num-ticks <= tick-limit,
              message: "Number of major ticks exceeds limit " + str(tick-limit))
 
-      let n = range(
-        int(min * s),
-        int(max * s + 1.5)
-      )
-
-      for t in n {
-        let v = (t / s - min) / dt
-        if t / s == 0 and not add-zero { continue }
-
-        if v >= 0 - ferr and v <= 1 + ferr {
-          l.push((v, format-tick-value( calc.pow(axis.base, t / s), ticks), true))
-          major-tick-values.push(v)
-        }
-      }
     }
 
     if "minor-step" in ticks and ticks.minor-step != none {
@@ -205,11 +195,10 @@
       (v, label) = t
     }
 
-    v = value-on-axis(axis, v)
-    if v != none and v >= 0 and v <= 1 {
-      l.push((v, label, true))
+    if v != none {
+      return (v, label, true)
     }
-  })
+  }).filter(v => v != none)
 }
 
 // Compute list of axis ticks
@@ -219,12 +208,16 @@
 //
 // - mode (str): "lin" or "log"
 // - axis (axis): Axis object
-#let compute-ticks(mode, axis, add-zero: true) = {
+#let compute-ticks(mode, axis) = {
   let auto-tick-count = 11
   let auto-tick-factors = (1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10)
 
-  let find-max-n-ticks(axis, n: 11) = {
-    let dt = calc.abs(axis.max - axis.min)
+  let find-max-n-ticks(ax, n: 11) = {
+    if ax.min == none or ax.max == none {
+       return none
+    }
+
+    let dt = calc.abs(ax.max - ax.min)
     let scale = calc.floor(calc.log(dt, base: 10) - 1)
     if scale > 5 or scale < -5 {return none}
 
@@ -254,22 +247,19 @@
   }
 
   let ticks = if mode == "log" {
-    compute-logarithmic-ticks(axis, add-zero: add-zero)
+    compute-logarithmic-ticks(axis)
   } else {
-    compute-linear-ticks(axis, add-zero: add-zero)
+    compute-linear-ticks(axis)
   }
   ticks += fixed-ticks(axis)
   return ticks
 }
 
 // Place a list of tick marks and labels along a line
-#let draw-cartesian(start, stop, ticks, style, is-mirror: false, show-zero: true) = {
+#let draw-cartesian(transform, norm, ticks, style, is-mirror: false, show-zero: true) = {
   let draw-label = style.tick.label.draw
 
   draw.on-layer(style.tick-layer, {
-    let dir = vector.norm(vector.sub(stop, start))
-    let norm = (-dir.at(1), dir.at(0), dir.at(2, default: 0))
-
     let def(v, d) = {
       return if v == none or v == auto {d} else {v}
     }
@@ -279,12 +269,12 @@
       show-label = not is-mirror
     }
 
-    for (distance, label, is-major) in ticks {
+    for (value, label, is-major) in ticks {
       let offset = if is-major { style.tick.offset } else { style.tick.minor-offset }
       let length = if is-major { style.tick.length } else { style.tick.minor-length }
       let stroke = if is-major { style.tick.stroke } else { style.tick.minor-stroke }
 
-      let pt = vector.lerp(start, stop, distance)
+      let pt = transform(value)
       if style.tick.flip {
         offset = -offset - length
       }
@@ -312,33 +302,20 @@
 
 // Draw grid lines for the ticks of an axis
 //
-// - ptx (context): Plot context
-// - start (vector): Axis start
-// - stop (vector): Axis stop
-// - component (int): Vector compontent to use as direction
-// - axis (dictionary): The axis
-// - ticks (array): The computed ticks
-// - low (vector): Start position of a grid-line at tick 0
-// - high (vector): End position of a grid-line at tick 0
-// - style (style): Style
-#let draw-cartesian-grid(start, stop, component, axis, ticks, low, high, style) = {
+#let draw-cartesian-grid(proj, offset, axis, ticks, style) = {
   let kind = _get-grid-mode(axis.grid)
   if kind > 0 {
     draw.on-layer(style.grid-layer, {
-      for (distance, label, is-major) in ticks {
-        let offset = vector.lerp(start, stop, distance)
-
-        let start = low
-        start.at(component) = offset.at(component)
-        let end = high
-        end.at(component) = offset.at(component)
+      for (value, _, major) in ticks {
+        let start = proj(value)
+        let end = vector.add(start, offset)
 
         // Draw a minor line
-        if not is-major and kind >= 2 {
+        if not major and kind >= 2 {
           draw.line(start, end, stroke: style.grid.minor-stroke)
         }
         // Draw a major line
-        if is-major and (kind == 1 or kind == 3) {
+        if major and (kind == 1 or kind == 3) {
           draw.line(start, end, stroke: style.grid.stroke)
         }
       }
