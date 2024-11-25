@@ -331,7 +331,7 @@
       draw.line(r-start, (rel: (0, radius + r-padding)), stroke: distal-style.stroke)
       if "computed-ticks" in distal {
         // TODO
-        //ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
+        ticks.draw-distal-grid(proj, distal.computed-ticks, distal-style)
         ticks.draw-cartesian(r-start, r-end, distal.computed-ticks, distal-style)
       }
 
@@ -351,6 +351,7 @@
           mode: "PIE")
       }
       if "computed-ticks" in angular {
+        ticks.draw-angular-grid(proj, angular.computed-ticks, angular-style)
         // TODO
       }
     },

@@ -3,6 +3,22 @@
 
 #import "/src/plot/formats.typ"
 
+#let _get-grid-mode(mode) = {
+  return if mode in (true, "major") {
+    1
+  } else if mode == "minor" {
+    2
+  } else if mode == "both" {
+    3
+  } else {
+    0
+  }
+}
+
+#let _draw-grid(mode, is-major) = {
+  return mode >= 3 or (is-major and mode == 1) or mode == 2
+}
+
 // Format a tick value
 #let format-tick-value(value, tic-options) = {
   // Without it we get negative zero in conversion
@@ -306,16 +322,7 @@
 // - high (vector): End position of a grid-line at tick 0
 // - style (style): Style
 #let draw-cartesian-grid(start, stop, component, axis, ticks, low, high, style) = {
-  let kind = if axis.grid in (true, "major") {
-    1
-  } else if axis.grid == "minor" {
-    2
-  } else if axis.grid == "both" {
-    3
-  } else {
-    0
-  }
-
+  let kind = _get-grid-mode(axis.grid)
   if kind > 0 {
     draw.on-layer(style.grid-layer, {
       for (distance, label, is-major) in ticks {
@@ -337,4 +344,87 @@
       }
     })
   }
+}
+
+/// Draw angular polar grid
+#let draw-angular-grid(projection, ticks, style) = {
+  let (angular, distal, ..) = projection.axes
+  let mode = _get-grid-mode(distal.grid)
+  if mode == 0 {
+    return
+  }
+
+  let (origin,) = (projection.transform)(
+    (angular.min, distal.min),
+  )
+
+  let padding = style.padding.first()
+  let range = angular.max - angular.min
+
+  draw.on-layer(style.grid-layer, {
+    for (pos, _, is-major) in ticks {
+      if not _draw-grid(mode, is-major) {
+        continue
+      }
+
+      let (pos,) = (projection.transform)(
+        (angular.min + pos * range, distal.max),
+      )
+
+      pos = vector.add(pos, vector.scale(vector.norm(vector.sub(pos, origin)), padding))
+
+      draw.line(origin, pos,
+        stroke: if is-major { style.grid.stroke } else { style.grid.minor-stroke })
+    }
+  })
+}
+
+/// Draw distal polar grid
+#let draw-distal-grid(projection, ticks, style) = {
+  let (angular, distal, ..) = projection.axes
+  let mode = _get-grid-mode(distal.grid)
+  if mode == 0 {
+    return
+  }
+
+  let (origin, start, stop) = (projection.transform)(
+    (angular.min, distal.min),
+    (angular.min, distal.max),
+    (angular.max, distal.max),
+  ).map(v => v.map(calc.round.with(digits: 6)))
+
+  let is-arc = start != stop
+  let radius = vector.dist(origin, start)
+  let range = distal.max - distal.min
+
+  let draw-ring = (position, stroke) => {
+    let v = distal.min + position * range
+    if distal.min < v and v < distal.max {
+      if not is-arc {
+        draw.circle(origin, radius: radius / range * v,
+          stroke: stroke,
+          fill: none)
+      } else {
+        let (start, mid, stop) = (projection.transform)(
+          (angular.min, v),
+          ((angular.min + angular.max) / 2, v),
+          (angular.max, v)
+        )
+
+        draw.arc-through(start, mid, stop,
+          stroke: stroke,
+          fill: none)
+      }
+    }
+  }
+
+  draw.on-layer(style.grid-layer, {
+    for (pos, _, is-major) in ticks {
+      if not _draw-grid(mode, is-major) {
+        continue
+      }
+
+      draw-ring(pos, if is-major { style.grid.stroke } else { style.grid.minor-stroke })
+    }
+  })
 }
