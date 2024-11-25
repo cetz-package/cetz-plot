@@ -309,25 +309,47 @@
       let angular = proj.axes.at(0)
       let distal = proj.axes.at(1)
 
-      let (origin, outer) = (proj.transform)((0, distal.min), (0, distal.max))
-      let radius = vector.dist(origin, outer)
+      let (origin, start, mid, stop) = (proj.transform)(
+        (angular.min, distal.min),
+        (angular.min, distal.max),
+        ((angular.min + angular.max) / 2, distal.max),
+        (angular.max, distal.max),
+      )
+      start = start.map(calc.round.with(digits: 6))
+      stop = stop.map(calc.round.with(digits: 6))
+
+      let radius = vector.dist(origin, start)
 
       let style = _prepare-style(ptx, cetz.styles.resolve(ptx.cetz-ctx.style,
         root: "axes", merge: style.named(), base: default-style))
       let angular-style = _get-axis-style(ptx, style, "angular")
       let distal-style = _get-axis-style(ptx, style, "distal")
 
+      let r-padding = angular-style.padding.first()
       let r-start = origin
       let r-end = vector.add(origin, (0, radius))
-      draw.line(r-start, r-end, stroke: distal-style.stroke)
+      draw.line(r-start, (rel: (0, radius + r-padding)), stroke: distal-style.stroke)
       if "computed-ticks" in distal {
+        // TODO
         //ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
         ticks.draw-cartesian(r-start, r-end, distal.computed-ticks, distal-style)
       }
 
-      let padding = angular-style.padding.first()
-      draw.circle(origin, radius: radius + padding,
-        stroke: angular-style.stroke)
+      if start == stop {
+        draw.circle(origin, radius: radius + r-padding,
+          stroke: angular-style.stroke,
+          fill: angular-style.fill)
+      } else {
+        // Apply padding to all three points
+        (start, mid, stop) = (start, mid, stop).map(pt => {
+          vector.add(pt, vector.scale(vector.norm(vector.sub(pt, origin)), r-padding))
+        })
+
+        draw.arc-through(start, mid, stop,
+          stroke: angular-style.stroke,
+          fill: angular-style.fill,
+          mode: "PIE")
+      }
       if "computed-ticks" in angular {
         // TODO
       }
