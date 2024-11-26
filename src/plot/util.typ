@@ -247,7 +247,7 @@
     (-float.inf, float.inf)
   }
 
-  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
+  clipped-paths(points, (x-min, y-min), (x-max, y-max), fill: true)
 }
 
 /// Return points of a sampled catmull-rom through the
@@ -328,34 +328,6 @@
   return pts
 }
 
-// Get the default axis orientation
-// depending on the axis name
-#let get-default-axis-horizontal(name) = {
-  return lower(name).starts-with("x")
-}
-
-// Create axes specified by options
-#let create-axes(ptx, elements, options) = {
-  import "/src/axis.typ"
-  for element in elements {
-    if "axes" in element {
-      for name in element.axes {
-        if not name in ptx.axes {
-          let mode = options.at(name + "-mode", default: "lin")
-
-          ptx.axes.insert(name, if mode == "log" {
-            axis.logarithmic(name, none, none, 10)
-          } else {
-            axis.linear(name, none, none)
-          })
-        }
-      }
-    }
-  }
-
-  return ptx
-}
-
 // Setup axes dictionary
 //
 // - axis-dict (dictionary): Existing axis dictionary
@@ -370,19 +342,6 @@
     if v == auto { default } else { v }
   }
 
-  // Mode switching
-  for (name, ax) in axes {
-    let mode = get-opt(name, "mode", "lin")
-    if mode == "lin" {
-      ax.transform = axis._transform-lin
-    } else if mode == "log" {
-      ax.transform = axis._transform-log
-      ax.base = get-opt(name, "base", ax.at("base", default: 10))
-    } else {
-      panic("Invalid axis mode: " + repr(mode))
-    }
-  }
-
   for (name, ax) in axes {
     ax.min = get-opt(name, "min", ax.min)
     ax.max = get-opt(name, "max", ax.max)
@@ -394,6 +353,10 @@
     ax.ticks.step = get-opt(name, "tick-step", ax.ticks.step)
     ax.ticks.minor-step = get-opt(name, "minor-tick-step", ax.ticks.minor-step)
     ax.grid = get-opt(name, "grid", ax.grid)
+
+    if get-opt(name, "mode", none) != none {
+      panic("Mode switching is no longer supported. Use log-axis/lin-axis to create the axis.")
+    }
 
     axes.at(name) = axis.prepare(ptx, ax)
   }

@@ -69,6 +69,10 @@
     let num-negative = int((0 - min) / step)
     let num-positive = int((max - 0) / step)
 
+    if num-negative + num-positive > limit {
+      panic("Tick limit reached! Adjust axis ticks.limit or ticks.minor-limit.")
+    }
+
     return range(-num-negative, num-positive + 1).map(t => {
       t * step
     })
@@ -92,11 +96,19 @@
 /// - ax (axis): Axis
 /// -> List of ticks
 #let compute-logarithmic-ticks(ax) = {
-  let min = calc.log(calc.max(axis.min, util.float-epsilon), base: ax.base)
-  let max = calc.log(calc.max(axis.max, util.float-epsilon), base: ax.base)
+  let min = calc.log(calc.max(ax.min, util.float-epsilon), base: ax.base)
+  let max = calc.log(calc.max(ax.max, util.float-epsilon), base: ax.base)
 
   let compute-list(min, max, step, limit) = {
+    if step == none or step <= 0 or min == none or max == none {
+      return ()
+    }
+
     let num-positive = int((max - 0) / step)
+
+    if num-positive > limit {
+      panic("Tick limit reached! Adjust axis ticks.limit or ticks.minor-limit.")
+    }
 
     // TODO
 

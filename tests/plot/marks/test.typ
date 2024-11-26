@@ -7,7 +7,7 @@
 #test-case({
   import cetz-plot: plot
 
-  let axis-options = (("x", "y"), ("x2", "y"), ("x", "y2"), ("x2", "y2"))
+  let axis-options = (("x", "y"), ("u", "y"), ("x", "v"), ("u", "v"))
 
   plot.plot(
     size: (5,5),

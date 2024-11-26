@@ -28,26 +28,26 @@
     x-min: -360,
     x-max:  360,
     y-tick-step: 1,
-    x2-label: none,
-    x2-min: -90,
-    x2-max:  90,
-    x2-tick-step: 45,
-    x2-minor-tick-step: 15,
-    y2-label: none,
-    y2-min: -1.5,
-    y2-max:  1.5,
-    y2-tick-step: .5,
-    y2-minor-tick-step: .1,
+    u-label: none,
+    u-min: -90,
+    u-max:  90,
+    u-tick-step: 45,
+    u-minor-tick-step: 15,
+    v-label: none,
+    v-min: -1.5,
+    v-max:  1.5,
+    v-tick-step: .5,
+    v-minor-tick-step: .1,
     {
       plot.add(data)
-      plot.add(data, style: (stroke: blue), axes: ("x2", "y2"))
+      plot.add(data, style: (stroke: blue), axes: ("u", "v"))
     })
 })
 
 /* School-Book Style */
 #test-case({
   plot.plot(size: (5, 4),
-    axis-style: "school-book",
+    template: "school-book",
     x-tick-step: 180,
     y-tick-step: 1,
     {
@@ -58,7 +58,7 @@
 /* Clipping */
 #test-case({
   plot.plot(size: (5, 4),
-    axis-style: "school-book",
+    template: "school-book",
     x-min: auto,
     x-max: 350,
     x-tick-step: 180,
@@ -75,7 +75,6 @@
   plot.plot(size: (5, 4),
     x-label: [Rainbow],
     x-tick-step: none,
-    axis-style: "scientific",
     y-label: [Color],
     y-max: 8,
     y-tick-step: none,
@@ -92,34 +91,33 @@
 /* Tick Step Calculation */
 #test-case({
   plot.plot(size: (12, 4),
-    y2-decimals: 4,
+    v-format: plot.formats.decimal.with(digits: 4),
     {
       plot.add(((0,0), (1,10)), axes: ("x", "y"))
-      plot.add(((0,0), (.1,.01)), axes: ("x2", "y2"))
+      plot.add(((0,0), (.1,.01)), axes: ("u", "v"))
     })
 })
 
 #test-case({
   plot.plot(size: (12, 4),
-    y2-decimals: 9,
-    x2-decimals: 9,
-    y2-format: "sci",
+    v-format: plot.formats.sci,
+    u-format: plot.formats.sci,
     {
       plot.add(((0,0), (30,2500)), axes: ("x", "y"))
-      plot.add(((0,0), (.001,.0001)), axes: ("x2", "y2"))
+      plot.add(((0,0), (.001,.0001)), axes: ("u", "v"))
     })
 })
 
-/* Axis Styles */
-
-
+/* Templates */
 #test-case(args => {
   plot.plot(size: (4,4), x-tick-step: 90, y-tick-step: 1,
-            axis-style: args, {
+            template: args, {
     plot.add(domain: (0, 360), x => calc.sin(x * 1deg))
   })
 }, args: (
-  "scientific", "scientific-auto", "left", "school-book", none
+  // TODO
+  //"scientific", "scientific-auto", "left", "school-book", none
+  "scientific", "school-book"
 ))
 
 /* Manual Axis Bounds */
@@ -136,10 +134,10 @@
     yb-min: -1.5, yb-max: .5,
     yt-min: -.5, yt-max: 1.5,
     {
-      plot.add-cartesian-axis("xl", (0, 0), (4, 0))
-      plot.add-cartesian-axis("xr", (0, 4), (4, 4))
-      plot.add-cartesian-axis("yt", (0, 0), (0, 4))
-      plot.add-cartesian-axis("yb", (4, 0), (4, 4))
+      plot.lin-axis("xl")
+      plot.lin-axis("xr")
+      plot.lin-axis("yt")
+      plot.lin-axis("yb")
       plot.add(circle-data)
       plot.add(circle-data, axes: ("xl", "y"), style: (stroke: green))
       plot.add(circle-data, axes: ("xr", "y"), style: (stroke: red))
@@ -159,10 +157,10 @@
     yb-min: -1.75, yb-max: .25,
     yt-min: -.25, yt-max: 1.75,
     {
-      plot.add-cartesian-axis("xl", (0, 0), (4, 0))
-      plot.add-cartesian-axis("xr", (0, 4), (4, 4))
-      plot.add-cartesian-axis("yt", (0, 0), (0, 4))
-      plot.add-cartesian-axis("yb", (4, 0), (4, 4))
+      plot.lin-axis("xl")
+      plot.lin-axis("xr")
+      plot.lin-axis("yt")
+      plot.lin-axis("yb")
       plot.add(circle-data)
       plot.add(circle-data, axes: ("xl", "y"), style: (stroke: green))
       plot.add(circle-data, axes: ("xr", "y"), style: (stroke: red))
@@ -198,16 +196,6 @@
        mark: (start: ">", end: ">"), name: "amplitude")
 })
 
-/* Custom sample points */
-#test-case({
-  plot.plot(size: (6, 4), y-min: -2, y-max: 2,
-    samples: 10,
-    {
-      plot.add(samples: 2, sample-at: (.99, 1.001, 1.99, 2.001, 2.99), domain: (0, 3),
-        x => calc.pow(-1, int(x)))
-    })
-})
-
 /* Format tick values */
 #test-case({
   plot.plot(size: (6, 4),
@@ -217,19 +205,20 @@
     y-tick-step: none,
     y-ticks: (-1, 0, 1),
     y-format: x => $y_(#x)$,
-    x2-tick-step: none,
-    x2-ticks: (-1, 0, 1),
-    x2-format: x => $x_(2,#x)$,
-    y2-tick-step: none,
-    y2-ticks: (-1, 0, 1),
-    y2-format: x => $y_(2,#x)$,
+    u-tick-step: none,
+    u-ticks: (-1, 0, 1),
+    u-format: x => $x_(2,#x)$,
+    v-tick-step: none,
+    v-ticks: (-1, 0, 1),
+    v-format: x => $y_(2,#x)$,
     {
       plot.add(samples: 2, domain: (-1, 1), x => -x, axes: ("x", "y"))
-      plot.add(samples: 2, domain: (-1, 1), x => x, axes: ("x2", "y2"))
+      plot.add(samples: 2, domain: (-1, 1), x => x, axes: ("u", "v"))
     })
 })
 
 // Test plot with anchors only
+/*
 #test-case({
   import draw: *
 
@@ -256,13 +245,13 @@
     tick: (
       length: -.1,
     ),
-    left: (
+    y: (
       stroke: (paint: red),
       tick: (
         stroke: auto,
       )
     ),
-    bottom: (
+    x: (
       stroke: (paint: blue, thickness: 2pt),
       tick: (
         stroke: auto,

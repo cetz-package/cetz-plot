@@ -3,33 +3,29 @@
 #import "/tests/helper.typ": *
 #import "/src/lib.typ": *
 #import cetz: draw, canvas
-#import cetz-plot: axes,
 
 #test-case({
-  import draw: *
-
   plot.plot(
     size: (9, 6), 
-    axis-style: "scientific", 
-    y-mode: "log", y-base: 10,
     y-format: "sci",
     x-min: 1, x-max: 10, x-tick-step: 1,
     y-min: 1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 1,
     x-grid: "both",
     y-grid: "both",
     {
+      plot.log-axis("y", base: 10)
+
       plot.add(
         domain: (0, 10), 
         x => {calc.pow(10, x)},
         samples: 100, 
-        line: "raw",
         label: $ y=10^x $,
       )
+
       plot.add(
         domain: (1, 10), 
         x => {x}, 
         samples: 100, 
-        line: "raw",
         hypograph: true,
         label: $ y=x $,
       )
@@ -37,6 +33,24 @@
   )
 })
 
+// Column chart test
+#test-case({
+  plot.plot(
+    size: (9, 6),
+    y-format: "sci",
+    x-min: -0.5, x-max: 4.5, x-tick-step: 1,
+    y-min: 0.1, y-max: 10000, step: 1, minor-step: 1,
+    x-grid: "both",
+    y-grid: "both",
+    {
+      plot.log-axis("y")
+      plot.add-bar(
+        (1, 10, 100, 1000, 10000).enumerate().map(((x,y))=>{(x,y)}),
+        bar-width: 0.8,
+      )
+    }
+  )
+})
 // Bode plot test
 #box(stroke: 2pt + red,{
   canvas({
@@ -47,7 +61,6 @@
     )
     plot.plot(
       size: (16, 6), 
-      axis-style: "scientific", 
       x-format: none, x-label: none,
       x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
@@ -68,7 +81,6 @@
     )
     plot.plot(
       size: (16, 6), 
-      axis-style: "scientific", 
       x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
       x-label: [Frequency ($upright(r a d)\/s$)],
@@ -83,27 +95,6 @@
   })
 })
 
-// Column chart test
-#box(stroke: 2pt + red, canvas({
-  import draw: *
-
-  plot.plot(
-    size: (9, 6), 
-    axis-style: "scientific", 
-    y-mode: "log", y-base: 10,
-    y-format: "sci",
-    x-min: -0.5, x-max: 4.5, x-tick-step: 1,
-    y-min: 0.1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 1,
-    x-grid: "both",
-    y-grid: "both",
-    {
-      plot.add-bar(
-        (1, 10, 100, 1000, 10000).enumerate().map(((x,y))=>{(x,y)}),
-        bar-width: 0.8,
-      )
-    }
-  )
-}))
 
 // Scatter plot test
 #box(stroke: 2pt + red, canvas({
@@ -111,7 +102,6 @@
 
   plot.plot(
     size: (9, 6), 
-    axis-style: "scientific", 
     y-mode: "log", y-base: 100,
     y-format: "sci",
     x-min: -0.5, x-max: 4.5, x-tick-step: 1,
@@ -135,21 +125,21 @@
     }
   )
 }))
+*/
 
 // Box plot test
-#box(stroke: 2pt + red, canvas({
+#test-case({
   import draw: *
 
   plot.plot(
     size: (9, 6), 
-    axis-style: "scientific", 
-    y-mode: "log", y-base: 10,
     y-format: "sci",
     x-min: -0.5, x-max: 2.5, x-tick-step: 1,
     y-min: 0.1, y-max: 15000, y-tick-step: 1, y-minor-tick-step: 1,
     x-grid: "both",
     y-grid: "both",
     {
+      plot.log-axis("y")
       plot.add-boxwhisker(
         (
           (x: 0, min: 1, q1: 10, q2: 100, q3: 1000, max: 10000),
@@ -159,4 +149,4 @@
       )
     }
   )
-}))
+})

@@ -7,6 +7,7 @@
 #import "/src/spine.typ"
 #import "/src/ticks.typ"
 #import "/src/sub-plot.typ"
+#import "/src/compat.typ"
 
 #import "/src/plot/sample.typ": sample-fn, sample-fn2
 #import "/src/plot/line.typ": add, add-hline, add-vline, add-fill-between
@@ -256,17 +257,23 @@
   )
 
   if template != none and template in templates {
-    body += (templates.at(template))(ptx)
+    body = (templates.at(template))(ptx) + body
   }
+
+  // Wrap old style elements
+  body = body.map(elem => {
+    return if "type" in elem {
+      compat.wrap(elem)
+    } else {
+      elem
+    }
+  })
 
   let plot-elements = body
     .filter(elem => type(elem) == dictionary)
     .sorted(key: elem => elem.at("priority", default: 0))
   let cetz-elements = body
     .filter(elem => type(elem) == function)
-
-  // Create axes
-  //ptx = plot-util.create-axes(ptx, plot-elements, options.named())
 
   for elem in plot-elements.filter(elem => elem.priority <= 0) {
     assert("fn" in elem,
@@ -353,11 +360,13 @@
 
     if ptx.legend != none {
       draw.scope({
+      /*
         draw.set-origin("plot." + options.at("legend", default: "north-east"))
         draw.group(name: "legend", anchor: options.at("legend-anchor", default: "north-west"), {
           draw.anchor("default", (0,0))
           draw-legend(ptx)
         })
+      */
       })
     }
 
@@ -400,6 +409,7 @@
       for plot in ptx.plots {
         for proj in plot.projections {
           if axes.all(name => proj.axes.contains(name)) {
+            // FIXME: Broken
             let pt = (proj.transform)(position).first()
             ptx.anchors.push((name, pt))
           }

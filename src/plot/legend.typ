@@ -243,5 +243,5 @@
 
 // TODO: Stub
 #let draw-legend(ptx) = {
-  draw.rect((0,0), (1,1))
+  //draw.rect((0,0), (1,1))
 }
