@@ -19,10 +19,10 @@
 
       let style = prepare-style(ptx, cetz.styles.resolve(ptx.cetz-ctx.style,
         root: "axes", merge: style, base: default-style))
-      let x-style = get-axis-style(ptx, style, "x")
-      let y-style = get-axis-style(ptx, style, "y")
-      let u-style = get-axis-style(ptx, style, "u")
-      let v-style = get-axis-style(ptx, style, "v")
+      let x-style = get-axis-style(ptx, style, x.name)
+      let y-style = get-axis-style(ptx, style, y.name)
+      let u-style = get-axis-style(ptx, style, u.name)
+      let v-style = get-axis-style(ptx, style, v.name)
 
       let (x-low, x-high, y-low, y-high) = (xy-proj.transform)(
         (x.min, y.min), (x.max, y.min),
