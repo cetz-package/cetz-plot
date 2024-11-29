@@ -62,13 +62,13 @@
     plot.plot(
       size: (16, 6), 
       x-format: none, x-label: none,
-      x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
       y-label: [Magnitude ($upright(d B)$)],
       y-min: -40, y-max: 10, y-tick-step: 10, 
       x-grid: "both",
       y-grid: "both",
       {
+        plot.log-axis("x")
         plot.add(domain: (0.01, 100), x => {0})
       }
     )
@@ -81,7 +81,6 @@
     )
     plot.plot(
       size: (16, 6), 
-      x-mode: "log",
       x-min: 0.01, x-max: 100, x-tick-step: 1, x-minor-tick-step: 1,
       x-label: [Frequency ($upright(r a d)\/s$)],
       y-label: [Phase ($upright(d e g)$)],
@@ -89,12 +88,14 @@
       x-grid: "both",
       y-grid: "both",
       {
+        plot.log-axis("x")
         plot.add(domain: (0.01, 100), x => {-40})
       }
     )
   })
 })
 
+/*
 
 // Scatter plot test
 #box(stroke: 2pt + red, canvas({
@@ -102,13 +103,13 @@
 
   plot.plot(
     size: (9, 6), 
-    y-mode: "log", y-base: 100,
     y-format: "sci",
     x-min: -0.5, x-max: 4.5, x-tick-step: 1,
     y-min: 0.1, y-max: 10000, y-tick-step: 1, y-minor-tick-step: 10,
     x-grid: "both",
     y-grid: "both",
     {
+      plot.log-axis("y", base: 100)
       plot.add(
         ((0, 1),(1,2),(1,3),(2, 100),(2,150),(3, 1000),),
         style: (stroke: none),

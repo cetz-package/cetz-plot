@@ -299,12 +299,21 @@
     let style = if type(plot-style) == function {
       (plot-style)(i)
     } else if type(plot-style) == array {
-      plot-style.at(i)
+      plot-style.at(calc.rem(i, plot-style.len()))
     } else {
       plot-style
     }
 
-    data.style = cetz.util.merge-dictionary(style, data.at("style", default: (:)))
+    let data-style = data.at("style", default: (:))
+    if type(data-style) == function {
+      data-style = (data-style)(i)
+    }
+
+    data.style = if style != none {
+      cetz.util.merge-dictionary(style, data-style)
+    } else {
+      data-style
+    }
     return data
   })
 

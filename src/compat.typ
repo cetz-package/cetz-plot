@@ -4,6 +4,14 @@
 
 #let make-cptx(ptx, old) = {
   let axes = old.axes.map(name => ptx.axes.at(name))
+  axes = axes.map(ax => {
+    if ax.min == none or ax.max == none {
+      // Compat elements need the axis domain very early
+      ax.min = ax.auto-domain.at(0)
+      ax.max = ax.auto-domain.at(1)
+    }
+    return ax
+  })
   return (
     axes: axes,
   )
@@ -35,14 +43,14 @@
     priority: 0,
     fn: ptx => {
       let old = old
-      if "plot-prepare" in old {
-        old = (old.plot-prepare)(old, make-cptx(ptx, old))
-      }
       if "x-domain" in old {
         ptx = util.set-auto-domain(ptx, (old.axes.at(0),), (old.x-domain,))
       }
       if "y-domain" in old {
         ptx = util.set-auto-domain(ptx, (old.axes.at(1),), (old.y-domain,))
+      }
+      if "plot-prepare" in old {
+        old = (old.plot-prepare)(old, make-cptx(ptx, old))
       }
 
       let data = (
