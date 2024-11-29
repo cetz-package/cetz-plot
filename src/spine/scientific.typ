@@ -7,7 +7,7 @@
 #import cetz: vector, draw
 
 ///
-#let cartesian-scientific(projections: none, name: none, style: (:)) = {
+#let scientific(projections: none, name: none, style: (:)) = {
   return (
     name: name,
     draw: (ptx) => {

@@ -2,8 +2,14 @@
 #import "/src/projection.typ"
 #import "/src/cetz.typ"
 
+/// Create a new sub-plot
 ///
-#let new(spine: spine.cartesian-scientific, projection: projection.cartesian, origin: (0, 0), size: auto, ..axes-style) = {
+/// - spine (spine): The sub-plot spine
+/// - projection (projection): The projection to use
+/// - origin (vector): Origin
+/// - size (auto,vector): Size or auto to use plot default size
+/// - ..axes-style (axis,style): Positionaln axis names (string) and style keys
+#let new(spine: spine.scientific, projection: projection.cartesian, origin: (0, 0), size: auto, ..axes-style) = {
   let axes = axes-style.pos()
   let style = axes-style.named()
 
