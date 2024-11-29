@@ -9,7 +9,7 @@
 #import "/src/sub-plot.typ"
 #import "/src/compat.typ"
 
-#import "/src/plot/sample.typ": sample-fn, sample-fn2
+#import "/src/plot/sample.typ": sample, sample-int, sample-binary
 #import "/src/plot/line.typ": add, add-hline, add-vline, add-fill-between
 #import "/src/plot/contour.typ": add-contour
 #import "/src/plot/boxwhisker.typ": add-boxwhisker

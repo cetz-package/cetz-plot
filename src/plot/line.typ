@@ -100,9 +100,9 @@
 ///   / `"shape"`: Fill the complete shape
 /// - samples (int): Number of times the `data` function gets called for
 ///   sampling y-values. Only used if `data` is of type function. This parameter gets
-///   passed onto `sample-fn`.
+///   passed onto `sampler`.
 /// - sample-at (array): Array of x-values the function gets sampled at in addition
-///   to the default sampling. This parameter gets passed to `sample-fn`.
+///   to the default sampling. This parameter gets passed to `sampler`.
 /// - line (string, dictionary): Line type to use. The following types are
 ///   supported:
 ///   / `"raw"`: Plot raw data
@@ -165,14 +165,22 @@
          mark-style: (:),
          samples: 50,
          sample-at: (),
+         sampler: auto,
          line: "raw",
          axes: ("x", "y"),
          label: none,
          data
          ) = {
+  if sampler == auto {
+    sampler = sample.sample
+      .with(domain: domain,
+            samples: samples,
+            sample-at: sample-at)
+  }
+
   // If data is of type function, sample it
   if type(data) == function {
-    data = sample.sample-fn(data, domain, samples, sample-at: sample-at)
+    data = sampler(data)
   }
 
   // Transform data
@@ -392,16 +400,24 @@
                       domain: auto,
                       samples: 50,
                       sample-at: (),
+                      sampler: auto,
                       line: "raw",
                       axes: ("x", "y"),
                       label: none,
                       style: (:)) = {
+  if sampler == auto {
+    sampler = sample.sample
+      .with(domain: domain,
+            samples: samples,
+            sample-at: sample-at)
+  }
+
   // If data is of type function, sample it
   if type(data-a) == function {
-    data-a = sample.sample-fn(data-a, domain, samples, sample-at: sample-at)
+    data-a = sampler(data-a)
   }
   if type(data-b) == function {
-    data-b = sample.sample-fn(data-b, domain, samples, sample-at: sample-at)
+    data-b = sampler(data-b)
   }
 
   // Transform data

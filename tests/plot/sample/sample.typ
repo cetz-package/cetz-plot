@@ -7,7 +7,7 @@
   (samples: 2, res: ((0,0), (50,5.0), (60,6.0), (100,10)), extra: (50,60)),
 )
 #for c in cases {
-  let pts = plot.sample-fn(x => x/10, (0, 100), c.samples,
+  let pts = plot.sample(x => x/10, (0, 100), samples: c.samples,
     sample-at: c.at("extra", default: ()))
   assert.eq(pts, c.res,
     message: "Expected: " + repr(c.res) + ", got: " + repr(pts))
@@ -21,8 +21,9 @@
                          (100,150,200))),
 )
 #for c in cases {
-  let rows = plot.sample-fn2((x, y) => x + y, (0, 100), (0,100),
-    c.samples.at(0), c.samples.at(1))
+  let rows = plot.sample-binary((x, y) => x + y, x-domain: (0, 100), y-domain: (0,100),
+    x-samples: c.samples.at(0),
+    y-samples: c.samples.at(1))
   assert.eq(rows, c.res,
     message: "Expected: " + repr(c.res) + ", got: " + repr(rows))
 }
