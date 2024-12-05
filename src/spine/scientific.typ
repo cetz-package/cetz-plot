@@ -89,7 +89,7 @@
       )
       for (i, (side, default-anchor, default-angle)) in label-config.enumerate() {
         let (ax, dir, _, proj, style, mirror) = axes.at(i)
-        if ax.label != none and ax.label != [] {
+        if not mirror and ax.label != none and ax.label != [] {
           let pos = proj((ax.max + ax.min) / 2)
           let offset = vector.scale(dir, -style.label.offset)
           let is-horizontal = calc.rem(i, 2) == 0
