@@ -3,6 +3,7 @@
 #import "/src/ticks.typ"
 #import "/src/style.typ": prepare-style, get-axis-style, default-style
 #import "/src/spine/util.typ": cartesian-axis-projection
+#import "/src/spine/grid.typ"
 
 #import cetz: vector, draw
 
@@ -56,24 +57,24 @@
       // Grid lengths
       let x-grid-length = u-low.at(1) - x-low.at(1)
       let y-grid-length = v-low.at(0) - y-low.at(0)
-      let u-grid-length = x-low.at(1) - u-low.at(1)
-      let v-grid-length = y-low.at(0) - v-low.at(0)
+      let u-grid-length = u-low.at(1) - x-low.at(1)
+      let v-grid-length = v-low.at(0) - y-low.at(0)
 
       let axes = (
-        (x, (0,+1), (0,x-grid-length), cartesian-axis-projection(x, x-low, x-high), x-style, false),
-        (y, (+1,0), (y-grid-length,0), cartesian-axis-projection(y, y-low, y-high), y-style, false),
-        (u, (0,-1), (0,u-grid-length), cartesian-axis-projection(u, u-low, u-high), u-style, not has-uv),
-        (v, (-1,0), (v-grid-length,0), cartesian-axis-projection(v, v-low, v-high), v-style, not has-uv),
+        (x, (0,+1), x-grid-length, cartesian-axis-projection(x, x-low, x-high), x-style, false),
+        (y, (+1,0), y-grid-length, cartesian-axis-projection(y, y-low, y-high), y-style, false),
+        (u, (0,-1), u-grid-length, cartesian-axis-projection(u, u-low, u-high), u-style, not has-uv),
+        (v, (-1,0), v-grid-length, cartesian-axis-projection(v, v-low, v-high), v-style, not has-uv),
       )
 
       draw.group(name: "spine", {
-        for (ax, dir, grid-dir, proj, style, mirror) in axes {
+        for (ax, dir, grid-length, proj, style, mirror) in axes {
           draw.on-layer(style.axis-layer, {
             draw.line(proj(ax.min), proj(ax.max), stroke: style.stroke, mark: style.mark)
           })
           if "computed-ticks" in ax {
             if not mirror {
-              ticks.draw-cartesian-grid(proj, grid-dir, ax, ax.computed-ticks, style)
+              grid.draw-cartesian(proj, 0, grid-length, dir, ax.computed-ticks, style.grid, ax.grid)
             }
             ticks.draw-cartesian(proj, dir, ax.computed-ticks, style, is-mirror: mirror)
           }

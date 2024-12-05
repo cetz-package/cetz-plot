@@ -3,6 +3,7 @@
 #import "/src/ticks.typ"
 #import "/src/style.typ": prepare-style, get-axis-style, default-style
 #import "/src/spine/util.typ": cartesian-axis-projection
+#import "/src/spine/grid.typ"
 
 #import cetz: vector, draw
 
@@ -18,7 +19,6 @@
     minor-length: .1cm,
   ),
 ))
-
 
 ///
 #let schoolbook(projections: none, name: none, zero: (0, 0), ..style) = {
@@ -68,7 +68,6 @@
       let outset-min-y = vector.scale(outset-lo-y, -1)
       let outset-max-y = vector.scale(outset-hi-y, +1)
 
-
       draw.on-layer(x-style.axis-layer, {
         draw.line((rel: outset-min-x, to: min-x),
                   (rel: outset-max-x, to: max-x),
@@ -76,8 +75,10 @@
           stroke: x-style.stroke)
       })
       if "computed-ticks" in x {
-        //ticks.draw-cartesian-grid(grid-proj, grid-dir, ax, ax.computed-ticks, style)
+        let grid-offset = min-x.at(1) - min-y.at(1)
+        let grid-length = max-y.at(1) - min-y.at(1)
         let tick-proj = cartesian-axis-projection(x, min-x, max-x)
+        grid.draw-cartesian(tick-proj, grid-offset, grid-length, (0,1), x.computed-ticks, style.grid, x.grid)
         ticks.draw-cartesian(tick-proj, (0,+1), x.computed-ticks, x-style)
       }
 
@@ -88,8 +89,10 @@
           stroke: y-style.stroke)
       })
       if "computed-ticks" in y {
-        //ticks.draw-cartesian-grid(min-y, max-y, 1, y, y.computed-ticks, min-x, max-x, y-style)
+        let grid-offset = min-y.at(0) - min-x.at(0)
+        let grid-length = max-x.at(0) - min-x.at(0)
         let tick-proj = cartesian-axis-projection(y, min-y, max-y)
+        grid.draw-cartesian(tick-proj, grid-offset, grid-length, (1,0), y.computed-ticks, style.grid, y.grid)
         ticks.draw-cartesian(tick-proj, (+1,0), y.computed-ticks, y-style)
       }
     }

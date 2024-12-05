@@ -1,6 +1,19 @@
 #import "/src/ticks.typ"
 #import "/src/plot/util.typ"
 
+// Grid modes
+#let _get-grid-mode(mode) = {
+  return if mode == true or mode == "major" {
+    1
+  } else if mode == "minor" {
+    2
+  } else if mode == "both" {
+    3
+  } else {
+    0
+  }
+}
+
 /// Transform linear axis value to linear space (low, high)
 #let _transform-lin(ax, value, low, high) = {
   let range = high - low
@@ -25,7 +38,7 @@
   name: name, min: min, max: max, base: 10, transform: _transform-lin,
   auto-domain: (none, none),
   ticks: (step: auto, minor-step: none, format: auto, list: none),
-  grid: none,
+  grid: 0,
   compute-ticks: ticks.compute-ticks.with("lin"),
 ) + options.named()
 
@@ -35,12 +48,13 @@
   name: name, min: min, max: max, base: base, transform: _transform-log,
   auto-domain: (none, none),
   ticks: (step: auto, minor-step: none, format: auto, list: none),
-  grid: none,
+  grid: 0,
   compute-ticks: ticks.compute-ticks.with("log"),
 ) + options.named()
 
 // Prepare axis
 #let prepare(ptx, ax) = {
+  ax.grid = _get-grid-mode(ax.grid)
   if ax.min == none { ax.min = ax.auto-domain.at(0) }
   if ax.max == none { ax.max = ax.auto-domain.at(1) }
   if ax.min == none or ax.max == none { ax.min = -1e-6; ax.max = +1e-6 }

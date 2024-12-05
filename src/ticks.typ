@@ -3,6 +3,7 @@
 
 #import "/src/plot/formats.typ"
 
+// TODO: Remove
 #let _get-grid-mode(mode) = {
   return if mode in (true, "major") {
     1
@@ -15,8 +16,9 @@
   }
 }
 
+// TODO: Remove
 #let _draw-grid(mode, is-major) = {
-  return mode >= 3 or (is-major and mode == 1) or mode == 2
+  return (2 + int(is-major)).bit-and(mode)
 }
 
 // Format a tick value
@@ -310,29 +312,6 @@
       }
     }
   })
-}
-
-// Draw grid lines for the ticks of an axis
-//
-#let draw-cartesian-grid(proj, offset, axis, ticks, style) = {
-  let kind = _get-grid-mode(axis.grid)
-  if kind > 0 {
-    draw.on-layer(style.grid-layer, {
-      for (value, _, major) in ticks {
-        let start = proj(value)
-        let end = vector.add(start, offset)
-
-        // Draw a minor line
-        if not major and kind >= 2 {
-          draw.line(start, end, stroke: style.grid.minor-stroke)
-        }
-        // Draw a major line
-        if major and (kind == 1 or kind == 3) {
-          draw.line(start, end, stroke: style.grid.stroke)
-        }
-      }
-    })
-  }
 }
 
 /// Draw angular polar grid
