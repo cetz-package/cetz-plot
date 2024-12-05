@@ -287,6 +287,7 @@
                  y-domain: (0, 1),
                  x-samples: 25,
                  y-samples: 25,
+                 sampler: auto,
                  interpolate: true,
                  op: auto,
                  axes: ("x", "y"),
@@ -294,11 +295,17 @@
                  fill: false,
                  limit: 50,
   ) = {
+  if sampler == auto {
+    sampler = sample.sample-binary
+      .with(x-domain: x-domain,
+            y-domain: y-domain,
+            x-samples: x-samples,
+            y-samples: y-samples)
+  }
+
   // Sample a x/y function
   if type(data) == function {
-    data = sample.sample-fn2(data,
-                             x-domain, y-domain,
-                             x-samples, y-samples)
+    data = sampler(data)
   }
 
   // Find matrix dimensions

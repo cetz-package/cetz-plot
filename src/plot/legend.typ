@@ -240,3 +240,8 @@
     (plot-legend-preview: _ => { preview() })
   },)
 }
+
+// TODO: Stub
+#let draw-legend(ptx) = {
+  //draw.rect((0,0), (1,1))
+}

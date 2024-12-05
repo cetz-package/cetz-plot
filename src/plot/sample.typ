@@ -13,7 +13,7 @@
 ///                      to the `samples` number of samples. Values outsides the
 ///                      specified domain are legal.
 /// -> array: Array of (x, y) tuples
-#let sample-fn(fn, domain, samples, sample-at: ()) = {
+#let sample(fn, domain: (0,1), samples: 25, sample-at: ()) = {
   assert(samples + sample-at.len() >= 2,
     message: "You must at least sample 2 values")
   assert(type(domain) == array and domain.len() == 2,
@@ -41,6 +41,28 @@
   })
 }
 
+/// Sample the given single parameter function `samples` times (rounded down),
+/// with $diam(domain)$ integer values.
+/// And returns the sampled `y` value in an array as `(x, y)` tuples.
+///
+/// If the functions first return value is a tuple `(x, y)`, then all return values
+/// must be a tuple.
+///
+/// - fn (function): Function to sample of the form `(x) => y` or `(t) => (x, y)`, where
+///   `x` or `t` are `float` values within the domain specified by `domain`.
+/// - domain (domain): Domain of `fn` used as bounding interval for the sampling points.
+/// - sample-at (array): List of x values the function gets sampled at in addition
+///                      to the `samples` number of samples. Values outsides the
+///                      specified domain are legal.
+/// -> array: Array of (x, y) tuples
+#let sample-int(fn, domain: (0,1), sample-at: ()) = {
+  let (low, high) = domain.map(calc.floor)
+  let samples = high - low + 1
+
+  return sample(n => fn(int(n)), domain: domain, samples: samples,
+    sample-at: sample-at.map(calc.floor))
+}
+
 /// Samples the given two parameter function with `x-samples` and
 /// `y-samples` values evenly spaced within the range given by
 /// `x-domain` and `y-domain` and returns each sampled output in
@@ -54,7 +76,7 @@
 /// - x-samples (int): Number of samples in the x-domain.
 /// - y-samples (int): Number of samples in the y-domain.
 /// -> array: Array of z scalars
-#let sample-fn2(fn, x-domain, y-domain, x-samples, y-samples) = {
+#let sample-binary(fn, x-domain: (0,1), y-domain: (0,1), x-samples: 25, y-samples: 25) = {
   assert(x-samples >= 2,
     message: "You must at least sample 2 x-values")
   assert(y-samples >= 2,

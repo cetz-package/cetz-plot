@@ -2,6 +2,33 @@
 #import cetz.util: bezier
 #import cetz: vector
 
+#let float-epsilon = cetz.util.float-epsilon
+
+#let set-auto-domain(ptx, axes, dom) = {
+  let axes = axes.map(name => ptx.axes.at(name))
+  assert(axes.len() == dom.len())
+
+  for (i, ax) in axes.enumerate() {
+    let (min, max) = ax.auto-domain
+    if min == none {
+      min = dom.at(i).at(0)
+    } else {
+      min = calc.min(min, dom.at(i).at(0))
+    }
+    if max == none {
+      max = dom.at(i).at(1)
+    } else {
+      max = calc.max(max, dom.at(i).at(1))
+    }
+    if min == max {
+      min -= float-epsilon
+      max += float-epsilon
+    }
+    ptx.axes.at(ax.name).auto-domain = (min, max)
+  }
+  return ptx
+}
+
 /// Clip line-strip in rect
 ///
 /// - points (array): Array of vectors representing a line-strip
@@ -177,8 +204,24 @@
 /// - axes (list): List of axes
 /// -> array List of stroke paths
 #let compute-stroke-paths(points, axes) = {
+  if not axes.any(ax => ax.at("clip", default: true)) {
+    return (points,)
+  }
+
   let (x, y, ..) = axes
-  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: false)
+  let (x-min, x-max) = if x.at("clip", default: true) {
+    (x.min, x.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  let (y-min, y-max) = if y.at("clip", default: true) {
+    (y.min, y.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  clipped-paths(points, (x-min, y-min), (x-max, y-max), fill: false)
 }
 
 /// Compute clipped fill path
@@ -187,8 +230,24 @@
 /// - axes (list): List of axes
 /// -> array List of fill paths
 #let compute-fill-paths(points, axes) = {
+  if not axes.any(ax => ax.at("clip", default: true)) {
+    return (points,)
+  }
+
   let (x, y, ..) = axes
-  clipped-paths(points, (x.min, y.min), (x.max, y.max), fill: true)
+  let (x-min, x-max) = if x.at("clip", default: true) {
+    (x.min, x.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  let (y-min, y-max) = if y.at("clip", default: true) {
+    (y.min, y.max)
+  } else {
+    (-float.inf, float.inf)
+  }
+
+  clipped-paths(points, (x-min, y-min), (x-max, y-max), fill: true)
 }
 
 /// Return points of a sampled catmull-rom through the
@@ -269,111 +328,41 @@
   return pts
 }
 
-// Get the default axis orientation
-// depending on the axis name
-#let get-default-axis-horizontal(name) = {
-  return lower(name).starts-with("x")
-}
-
 // Setup axes dictionary
 //
 // - axis-dict (dictionary): Existing axis dictionary
 // - options (dictionary): Named arguments
-// - plot-size (tuple): Plot width, height tuple
-#let setup-axes(ctx, axis-dict, options, plot-size) = {
-  import "/src/axes.typ"
+#let setup-axes(ptx, options) = {
+  import "/src/axis.typ"
+  let axes = ptx.axes
 
   // Get axis option for name
-  let get-axis-option(axis-name, name, default) = {
+  let get-opt(axis-name, name, default) = {
     let v = options.at(axis-name + "-" + name, default: default)
     if v == auto { default } else { v }
   }
 
-  for (name, axis) in axis-dict {
-    let used = axis.at("used", default: false)
+  for (name, ax) in axes {
+    ax.min = get-opt(name, "min", ax.min)
+    ax.max = get-opt(name, "max", ax.max)
+    ax.clip = get-opt(name, "clip", ax.at("clip", default: true))
+    ax.label = get-opt(name, "label", ax.label)
+    ax.transform = get-opt(name, "transform", ax.transform)
+    ax.ticks.list = get-opt(name, "list", ax.ticks.list)
+    ax.ticks.format = get-opt(name, "format", ax.ticks.format)
+    ax.ticks.step = get-opt(name, "tick-step", ax.ticks.step)
+    ax.ticks.minor-step = get-opt(name, "minor-tick-step", ax.ticks.minor-step)
+    ax.grid = get-opt(name, "grid", ax.grid)
 
-    if not "ticks" in axis { axis.ticks = () }
-    axis.label = get-axis-option(name, "label", if used { $#name$ } else { axis.at("label", default: none) })
-
-    // Configure axis bounds
-    axis.min = get-axis-option(name, "min", axis.min)
-    axis.max = get-axis-option(name, "max", axis.max)
-
-    if axis.min == none {
-      axis.min = 0
-      axis.ticks.step = none
-      axis.ticks.minor-step = none
-      axis.ticks.format = none
-    }
-    if axis.max == none { axis.max = axis.min }
-    if axis.min == axis.max {
-      axis.min -= 1; axis.max += 1
+    if get-opt(name, "mode", none) != none {
+      panic("Mode switching is no longer supported. Use log-axis/lin-axis to create the axis.")
     }
 
-    axis.mode = get-axis-option(name, "mode", "lin")
-    axis.base = get-axis-option(name, "base", 10)
-
-    // Configure axis orientation
-    axis.horizontal = get-axis-option(name, "horizontal",
-      get-default-axis-horizontal(name))
-
-    // Configure ticks
-    axis.ticks.list = get-axis-option(name, "ticks", ())
-    axis.ticks.step = get-axis-option(name, "tick-step", axis.ticks.step)
-    axis.ticks.minor-step = get-axis-option(name, "minor-tick-step", axis.ticks.minor-step)
-    axis.ticks.decimals = get-axis-option(name, "decimals", 2)
-    axis.ticks.unit = get-axis-option(name, "unit", [])
-    axis.ticks.format = get-axis-option(name, "format", axis.ticks.format)
-
-    // Axis break
-    axis.show-break = get-axis-option(name, "break", false)
-    axis.inset = get-axis-option(name, "inset", (0, 0))
-
-    // Configure grid
-    axis.ticks.grid = get-axis-option(name, "grid", false)
-
-    axis-dict.at(name) = axis
+    axes.at(name) = axis.prepare(ptx, ax)
   }
 
-  // Set axis options round two, after setting
-  // axis bounds
-  for (name, axis) in axis-dict {
-    let changed = false
-
-    // Configure axis aspect ratio
-    let equal-to = get-axis-option(name, "equal", none)
-    if equal-to != none {
-      assert.eq(type(equal-to), str,
-        message: "Expected axis name.")
-      assert(equal-to != name,
-        message: "Axis can not be equal to itself.")
-
-      let other = axis-dict.at(equal-to, default: none)
-      assert(other != none,
-        message: "Other axis must exist.")
-      assert(axis.kind == "cartesian" and other.kind == "cartesian",
-        message: "Bothe axes must be cartesian.")
-
-      let dir = vector.sub(axis.target, axis.origin)
-      let other-dir = vector.sub(other.target, other.origin)
-      let ratio = vector.len(dir) / vector.len(other-dir)
-
-      axis.min = other.min * ratio
-      axis.max = other.max * ratio
-
-      changed = true
-    }
-
-    if changed {
-      axis-dict.at(name) = axis
-    }
-  }
-
-  for (name, axis) in axis-dict {
-    axis-dict.at(name) = axes.prepare-axis(ctx, axis, name)
-  }
-
-  return axis-dict
+  ptx.axes = axes
+  return ptx
 }
 
 /// Tests if point pt is contained in the

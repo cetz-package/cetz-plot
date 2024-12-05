@@ -1,5 +1,4 @@
 #import "/src/cetz.typ": draw
-#import "/src/axes.typ"
 #import "/src/plot/util.typ"
 
 // Draw mark at point with size

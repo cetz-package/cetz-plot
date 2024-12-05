@@ -1,8 +1,15 @@
-#import "/src/cetz.typ": util, draw, matrix, vector, styles, palette
+#import "/src/cetz.typ"
+#import cetz: util, draw, matrix, vector, styles, palette, coordinate, styles
 #import util: bezier
 
-#import "/src/axes.typ"
-#import "/src/plot/sample.typ": sample-fn, sample-fn2
+#import "/src/axis.typ"
+#import "/src/projection.typ"
+#import "/src/spine.typ"
+#import "/src/ticks.typ"
+#import "/src/sub-plot.typ"
+#import "/src/compat.typ"
+
+#import "/src/plot/sample.typ": sample, sample-int, sample-binary
 #import "/src/plot/line.typ": add, add-hline, add-vline, add-fill-between
 #import "/src/plot/contour.typ": add-contour
 #import "/src/plot/boxwhisker.typ": add-boxwhisker
@@ -29,22 +36,51 @@
   return default-plot-style(i)
 }
 
-/// Add a cartesian axis to a plot
-#let add-cartesian-axis(name, origin, target) = {
-  ((type: "context", fn: (ctx) => {
-    let axis = (
-      name: name,
-      kind: "cartesian",
-      origin: origin,
-      target: target,
-      min: none,
-      max: none,
-      ticks: (step: auto, minor-step: none, format: "float", list: ())
-    )
-    ctx.axes.insert(name, axis)
-    return ctx
+/// Add a linear axis to a plot
+/// - name (str): Axis name
+/// - min: (none, float): Minimum
+/// - max: (none, float): Maximum
+#let lin-axis(name, min: none, max: none, ..options) = {
+  ((priority: -100, fn: (ptx) => {
+    ptx.axes.insert(name, axis.linear(name, min, max, ..options))
+    return ptx
   }),)
 }
+
+/// Add a logarithmic axis to a plot
+/// - name (str): Axis name
+/// - min: (none, float): Minimum
+/// - max: (none, float): Maximum
+/// - base: (int): Log base
+#let log-axis(name, min: none, max: none, base: 10, ..options) = {
+  ((priority: -100, fn: (ptx) => {
+    ptx.axes.insert(name, axis.logarithmic(name, min, max, base, ..options))
+    return ptx
+  }),)
+}
+
+
+#let templates = (
+  scientific: (ptx) => {
+    lin-axis("x")
+    lin-axis("y")
+    //lin-axis("u")
+    //lin-axis("v")
+    sub-plot.new("x", "y")
+  },
+  scientific-4: (ptx) => {
+    lin-axis("x")
+    lin-axis("y")
+    lin-axis("u")
+    lin-axis("v")
+    sub-plot.new("x", "y", "u", "v")
+  },
+  school-book: (ptx) => {
+    lin-axis("x")
+    lin-axis("y")
+    sub-plot.new("x", "y")
+  },
+)
 
 /// Create a plot environment. Data to be plotted is given by passing it to the
 /// `plot.add` or other plotting functions. The plot environment supports different
@@ -204,303 +240,158 @@
 /// - legend-style (style): Style key-value overwrites for the legend style with style root `legend`.
 /// - ..options (any): Axis options, see _options_ below.
 #let plot(body,
-          size: (1, 1),
-          axis-style: "scientific",
           name: none,
+          size: (5, 4),
+          template: "scientific",
           plot-style: default-plot-style,
-          mark-style: default-mark-style,
-          fill-below: true,
           legend: auto,
-          legend-anchor: auto,
+          draw-legend: plot-legend.draw-legend,
           legend-style: (:),
-          ..options
-          ) = draw.group(name: name, cetz-ctx => {
-  draw.assert-version(version(0, 3, 1))
+          fill-below: true,
+          ..options) = draw.get-ctx(ctx => {
+  let body = body
+  let ptx = (
+    cetz-ctx: ctx,
 
-  // Plot local context
-  let ctx = (
-    origin: (0, 0),
-    size: size,
-    axes: (:)
+    default-size: size,
+    options: options.named(),
+
+    axes: (:),   // Shared axes
+    plots: (),   // Sub plots
+    data: (),    // Plot data
+    legend: (),  // Legend entries
+    anchors: (), // Anchors
   )
 
-  // Setup default axes
-  let default-axes = (
-    if axis-style in (none, "scientific", "scientific-auto") {
-      add-cartesian-axis("x",  (0,0), (size.at(0),0))
-      add-cartesian-axis("x2", (0,size.at(1)), (size.at(0),size.at(1)))
-      add-cartesian-axis("y",  (0,0), (0,size.at(1)))
-      add-cartesian-axis("y2", (size.at(0),0), (size.at(0),size.at(1)))
-    } else if axis-style in ("school-book", "left") {
-      add-cartesian-axis("x",  (0,0), (size.at(0),0))
-      add-cartesian-axis("y",  (0,0), (0,size.at(1)))
-    }
-  )
-
-  let body = default-axes + body
-
-  // Create plot context object
-  let make-ctx(axes, size) = {
-    assert(axes.len() >= 1, message: "At least one axis must exist")
-    assert(size.at(0) > 0 and size.at(1) > 0, message: "Plot size must be > 0")
-
-    return (axes: axes, size: size)
+  if template != none and template in templates {
+    body = (templates.at(template))(ptx) + body
   }
 
-  // Setup data viewport
-  let data-viewport(data, all-axes, body, name: none) = {
-    if body == none or body == () { return }
-
-    // Setup the viewport
-    axes.axis-viewport(all-axes, body, name: name)
-  }
-
-  let data = ()
-  let anchors = ()
-  let annotations = ()
-  let body = if body != none { body } else { () }
-
-  for cmd in body {
-    assert(type(cmd) == dictionary and "type" in cmd,
-           message: "Expected plot sub-command in plot body")
-    if cmd.type == "anchor" {
-      anchors.push(cmd)
-    } else if cmd.type == "annotation" {
-      annotations.push(cmd)
-    } else if cmd.type == "context" {
-      ctx = (cmd.fn)(ctx)
-    } else { data.push(cmd) }
-  }
-
-  assert(axis-style in (none, "scientific", "scientific-auto", "school-book", "left"),
-    message: "Invalid plot style")
-
-
-  // Create axes for data & annotations
-  for d in data + annotations {
-    if "axes" not in d { continue }
-
-    for (i, name) in d.axes.enumerate() {
-      assert(name in ctx.axes, message: "Undefined axis " + name)
-
-      let axis = ctx.axes.at(name)
-      axis.used = true
-
-      let domain = if i == 0 {
-        d.at("x-domain", default: (none, none))
-      } else {
-        d.at("y-domain", default: (none, none))
-      }
-      if domain != (none, none) {
-        axis.min = util.min(axis.min, ..domain)
-        axis.max = util.max(axis.max, ..domain)
-      }
-
-      ctx.axes.at(name) = axis
-    }
-  }
-
-  // Set axis options
-  ctx.axes = plot-util.setup-axes(cetz-ctx, ctx.axes, options.named(), size)
-
-  // Prepare styles
-  for i in range(data.len()) {
-    if "style" not in data.at(i) { continue }
-
-    let style-base = plot-style
-    if type(style-base) == function {
-      style-base = (style-base)(i)
-    }
-    assert.eq(type(style-base), dictionary,
-      message: "plot-style must be of type dictionary")
-
-    if type(data.at(i).style) == function {
-      data.at(i).style = (data.at(i).style)(i)
-    }
-    assert.eq(type(style-base), dictionary,
-      message: "data plot-style must be of type dictionary")
-
-    data.at(i).style = util.merge-dictionary(
-      style-base, data.at(i).style)
-
-    if "mark-style" in data.at(i) {
-      let mark-style-base = mark-style
-      if type(mark-style-base) == function {
-        mark-style-base = (mark-style-base)(i)
-      }
-      assert.eq(type(mark-style-base), dictionary,
-        message: "mark-style must be of type dictionary")
-
-      if type(data.at(i).mark-style) == function {
-        data.at(i).mark-style = (data.at(i).mark-style)(i)
-      }
-
-      if type(data.at(i).mark-style) == dictionary {
-        data.at(i).mark-style = util.merge-dictionary(
-          mark-style-base,
-          data.at(i).mark-style
-        )
-      }
-    }
-  }
-
-  draw.group(name: "plot", {
-    draw.anchor("origin", (0, 0))
-
-    // Prepare
-    for i in range(data.len()) {
-      if "axes" not in data.at(i) { continue }
-
-      let plot-ctx = make-ctx(data.at(i).axes.map(name => ctx.axes.at(name)), size)
-
-      if "plot-prepare" in data.at(i) {
-        data.at(i) = (data.at(i).plot-prepare)(data.at(i), plot-ctx)
-        assert(data.at(i) != none,
-          message: "Plot prepare(self, cxt) returned none!")
-      }
-    }
-
-    // Background Annotations
-    for a in annotations.filter(a => a.background) {
-      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
-
-      data-viewport(a, plot-ctx.axes, {
-        draw.anchor("default", (0, 0))
-        a.body
-      })
-    }
-
-    // Fill
-    if fill-below {
-      for d in data {
-        if "axes" not in d { continue }
-
-        let plot-ctx = make-ctx(d.axes.map(name => ctx.axes.at(name)), size)
-
-        data-viewport(d, plot-ctx.axes, {
-          draw.anchor("default", (0, 0))
-          draw.set-style(..d.style)
-
-          if "plot-fill" in d {
-            (d.plot-fill)(d, plot-ctx)
-          }
-        })
-      }
-    }
-
-    if axis-style in ("scientific", "scientific-auto") {
-      let draw-unset = if axis-style == "scientific" {
-        true
-      } else {
-        false
-      }
-
-      let mirror = if axis-style == "scientific" {
-        auto
-      } else {
-        none
-      }
-
-      axes.scientific(
-        size: size,
-        draw-unset: draw-unset,
-        bottom: ctx.axes.at("x", default: none),
-        top: ctx.axes.at("x2", default: mirror),
-        left: ctx.axes.at("y", default: none),
-        right: ctx.axes.at("y2", default: mirror),)
-    } else if axis-style == "left" {
-      axes.school-book(
-        size: size,
-        ctx.axes.x,
-        ctx.axes.y,
-        x-position: ctx.axes.y.min,
-        y-position: ctx.axes.x.min)
-    } else if axis-style == "school-book" {
-      axes.school-book(
-        size: size,
-        ctx.axes.x,
-        ctx.axes.y,)
-    }
-
-    // Stroke + Mark data
-    for d in data {
-      if "axes" not in d { continue }
-
-      let plot-ctx = make-ctx(d.axes.map(name => ctx.axes.at(name)), size)
-
-      data-viewport(d, plot-ctx.axes, {
-        draw.anchor("default", (0, 0))
-        draw.set-style(..d.style)
-
-        if not fill-below and "plot-fill" in d {
-          (d.plot-fill)(d, plot-ctx)
-        }
-        if "plot-stroke" in d {
-          (d.plot-stroke)(d, plot-ctx)
-        }
-      })
-
-      if "mark" in d and d.mark != none {
-        draw.scope({
-          draw.set-style(..d.style, ..d.mark-style)
-          mark.draw-mark(d.data, plot-ctx.axes, d.mark, d.mark-size)
-        })
-      }
-    }
-
-    // Foreground Annotations
-    for a in annotations.filter(a => not a.background) {
-      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
-
-      data-viewport(a, plot-ctx.axes, {
-        draw.anchor("default", (0, 0))
-        a.body
-      })
-    }
-
-    // Place anchors
-    for a in anchors {
-      let plot-ctx = make-ctx(a.axes.map(name => ctx.axes.at(name)), size)
-
-      let pt = a.position.enumerate().map(((i, v)) => {
-        if v == "min" { return plot-ctx.axes.at(i).min }
-        if v == "max" { return plot-ctx.axes.at(i).max }
-        return v
-      })
-      pt = axes.transform-vec(plot-ctx.axes, pt)
-      if pt != none {
-        draw.anchor(a.name, pt)
-      }
+  // Wrap old style elements
+  body = body.map(elem => {
+    return if "type" in elem {
+      compat.wrap(elem)
+    } else {
+      elem
     }
   })
 
-  // Draw the legend
-  if legend != none {
-    let items = data.filter(d => "label" in d and d.label != none)
-    if items.len() > 0 {
-      let legend-style = styles.resolve(cetz-ctx.style,
-        base: plot-legend.default-style, merge: legend-style, root: "legend")
+  let plot-elements = body
+    .filter(elem => type(elem) == dictionary)
+    .sorted(key: elem => elem.at("priority", default: 0))
+  let cetz-elements = body
+    .filter(elem => type(elem) == function)
 
-      plot-legend.add-legend-anchors(legend-style, "plot", size)
-      plot-legend.legend(legend, anchor: legend-anchor, {
-        for item in items {
-          let preview = if "plot-legend-preview" in item {
-            _ => {(item.plot-legend-preview)(item) }
-          } else {
-            auto
-          }
+  for elem in plot-elements.filter(elem => elem.priority <= 0) {
+    assert("fn" in elem,
+      message: "Invalid plot element: " + repr(elem))
 
-          plot-legend.item(item.label, preview,
-            mark: item.at("mark", default: none),
-            mark-size: item.at("mark-size", default: none),
-            mark-style: item.at("mark-style", default: none),
-            ..item.at("style", default: (:)))
-        }
-      }, ..legend-style)
-    }
+    ptx = (elem.fn)(ptx)
+    assert(ptx != none)
   }
 
-  draw.copy-anchors("plot")
+  // Apply axis options & prepare axes
+  ptx = plot-util.setup-axes(ptx, options.named())
+
+  for elem in plot-elements.filter(elem => elem.priority > 0) {
+    assert("fn" in elem,
+      message: "Invalid plot element: " + repr(elem))
+
+    ptx = (elem.fn)(ptx)
+    assert(ptx != none)
+  }
+
+  // Prepare styles
+  ptx.data = ptx.data.enumerate().map(((i, data)) => {
+    let style = if type(plot-style) == function {
+      (plot-style)(i)
+    } else if type(plot-style) == array {
+      plot-style.at(calc.rem(i, plot-style.len()))
+    } else {
+      plot-style
+    }
+
+    let data-style = data.at("style", default: (:))
+    if type(data-style) == function {
+      data-style = (data-style)(i)
+    }
+
+    data.style = if style != none {
+      cetz.util.merge-dictionary(style, data-style)
+    } else {
+      data-style
+    }
+    return data
+  })
+
+  draw.group(name: name, {
+    draw.group(name: "plot", {
+      for sub-plot in ptx.plots {
+        let matching-data = ()
+        for proj in sub-plot.projections {
+          let axis-names = proj.axes.map(ax => ax.name)
+          let sub-data = ptx.data.filter(data => data.axes.all(ax => ax in axis-names))
+          if sub-data != () {
+            matching-data.push((proj, sub-data))
+          }
+        }
+
+        // Draw background
+        for (proj, sub-data) in matching-data {
+          for data in sub-data {
+            draw.scope({
+              draw.set-style(..data.style)
+              if fill-below {
+                (data.fill)(ptx, proj.transform)
+              }
+            })
+          }
+        }
+
+        // Draw spine (axes, ticks, ...)
+        if sub-plot.at("spine", default: none) != none {
+          draw.group(name: sub-plot.spine.name, {
+            (sub-plot.spine.draw)(ptx)
+          })
+        }
+
+        // Draw foreground
+        for (proj, sub-data) in matching-data {
+          for data in sub-data {
+            draw.scope({
+              draw.set-style(..data.style)
+              if not fill-below {
+                (data.fill)(ptx, proj.transform)
+              }
+              (data.stroke)(ptx, proj.transform)
+            })
+          }
+        }
+      }
+
+      draw.scope({
+        cetz-elements
+      })
+    })
+
+    if ptx.legend != none {
+      draw.scope({
+      /*
+        draw.set-origin("plot." + options.at("legend", default: "north-east"))
+        draw.group(name: "legend", anchor: options.at("legend-anchor", default: "north-west"), {
+          draw.anchor("default", (0,0))
+          draw-legend(ptx)
+        })
+      */
+      })
+    }
+
+    for (name, pt) in ptx.anchors {
+      draw.anchor(name, pt)
+    }
+
+    draw.copy-anchors("plot")
+  })
 })
 
 /// Add an anchor to a plot environment
@@ -529,9 +420,27 @@
 ///   as `add-anchors` does not create them on demand.
 #let add-anchor(name, position, axes: ("x", "y")) = {
   ((
-    type: "anchor",
-    name: name,
-    position: position,
-    axes: axes,
+    priority: 100,
+    fn: ptx => {
+      for plot in ptx.plots {
+        for proj in plot.projections {
+          let axis-names = proj.axes.map(ax => ax.name)
+          if axes.all(name => axis-names.contains(name)) {
+            let position = position.enumerate().map(((i, v)) => {
+              return if v == "min" {
+                proj.axes.at(i).min
+              } else if v == "max" {
+                proj.axes.at(i).max
+              } else {
+                v
+              }
+            })
+            let pt = (proj.transform)(position).first()
+            ptx.anchors.push((name, pt))
+          }
+        }
+      }
+      return ptx
+    }
   ),)
 }

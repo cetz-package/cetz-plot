@@ -141,15 +141,15 @@ Uniform marks across the series
   )
 })
 
-= Logarithym
 // Test pending upstream
 #test-case({
   plot.plot(
     size: (10,6), 
     // x-min: 35, x-max: 45,
     y-max: 100,
-    y-mode: "log", y-tick-step: 1, y-base: 10, y-format: "sci", y-minor-tick-step: 1,
+    y-tick-step: 1, y-base: 10, y-format: "sci", y-minor-tick-step: 1,
     {
+      plot.log-axis("y")
       plot.add-comb(
         label: "Linalool, 70eV",
         mark: "o",
@@ -166,8 +166,9 @@ Uniform marks across the series
     size: (10,6), 
     x-min: 10, x-max: 1000,
     y-max: 100, y-tick-step: 20,
-    x-mode: "log", x-tick-step: 1, x-base: 10, x-format: "sci",
+    x-tick-step: 1, x-base: 10, x-format: "sci",
     {
+      plot.log-axis("x")
       plot.add-comb(
         label: "Linalool, 70eV",
         mark: "x",
