@@ -81,7 +81,38 @@
         }
       })
 
-      // TODO: Draw labels
+      let label-config = (
+        ("south", "north", 0deg),
+        ("west",  "south", 90deg),
+        ("north", "south", 0deg),
+        ("east",  "north", 90deg),
+      )
+      for (i, (side, default-anchor, default-angle)) in label-config.enumerate() {
+        let (ax, dir, _, proj, style, mirror) = axes.at(i)
+        if ax.label != none and ax.label != [] {
+          let pos = proj((ax.max + ax.min) / 2)
+          let offset = vector.scale(dir, -style.label.offset)
+          let is-horizontal = calc.rem(i, 2) == 0
+          pos = if is-horizontal {
+            (pos, "|-", (rel: offset, to: "spine." + side))
+          } else {
+            (pos, "-|", (rel: offset, to: "spine." + side))
+          }
+
+          let angle = style.label.angle
+          if angle == auto {
+            angle = default-angle
+          }
+
+          let anchor = style.label.anchor
+          if anchor == auto {
+            anchor = default-anchor
+          }
+
+          draw.content(pos,
+            [#ax.label], anchor: anchor, angle: angle)
+        }
+      }
     },
   )
 }

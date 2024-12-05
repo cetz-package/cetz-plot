@@ -72,6 +72,12 @@
     minor-stroke: black + .25pt,
   ),
 
+  label: (
+    angle: auto,
+    offset: .5em,
+    anchor: auto,
+  ),
+
   // Overrides
   x: (
     tick: (
@@ -135,6 +141,8 @@
   style.tick.minor-length = resolve-relative-number(style.tick.minor-length, style.tick.length)
 
   style.tick.label.offset = resolve-number(style.tick.label.offset)
+
+  style.label.offset = resolve-number(style.label.offset)
 
   return style
 }
