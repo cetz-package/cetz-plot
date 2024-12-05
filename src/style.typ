@@ -68,8 +68,8 @@
   ),
 
   grid: (
-    stroke: black + .5pt,
-    minor-stroke: black + .25pt,
+    stroke: gray + .5pt,
+    minor-stroke: gray + .25pt,
   ),
 
   label: (

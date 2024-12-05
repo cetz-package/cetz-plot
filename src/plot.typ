@@ -64,6 +64,13 @@
   scientific: (ptx) => {
     lin-axis("x")
     lin-axis("y")
+    //lin-axis("u")
+    //lin-axis("v")
+    sub-plot.new("x", "y")
+  },
+  scientific-4: (ptx) => {
+    lin-axis("x")
+    lin-axis("y")
     lin-axis("u")
     lin-axis("v")
     sub-plot.new("x", "y", "u", "v")
