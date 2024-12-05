@@ -167,7 +167,7 @@
       plot.add(circle-data, axes: ("x", "yt"), style: (stroke: blue))
       plot.add(circle-data, axes: ("x", "yb"), style: (stroke: yellow))
     })
-}),))
+})
 
 /* Anchors */
 #test-case({
@@ -218,7 +218,6 @@
 })
 
 // Test plot with anchors only
-/*
 #test-case({
   import draw: *
 

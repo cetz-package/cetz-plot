@@ -417,8 +417,17 @@
     fn: ptx => {
       for plot in ptx.plots {
         for proj in plot.projections {
-          if axes.all(name => proj.axes.contains(name)) {
-            // FIXME: Broken
+          let axis-names = proj.axes.map(ax => ax.name)
+          if axes.all(name => axis-names.contains(name)) {
+            let position = position.enumerate().map(((i, v)) => {
+              return if v == "min" {
+                proj.axes.at(i).min
+              } else if v == "max" {
+                proj.axes.at(i).max
+              } else {
+                v
+              }
+            })
             let pt = (proj.transform)(position).first()
             ptx.anchors.push((name, pt))
           }
