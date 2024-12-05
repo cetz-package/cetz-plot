@@ -69,15 +69,17 @@
 
       draw.group(name: "spine", {
         for (ax, dir, grid-length, proj, style, mirror) in axes {
-          draw.on-layer(style.axis-layer, {
-            draw.line(proj(ax.min), proj(ax.max), stroke: style.stroke, mark: style.mark)
-          })
           if "computed-ticks" in ax {
             if not mirror {
               grid.draw-cartesian(proj, 0, grid-length, dir, ax.computed-ticks, style.grid, ax.grid)
             }
             ticks.draw-cartesian(proj, dir, ax.computed-ticks, style, is-mirror: mirror)
           }
+        }
+        for (ax, dir, grid-length, proj, style, mirror) in axes {
+          draw.on-layer(style.axis-layer, {
+            draw.line(proj(ax.min), proj(ax.max), stroke: style.stroke, mark: style.mark)
+          })
         }
       })
 
