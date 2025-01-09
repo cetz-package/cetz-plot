@@ -25,7 +25,7 @@
 // Outline
 #{
   show heading: none
-  columns(2, outline(indent: true, depth: 3))
+  columns(2, outline(indent: auto, depth: 3))
   pagebreak(weak: true)
 }
 
