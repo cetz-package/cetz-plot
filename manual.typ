@@ -25,7 +25,7 @@
 // Outline
 #{
   show heading: none
-  columns(2, outline(indent: true, depth: 3))
+  columns(2, outline(indent: auto, depth: 3))
   pagebreak(weak: true)
 }
 
@@ -54,9 +54,32 @@ module imported into the namespace.
 = Plot
 
 #doc-style.parse-show-module("/src/plot.typ")
+
 #for m in ("line", "bar", "boxwhisker", "contour", "errorbar", "annotation", "formats", "violin", "legend") {
   doc-style.parse-show-module("/src/plot/" + m + ".typ")
 }
+
+== Styling
+You can use style root `axes` with the following keys:
+#doc-style.parse-show-module("/src/axes.typ")
+
+=== Example
+```example
+import cetz.draw: *
+import cetz-plot: *
+
+set-style(axes: (
+  stroke: (dash: "dotted", paint: gray),
+  x: (mark: (start: ">", end: ">"), padding: 1),
+  y: (mark: none),
+  tick: (stroke: gray + .5pt),
+))
+
+plot.plot(size: (5, 4), axis-style: "school-book", y-tick-step: none, {
+  plot.add(calc.sin, domain: (0, calc.pi * 2))
+})
+
+```
 
 = Chart
 
@@ -64,3 +87,4 @@ module imported into the namespace.
 #for m in ("barchart", "boxwhisker", "columnchart", "piechart", "pyramid") {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }
+
