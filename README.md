@@ -34,8 +34,14 @@ CeTZ-Plot requires CeTZ version ≥ 0.3.1!
       <img src="gallery/pyramid.png" width="250px">
     </a>
   </td>
+  <td colspan="2">
+    <a href="gallery/process.typ">
+      <img src="gallery/process.png" width="500px">
+    </a>
+  </td>
 </tr><tr>
   <td>Pyramid</td>
+  <td colspan="2">Process</td>
 </tr>
 </table>
 
