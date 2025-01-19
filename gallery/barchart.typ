@@ -13,12 +13,11 @@
 )
 
 #canvas({
-  draw.set-style(legend: (fill: white))
+  draw.set-style(legend: (fill: white), barchart: (bar-width: .8, cluster-gap: 0))
   chart.barchart(mode: "clustered",
                  size: (9, auto),
                  label-key: 0,
                  value-key: (..range(1, 5)),
-                 bar-width: .8,
                  x-tick-step: 2.5,
                  data2,
                  labels: ([Low], [Medium], [High], [Very high]),
