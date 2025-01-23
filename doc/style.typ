@@ -1,7 +1,7 @@
 #import "example.typ": example
 #import "/src/lib.typ"
 
-#import "@preview/tidy:0.1.0"
+#import "@preview/tidy:0.3.0"
 #import "@preview/t4t:0.3.2": is
 
 #let show-function(fn, style-args) = {
@@ -61,7 +61,7 @@
   stack(dir: ttb, spacing: 1em,
     // name <type>     Default: <default>
     block(breakable: false, width: 100%, stack(dir: ltr,
-      [#text(weight: "bold", name + [:]) #types.map(tidy.styles.default.show-type).join(" or ")],
+      [#text(weight: "bold", name + [:]) #types.map(tidy.styles.default.show-type.with(style-args: tidy.styles.default)).join(" or ")],
       if show-default {
         align(right)[
           Default: #raw(
@@ -77,19 +77,6 @@
   )
 }
 
-
-#let show-type = tidy.styles.default.show-type
-#let show-outline = tidy.styles.default.show-outline
-#let show-parameter-list = tidy.styles.default.show-parameter-list
-
-#let style = (
-  show-function: show-function,
-  show-parameter-block: show-parameter-block.with(in-tidy: true),
-  show-type: show-type,
-  show-outline: show-outline,
-  show-parameter-list: show-parameter-list
-)
-
 #let parse-show-module(path) = {
   tidy.show-module(
     tidy.parse-module(
@@ -102,6 +89,5 @@
     ),
     show-outline: false,
     sort-functions: none,
-    style: style
   )
 }
