@@ -143,12 +143,12 @@
 /// - data (array): Array of data items. An item is an array containing a x an one or more y values.
 ///                 For example `(0, 1)` or `(0, 10, 5, 30)`. Depending on the `mode`, the data items
 ///                 get drawn as either clustered or stacked rects.
-/// - x-key: (int,string): Key to use for retrieving a bars x-value from a single data entry.
+/// - x-key (int,string): Key to use for retrieving a bars x-value from a single data entry.
 ///   This value gets passed to the `.at(...)` function of a data item.
-/// - y-key: (auto,int,string,array): Key to use for retrieving a bars y-value. For clustered/stacked
+/// - y-key (auto,int,string,array): Key to use for retrieving a bars y-value. For clustered/stacked
 ///   data, this must be set to a list of keys (e.g. `range(1, 4)`). If set to `auto`, att but the first
 ///   array-values of a data item are used as y-values.
-/// - error-key: (none,int,string,array): Key(s) to use for retrieving a bars y-error.
+/// - error-key (none,int,string,array): Key(s) to use for retrieving a bars y-error.
 /// - mode (string): The mode on how to group data items into bars:
 ///   / basic: Add one bar per data value. If the data contains multiple values,
 ///     group those bars next to each other.

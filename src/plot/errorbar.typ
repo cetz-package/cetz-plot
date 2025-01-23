@@ -59,14 +59,14 @@
 /// Add x- and/or y-error bars
 ///
 /// - pt (tuple): Error-bar center coordinate tuple: `(x, y)`
-/// - x-error: (float,tuple): Single error or tuple of errors along the x-axis
-/// - y-error: (float,tuple): Single error or tuple of errors along the y-axis
-/// - mark: (none,string): Mark symbol to show at the error position (`pt`).
-/// - mark-size: (number): Size of the mark symbol.
-/// - mark-style: (style): Extra style to apply to the mark symbol.
+/// - x-error (float,tuple): Single error or tuple of errors along the x-axis
+/// - y-error (float,tuple): Single error or tuple of errors along the y-axis
+/// - mark (none,string): Mark symbol to show at the error position (`pt`).
+/// - mark-size (number): Size of the mark symbol.
+/// - mark-style (style): Extra style to apply to the mark symbol.
 /// - whisker-size (float): Width of the error bar whiskers in canvas units.
 /// - style (dictionary): Style for the error bars
-/// - label: (none,content): Label to tsh
+/// - label (none,content): Label to tsh
 /// - axes (axes): Plot axes. To draw a horizontal growing bar chart, you can swap the x and y axes.
 #let add-errorbar(pt,
                   x-error: 0,
