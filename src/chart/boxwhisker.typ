@@ -44,7 +44,7 @@
 ///      q2: 35,                //            Median
 ///      q3: 50)                //            Upper
 ///   ```
-/// - size (array) : Size of chart. If the second entry is auto, it automatically scales to accommodate the number of entries plotted
+/// - size (array): Size of chart. If the second entry is auto, it automatically scales to accommodate the number of entries plotted
 /// - label-key (integer, string): Index in the array where labels of each entry is stored
 /// - mark (string): Mark to use for plotting outliers. Set `none` to disable. Defaults to "x"
 /// - ..plot-args (any): Additional arguments are passed to `plot.plot`
