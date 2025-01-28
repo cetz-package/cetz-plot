@@ -22,3 +22,13 @@
     name: "chart",
   )
 })
+
+#cetz.canvas({
+  chart.process.chevron(
+    steps,
+    step-style: colors,
+    equal-length: true,
+    dir: ltr,
+    name: "chart",
+  )
+})
