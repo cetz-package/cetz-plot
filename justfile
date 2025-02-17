@@ -10,10 +10,10 @@ install target="@local":
   ./common/scripts/package "{{target}}"
 
 test *filter:
-  typst-test run {{filter}}
+  tt run {{filter}}
 
 update-test *filter:
-  typst-test update {{filter}}
+  tt update {{filter}}
 
 manual:
   typst c manual.typ manual.pdf

@@ -1,7 +1,7 @@
 [package]
 name = "cetz-plot"
 version = "0.1.1"
-compiler = "0.12.0"
+compiler = "0.13.0-rc1"
 repository = "https://github.com/cetz-package/cetz-plot"
 entrypoint = "src/lib.typ"
 authors = [
