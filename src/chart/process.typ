@@ -42,6 +42,15 @@
   )
 )
 
+/// Possible chevron caps: #cetz.chart.process.CHEVRON-CAPS
+/// #example(```
+/// for cap in chart.process.CHEVRON-CAPS {
+///   chart.process.chevron(
+///     ([Step 1], [Step 2]), spacing: 0,
+///     start-cap: cap, middle-cap: cap, end-cap: cap)
+///   translate(y: -1)
+/// }
+/// ```)
 #let CHEVRON-CAPS = (
   "(", "<", "|", ">", ")"
 )
@@ -231,6 +240,57 @@
   return (sizes, largest-width, highest-height)
 }
 
+/// Draw a basic process chart, describing sequencial steps
+///
+/// #example(```
+/// let steps = ([Improvise], [Adapt], [Overcome])
+/// let colors = (red, orange, green).map(c => c.lighten(40%))
+///
+/// chart.process.basic(
+///   steps,
+///   step-style: colors,
+///   equal-width: true,
+///   steps: (max-width: 8em),
+///   dir: ttb
+/// )
+/// ```)
+///
+/// = Styling
+/// *Root* `process-basic` \
+/// #show-parameter-block("spacing", ("number", "length"), [
+///   Gap between steps and arrows.], default: 0.2em)
+/// #show-parameter-block("steps.radius", ("number", "length"), [
+///   Corner radius of the steps boxes.], default: 0.2em)
+/// #show-parameter-block("steps.padding", ("number", "length"), [
+///   Inner padding of the steps boxes.], default: 0.6em)
+/// #show-parameter-block("steps.max-width", ("number", "length"), [
+///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("arrows.width", ("number", "length"), [
+///   Width / length of arrows.], default: 1.2em)
+/// #show-parameter-block("arrows.height", ("number", "length"), [
+///   Height of arrows.], default: 1em)
+/// 
+/// - steps (array): Array of steps (`<content>` or `<str>`)
+/// - arrow-style (auto, function, array, gradient): Arrow style of the following types:
+///   - auto: If set to auto, the arrows will be filled with a color in between those of the neighboring steps
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each arrow the style at the arrows
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the arrows
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the charts style.
+/// - step-style (function, array, gradient): Step style of the following types:
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each step the style at the steps
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the steps
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the charts style.
+/// - equal-width (boolean): If true, all steps will be sized to have the same width
+/// - equal-height (boolean): If true, all steps will be sized to have the same height
+/// - dir (direction): Direction in which the steps are laid out. The first step is always placed at (0, 0)
 #let basic(
   steps,
   arrow-style: auto,
@@ -409,6 +469,54 @@
   })
 }
 
+
+/// Draw a chevron process chart, describing sequencial steps
+///
+/// #example(```
+/// let steps = ([Improvise], [Adapt], [Overcome])
+/// let colors = (red, orange, green).map(c => c.lighten(40%))
+///
+/// chart.process.chevron(
+///   steps,
+///   step-style: colors,
+///   equal-width: true,
+///   steps: (max-width: 8em, cap-ratio: 25%),
+///   dir: btt
+/// )
+/// ```)
+///
+/// = Styling
+/// *Root* `process-chevron` \
+/// #show-parameter-block("spacing", ("number", "length"), [
+///   Gap between steps.], default: 0.2em)
+/// #show-parameter-block("start-cap", ("string"), [
+///   Cap at the start of the process (first step). See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+/// #show-parameter-block("mid-cap", ("string"), [
+///   Cap between steps. See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+/// #show-parameter-block("end-cap", ("string"), [
+///   Cap at the end of the process (last step). See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+/// #show-parameter-block("start-in-cap", ("boolean"), [
+///   If true, the content of the first step is shifted inside the start cap (useful with "(" or "<").], default: false)
+/// #show-parameter-block("end-in-cap", ("boolean"), [
+///   If true, the content of the last step is shifted inside the end cap (useful with ")" or ">").], default: false)
+/// #show-parameter-block("steps.padding", ("number", "length"), [
+///   Inner padding of the steps boxes.], default: 0.6em)
+/// #show-parameter-block("steps.max-width", ("number", "length"), [
+///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.cap-ratio", ("ratio"), [
+///   Ratio of the caps width relative to the steps heights (or the opposite if laid out vertically).], default: 50%)
+/// 
+/// - steps (array): Array of steps (`<content>` or `<str>`)
+/// - step-style (function, array, gradient): Step style of the following types:
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each step the style at the steps
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the steps
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the charts style.
+/// - equal-length (boolean): If true, all steps will be sized to have the same length (in the layout's direction, the other dimensions always being equal)
+/// - dir (direction): Direction in which the steps are laid out. The first step is always placed at (0, 0)
 #let chevron(
   steps,
   step-style: palette.red,
@@ -566,6 +674,63 @@
   })
 }
 
+/// Draw a bending process chart, describing sequencial steps in a zigzag layout
+///
+/// #example(```
+/// let steps = ([A], [B], [C], [D], [E], [F])
+/// let colors = (
+///   red, orange, yellow.mix(green), green, green.mix(blue), blue
+/// ).map(c => c.lighten(40%))
+///
+/// chart.process.bending(
+///   steps,
+///   step-style: colors,
+///   equal-width: true,
+///   layout: (
+///     flow: (ltr, btt), max-stride: 2
+///   )
+/// )
+/// ```)
+/// 
+/// = Styling
+/// *Root* `process-bending` \
+/// #show-parameter-block("spacing", ("number", "length"), [
+///   Gap between steps and arrows.], default: 0.2em)
+/// #show-parameter-block("steps.radius", ("number", "length"), [
+///   Corner radius of the steps boxes.], default: 0.2em)
+/// #show-parameter-block("steps.padding", ("number", "length"), [
+///   Inner padding of the steps boxes.], default: 0.6em)
+/// #show-parameter-block("steps.max-width", ("number", "length"), [
+///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("arrows.width", ("number", "length"), [
+///   Width / length of arrows.], default: 1.2em)
+/// #show-parameter-block("arrows.height", ("number", "length"), [
+///   Height of arrows.], default: 1em)
+/// #show-parameter-block("layout.max-stride", ("number"), [
+///   Maximum number of steps before turning, i.e. making a zigzag.], default: 3)
+/// #show-parameter-block("layout.flow", ("array"), [
+///   Pair of directions on different axes indicating the primary and secondary layout directions.], default: (ltr, ttb))
+/// 
+/// - steps (array): Array of steps (`<content>` or `<str>`)
+/// - arrow-style (auto, function, array, gradient): Arrow style of the following types:
+///   - auto: If set to auto, the arrows will be filled with a color in between those of the neighboring steps
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each arrow the style at the arrows
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the arrows
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the charts style.
+/// - step-style (function, array, gradient): Step style of the following types:
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each step the style at the steps
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the steps
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the charts style.
+/// - equal-width (boolean): If true, all steps will be sized to have the same width
+/// - equal-height (boolean): If true, all steps will be sized to have the same height
 #let bending(
   steps,
   arrow-style: auto,

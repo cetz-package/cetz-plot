@@ -88,3 +88,7 @@ plot.plot(size: (5, 4), axis-style: "school-book", y-tick-step: none, {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }
 
+== Processes
+
+#doc-style.parse-show-module("/src/chart/process.typ")
+
