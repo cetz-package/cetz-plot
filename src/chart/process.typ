@@ -240,6 +240,90 @@
   return (sizes, largest-width, highest-height)
 }
 
+#let _get-style-at-func(style) = {
+  if type(style) == function {
+    style
+  } else if type(style) == array {
+    i => {
+      let s = style.at(calc.rem(i, style.len()))
+      if type(s) == color or type(s) == gradient {
+        (fill: s)
+      } else {
+        s
+      }
+    }
+  } else if type(style) == gradient {
+    i => (fill: style.sample(i / (steps.len() - 1) * 100%))
+  } else {
+    i => (:)
+  }
+}
+
+#let _pos-to-anchor(pos) = {
+  if pos == left {return "west"}
+  if pos == right {return "east"}
+  if pos == top {return "north"}
+  if pos == bottom {return "south"}
+  panic("Cannot convert alignment " + repr(pos) + " to cardinal anchor")
+}
+
+#let _dir-to-anchors(dir) = {
+  return (
+    _pos-to-anchor(dir.start()),
+    _pos-to-anchor(dir.end())
+  )
+}
+
+#let _dir-to-str(dir) = {
+  if dir == ttb {return "ttb"}
+  if dir == btt {return "btt"}
+  if dir == ltr {return "ltr"}
+  if dir == rtl {return "rtl"}
+  panic("Invalid direction " + repr(dir))
+}
+
+#let _draw-step-content(step, name, width) = {
+  draw.content(
+    name + ".center",
+    box(
+      width: width,
+      align(center)[
+        #set text(bottom-edge: "baseline")
+        #step
+      ]
+    ),
+    anchor: "center"
+  )
+}
+
+#let _draw-step(ctx, step, pos, dir, style, name, w, h) = {
+  let padding = resolve-number(ctx, style.padding)
+  let radius = resolve-number(ctx, style.radius)
+
+  let tl = (
+    rel: (
+      ltr: (0, h / 2 + padding),
+      rtl: (-w - padding * 2, h / 2 + padding),
+      btt: (-w / 2 - padding, h + 2 * padding),
+      ttb: (-w / 2 - padding, 0),
+    ).at(_dir-to-str(dir)),
+    to: pos
+  )
+  let br = (
+    rel: (w + padding * 2, -h - padding * 2),
+    to: tl
+  )
+
+  draw.rect(
+    tl, br,
+    name: name,
+    stroke: style.stroke,
+    fill: style.fill,
+    radius: radius
+  )
+  _draw-step-content(step, name, w * ctx.length)
+}
+
 /// Draw a basic process chart, describing sequencial steps
 ///
 /// #example(```
@@ -265,14 +349,21 @@
 ///   Inner padding of the steps boxes.], default: 0.6em)
 /// #show-parameter-block("steps.max-width", ("number", "length"), [
 ///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
+///   Fill color of the steps boxes.], default: none)
+/// #show-parameter-block("steps.stroke", ("stroke", "none"), [
+///   Stroke color of the steps boxes.], default: none)
 /// #show-parameter-block("arrows.width", ("number", "length"), [
 ///   Width / length of arrows.], default: 1.2em)
 /// #show-parameter-block("arrows.height", ("number", "length"), [
 ///   Height of arrows.], default: 1em)
+/// #show-parameter-block("arrows.fill", ("string", "color", "gradient", "pattern", "none"), [
+///   Fill color of the arrows. If set to "steps", the arrows will be filled with a color in between those of the neighboring steps.], default: "steps")
+/// #show-parameter-block("arrows.stroke", ("stroke", "none"), [
+///   Stroke used for the arrows.], default: none)
 /// 
 /// - steps (array): Array of steps (`<content>` or `<str>`)
-/// - arrow-style (auto, function, array, gradient): Arrow style of the following types:
-///   - auto: If set to auto, the arrows will be filled with a color in between those of the neighboring steps
+/// - arrow-style (function, array, gradient): Arrow style of the following types:
 ///   - function: A function of the form `index => style` that must return a style dictionary.
 ///     This can be a `palette` function.
 ///   - array: An array of style dictionaries or fill colors of at least one item. For each arrow the style at the arrows
@@ -313,37 +404,8 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = if type(step-style) == function {
-      step-style
-    } else if type(step-style) == array {
-      i => {
-        let s = step-style.at(calc.rem(i, step-style.len()))
-        if type(s) == color or type(s) == gradient {
-          (fill: s)
-        } else {
-          s
-        }
-      }
-    } else if type(step-style) == gradient {
-      i => (fill: step-style.sample(i / (steps.len() - 1) * 100%))
-    }
-
-    let arrow-style-at = if type(arrow-style) == function {
-      arrow-style
-    } else if type(arrow-style) == array {
-      i => {
-        let s = arrow-style.at(calc.rem(i, arrow-style.len()))
-        if type(s) == color or type(s) == gradient {
-          (fill: s)
-        } else {
-          s
-        }
-      }
-    } else if type(arrow-style) == gradient {
-      i => (fill: arrow-style.sample(i / (steps.len() - 1) * 100%))
-    } else {
-      i => (:)
-    }
+    let step-style-at = _get-style-at-func(step-style)
+    let arrow-style-at = _get-style-at-func(arrow-style)
 
     let (
       sizes,
@@ -351,7 +413,7 @@
       highest-height
     ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
-    let vertical = dir in (ttb, btt)
+    let vertical = dir.axis() == "vertical"
     let reverse = dir in (rtl, ttb)
     let adapt-offset(offset, ..args) = {
       let offset = offset
@@ -368,12 +430,7 @@
       return offset
     }
 
-    let (anchor-1, anchor-2) = (
-      ltr: ("west", "east"),
-      rtl: ("east", "west"),
-      ttb: ("north", "south"),
-      btt: ("south", "north")
-    ).at(repr(dir))
+    let (anchor-1, anchor-2) = _dir-to-anchors(dir)
 
     for (i, step) in steps.enumerate() {
       let pos = if i == 0 {
@@ -386,15 +443,8 @@
       }
 
       let step-style = style.steps + step-style-at(i)
-      
-      let step-stroke = step-style.stroke
-      let step-fill = step-style.fill
       let padding = resolve-number(ctx, step-style.padding)
-      let radius = resolve-number(ctx, step-style.radius)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
 
-      let m = measure(step, width: max-width * ctx.length)
       let (w, h) = sizes.at(i)
       if equal-width {
         w = largest-width
@@ -403,38 +453,8 @@
         h = highest-height
       }
       let step-name = "step-" + str(i)
-      let tl = (
-        rel: (
-          ltr: (0, h / 2 + padding),
-          rtl: (-w - padding * 2, h / 2 + padding),
-          btt: (-w / 2 - padding, h + 2 * padding),
-          ttb: (-w / 2 - padding, 0),
-        ).at(repr(dir)),
-        to: pos
-      )
-      let br = (
-        rel: (w + padding * 2, -h - padding * 2),
-        to: tl
-      )
 
-      draw.rect(
-        tl, br,
-        name: step-name,
-        stroke: step-stroke,
-        fill: step-fill,
-        radius: radius
-      )
-      draw.content(
-        step-name + ".center",
-        box(
-          width: w * ctx.length,
-          align(center)[
-            #set text(bottom-edge: "baseline")
-            #step
-          ]
-        ),
-        anchor: "center"
-      )
+      _draw-step(ctx, step, pos, dir, step-style, step-name, w, h)
 
       if i != steps.len() - 1 {
         let arrow-style = style.arrows + arrow-style-at(i)
@@ -462,7 +482,7 @@
           arrow-h,
           arrow-fill,
           arrow-stroke,
-          name: "arrow-" + str(i)  
+          name: "arrow-" + str(i)
         )
       }
     }
@@ -505,6 +525,10 @@
 ///   Maximum width of the steps boxes.], default: 5em)
 /// #show-parameter-block("steps.cap-ratio", ("ratio"), [
 ///   Ratio of the caps width relative to the steps heights (or the opposite if laid out vertically).], default: 50%)
+/// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
+///   Fill color of the steps boxes.], default: none)
+/// #show-parameter-block("steps.stroke", ("stroke", "none"), [
+///   Stroke color of the steps boxes.], default: none)
 /// 
 /// - steps (array): Array of steps (`<content>` or `<str>`)
 /// - step-style (function, array, gradient): Step style of the following types:
@@ -537,37 +561,15 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = if type(step-style) == function {
-      step-style
-    } else if type(step-style) == array {
-      i => {
-        let s = step-style.at(calc.rem(i, step-style.len()))
-        if type(s) == color or type(s) == gradient {
-          (fill: s)
-        } else {
-          s
-        }
-      }
-    } else if type(step-style) == gradient {
-      i => (fill: step-style.sample(i / (steps.len() - 1) * 100%))
-    }
+    let step-style-at = _get-style-at-func(step-style)
 
-    let sizes = steps.enumerate().map(p => {
-      let (i, step) = p
-      let step-style = style.steps + step-style-at(i)
-      let padding = resolve-number(ctx, step-style.padding)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
-      let m = measure(step, width: max-width * ctx.length)
-      let w = resolve-number(ctx, m.width)
-      let h = resolve-number(ctx, m.height)
-      return (w, h)
-    })
+    let (
+      sizes,
+      largest-width,
+      highest-height
+    ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
-    let largest-width = calc.max(..sizes.map(s => s.first()))
-    let highest-height = calc.max(..sizes.map(s => s.last()))
-
-    let vertical = dir in (ttb, btt)
+    let vertical = dir.axis() == "vertical"
     let reverse = dir in (rtl, ttb)
     let adapt-offset(offset, ..args) = {
       let offset = offset
@@ -584,12 +586,7 @@
       return offset
     }
 
-    let (anchor-1, anchor-2) = (
-      ltr: ("west", "east"),
-      rtl: ("east", "west"),
-      ttb: ("north", "south"),
-      btt: ("south", "north")
-    ).at(repr(dir))
+    let (anchor-1, anchor-2) = _dir-to-anchors(dir)
 
     for (i, step) in steps.enumerate() {
       let step-style = style.steps + step-style-at(i)
@@ -597,10 +594,7 @@
       let step-stroke = step-style.stroke
       let step-fill = step-style.fill
       let padding = resolve-number(ctx, step-style.padding)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
 
-      let m = measure(step, width: max-width * ctx.length)
       let (w, h) = sizes.at(i)
       if equal-length {
         if vertical {
@@ -614,11 +608,19 @@
       let cap-width = step-style.cap-ratio / 100% * cap-height
       let step-name = "step-" + str(i)
 
+      let cap-s = if i == 0 { style.start-cap }
+                  else { style.middle-cap }
+      let cap-e = if i == steps.len() - 1 { style.end-cap }
+                  else { style.middle-cap }
+
       let pos = if i == 0 {
         (0, 0)
       } else {
         (
-          rel: adapt-offset((spacing + if (style.middle-cap != "|") {cap-width} else {0}, 0)),
+          rel: adapt-offset((
+            spacing + if cap-s != "|" {cap-width} else {0},
+            0
+          )),
           to: "step-" + str(i - 1) + ".end"
         )
       }
@@ -630,22 +632,6 @@
         to: pos
       )
 
-      /*draw.rect(
-        tl, br,
-        name: step-name,
-        stroke: step-stroke,
-        fill: step-fill
-      )*/
-      let cap-s = if i == 0 {
-        style.start-cap
-      } else {
-        style.middle-cap
-      }
-      let cap-e = if i == steps.len() - 1 {
-        style.end-cap
-      } else {
-        style.middle-cap
-      }
       _draw-chevron(
         pos,
         end,
@@ -659,17 +645,7 @@
         (i == steps.len() - 1) and style.end-in-cap,
         name: step-name
       )
-      draw.content(
-        step-name + ".center",
-        box(
-          width: w * ctx.length,
-          align(center)[
-            #set text(bottom-edge: "baseline")
-            #step
-          ]
-        ),
-        anchor: "center"
-      )
+      _draw-step-content(step, step-name, w * ctx.length)
     }
   })
 }
@@ -702,6 +678,10 @@
 ///   Inner padding of the steps boxes.], default: 0.6em)
 /// #show-parameter-block("steps.max-width", ("number", "length"), [
 ///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
+///   Fill color of the steps boxes.], default: none)
+/// #show-parameter-block("steps.stroke", ("stroke", "none"), [
+///   Stroke color of the steps boxes.], default: none)
 /// #show-parameter-block("arrows.width", ("number", "length"), [
 ///   Width / length of arrows.], default: 1.2em)
 /// #show-parameter-block("arrows.height", ("number", "length"), [
@@ -710,10 +690,13 @@
 ///   Maximum number of steps before turning, i.e. making a zigzag.], default: 3)
 /// #show-parameter-block("layout.flow", ("array"), [
 ///   Pair of directions on different axes indicating the primary and secondary layout directions.], default: (ltr, ttb))
+/// #show-parameter-block("arrows.fill", ("string", "color", "gradient", "pattern", "none"), [
+///   Fill color of the arrows. If set to "steps", the arrows will be filled with a color in between those of the neighboring steps.], default: "steps")
+/// #show-parameter-block("arrows.stroke", ("stroke", "none"), [
+///   Stroke used for the arrows.], default: none)
 /// 
 /// - steps (array): Array of steps (`<content>` or `<str>`)
-/// - arrow-style (auto, function, array, gradient): Arrow style of the following types:
-///   - auto: If set to auto, the arrows will be filled with a color in between those of the neighboring steps
+/// - arrow-style (function, array, gradient): Arrow style of the following types:
 ///   - function: A function of the form `index => style` that must return a style dictionary.
 ///     This can be a `palette` function.
 ///   - array: An array of style dictionaries or fill colors of at least one item. For each arrow the style at the arrows
@@ -773,52 +756,14 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = if type(step-style) == function {
-      step-style
-    } else if type(step-style) == array {
-      i => {
-        let s = step-style.at(calc.rem(i, step-style.len()))
-        if type(s) == color or type(s) == gradient {
-          (fill: s)
-        } else {
-          s
-        }
-      }
-    } else if type(step-style) == gradient {
-      i => (fill: step-style.sample(i / (steps.len() - 1) * 100%))
-    }
+    let step-style-at = _get-style-at-func(step-style)
+    let arrow-style-at = _get-style-at-func(arrow-style)
 
-    let arrow-style-at = if type(arrow-style) == function {
-      arrow-style
-    } else if type(arrow-style) == array {
-      i => {
-        let s = arrow-style.at(calc.rem(i, arrow-style.len()))
-        if type(s) == color or type(s) == gradient {
-          (fill: s)
-        } else {
-          s
-        }
-      }
-    } else if type(arrow-style) == gradient {
-      i => (fill: arrow-style.sample(i / (steps.len() - 1) * 100%))
-    } else {
-      i => (:)
-    }
-
-    let sizes = steps.enumerate().map(p => {
-      let (i, step) = p
-      let step-style = style.steps + step-style-at(i)
-      let padding = resolve-number(ctx, step-style.padding)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
-      let m = measure(step, width: max-width * ctx.length)
-      let w = resolve-number(ctx, m.width)
-      let h = resolve-number(ctx, m.height)
-      return (w, h)
-    })
-
-    let largest-width = calc.max(..sizes.map(s => s.first()))
-    let highest-height = calc.max(..sizes.map(s => s.last()))
+    let (
+      sizes,
+      largest-width,
+      highest-height
+    ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
     let get-step-dir(i) = {
       // If turning
@@ -841,7 +786,7 @@
         btt: (0, 1),
         ltr: (1, 0),
         rtl: (-1, 0)
-      ).at(repr(dir)).map(v => v * spacing)
+      ).at(_dir-to-str(dir)).map(v => v * spacing)
     }
 
     for (i, step) in steps.enumerate() {
@@ -855,23 +800,8 @@
         )
       }
 
-      let (anchor-1, anchor-2) = (
-        ltr: ("west", "east"),
-        rtl: ("east", "west"),
-        ttb: ("north", "south"),
-        btt: ("south", "north")
-      ).at(repr(dir))
-
+      let (anchor-1, anchor-2) = _dir-to-anchors(dir)
       let step-style = style.steps + step-style-at(i)
-      
-      let step-stroke = step-style.stroke
-      let step-fill = step-style.fill
-      let padding = resolve-number(ctx, step-style.padding)
-      let radius = resolve-number(ctx, step-style.radius)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
-
-      let m = measure(step, width: max-width * ctx.length)
       let (w, h) = sizes.at(i)
       if equal-width {
         w = largest-width
@@ -912,38 +842,8 @@
         )
       }
 
-      
-      let tl = (
-        rel: (
-          ltr: (0, h / 2 + padding),
-          rtl: (-w - padding * 2, h / 2 + padding),
-          btt: (-w / 2 - padding, h + 2 * padding),
-          ttb: (-w / 2 - padding, 0),
-        ).at(repr(dir)),
-        to: pos
-      )
-      let br = (
-        rel: (w + padding * 2, -h - padding * 2),
-        to: tl
-      )
-
-      draw.rect(
-        tl, br,
-        name: step-name,
-        stroke: step-stroke,
-        fill: step-fill,
-        radius: radius
-      )
-      draw.content(
-        step-name + ".center",
-        box(
-          width: w * ctx.length,
-          align(center)[
-            #set text(bottom-edge: "baseline")
-            #step
-          ]
-        ),
-        anchor: "center"
+      _draw-step(
+        ctx, step, pos, dir, step-style, step-name, w, h
       )
     }
   })
