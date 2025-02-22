@@ -207,9 +207,28 @@
       fill: fill,
       close: true
     )
-    draw.anchor("start", sb)
-    draw.anchor("end", eb)
+    draw.anchor("start", p1)
+    draw.anchor("end", p2)
   })
+}
+
+#let _get-steps-sizes(steps, ctx, style, step-style-at) = {
+  let sizes = steps.enumerate().map(p => {
+    let (i, step) = p
+    let step-style = style.steps + step-style-at(i)
+    let padding = resolve-number(ctx, step-style.padding)
+    let max-width = resolve-number(ctx, step-style.max-width)
+    max-width -= 2 * padding
+    let m = measure(step, width: max-width * ctx.length)
+    let w = resolve-number(ctx, m.width)
+    let h = resolve-number(ctx, m.height)
+    return (w, h)
+  })
+
+  let largest-width = calc.max(..sizes.map(s => s.first()))
+  let highest-height = calc.max(..sizes.map(s => s.last()))
+
+  return (sizes, largest-width, highest-height)
 }
 
 #let basic(
@@ -266,20 +285,11 @@
       i => (:)
     }
 
-    let sizes = steps.enumerate().map(p => {
-      let (i, step) = p
-      let step-style = style.steps + step-style-at(i)
-      let padding = resolve-number(ctx, step-style.padding)
-      let max-width = resolve-number(ctx, step-style.max-width)
-      max-width -= 2 * padding
-      let m = measure(step, width: max-width * ctx.length)
-      let w = resolve-number(ctx, m.width)
-      let h = resolve-number(ctx, m.height)
-      return (w, h)
-    })
-
-    let largest-width = calc.max(..sizes.map(s => s.first()))
-    let highest-height = calc.max(..sizes.map(s => s.last()))
+    let (
+      sizes,
+      largest-width,
+      highest-height
+    ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
     let vertical = dir in (ttb, btt)
     let reverse = dir in (rtl, ttb)
@@ -474,15 +484,6 @@
     ).at(repr(dir))
 
     for (i, step) in steps.enumerate() {
-      let pos = if i == 0 {
-        (0, 0)
-      } else {
-        (
-          rel: adapt-offset((spacing, 0)),
-          to: "step-" + str(i - 1) + ".end"
-        )
-      }
-
       let step-style = style.steps + step-style-at(i)
       
       let step-stroke = step-style.stroke
@@ -501,7 +502,18 @@
         }
       }
       let thickness = if vertical { largest-width } else { highest-height }
+      let cap-height = thickness + padding * 2
+      let cap-width = step-style.cap-ratio / 100% * cap-height
       let step-name = "step-" + str(i)
+
+      let pos = if i == 0 {
+        (0, 0)
+      } else {
+        (
+          rel: adapt-offset((spacing + if (style.middle-cap != "|") {cap-width} else {0}, 0)),
+          to: "step-" + str(i - 1) + ".end"
+        )
+      }
       let end = (
         rel: adapt-offset(
           (w + padding * 2, 0),
@@ -529,7 +541,7 @@
       _draw-chevron(
         pos,
         end,
-        thickness + padding * 2,
+        cap-height,
         step-fill,
         step-stroke,
         cap-s,
