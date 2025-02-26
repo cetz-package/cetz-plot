@@ -88,7 +88,16 @@ plot.plot(size: (5, 4), axis-style: "school-book", y-tick-step: none, {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }
 
-== Processes
+= SmartArt
 
-#doc-style.parse-show-module("/src/chart/process.typ")
+#doc-style.parse-show-module("/src/smartart/common.typ")
 
+== Process
+
+#doc-style.parse-show-module("/src/smartart/process.typ")
+
+/*
+== Cycle
+
+#doc-style.parse-show-module("/src/smartart/cycle.typ")
+*/

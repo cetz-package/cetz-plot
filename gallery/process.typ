@@ -1,5 +1,5 @@
 #import "@preview/cetz:0.3.1" as cetz: draw
-#import "/src/lib.typ": chart
+#import "/src/lib.typ": smartart
 
 #set page(width: auto, height: auto, margin: .5cm)
 
@@ -14,7 +14,7 @@
 ).map(c => c.lighten(40%))
 
 #cetz.canvas({
-  chart.process.basic(
+  smartart.process.basic(
     steps,
     step-style: colors,
     equal-width: true,
@@ -24,7 +24,7 @@
 })
 
 #cetz.canvas({
-  chart.process.chevron(
+  smartart.process.chevron(
     steps,
     step-style: colors,
     equal-length: true,

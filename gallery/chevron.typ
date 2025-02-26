@@ -1,5 +1,5 @@
 #import "@preview/cetz:0.3.1" as cetz: draw
-#import "/src/lib.typ": chart
+#import "/src/lib.typ": smartart
 
 #set page(width: auto, height: auto, margin: .5cm)
 
@@ -32,7 +32,7 @@
 })
 
 #cetz.canvas({
-  chart.process.chevron(
+  smartart.process.chevron(
     steps2,
     step-style: (
       rgb("#352C6D"),
@@ -55,7 +55,7 @@
     dir: ltr,
     spacing: 1em,
     cetz.canvas({
-      chart.process.chevron(
+      smartart.process.chevron(
         steps,
         step-style: cetz.palette.light-green,
         dir: rtl,
@@ -65,7 +65,7 @@
       )
     }),
     cetz.canvas({
-      chart.process.chevron(
+      smartart.process.chevron(
         steps,
         step-style: cetz.palette.orange,
         dir: btt,
@@ -75,7 +75,7 @@
       )
     }),
     cetz.canvas({
-      chart.process.chevron(
+      smartart.process.chevron(
         steps,
         step-style: cetz.palette.red,
         dir: ttb,
