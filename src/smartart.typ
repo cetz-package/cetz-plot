@@ -1,2 +1,2 @@
 #import "smartart/process.typ"
-//#import "smartart/cycle.typ"
+#import "smartart/cycle.typ"

@@ -33,6 +33,7 @@
     let d = vector.norm(v)
     let n = (-d.at(1), d.at(0))
     let len = vector.len(v)
+    let head-len = h2
     /*
         c
     a---b\
@@ -40,15 +41,39 @@
     g---f/
         e
     */
+    /*
+      i   c
+     /a---b\
+    p1      p2
+     \g---f/
+      h   e
+    */
     let a = vector.add(p1, vector.scale(n, h4))
-    let b = vector.add(a, vector.scale(d, len * 2 / 3))
+    if double {
+      a = vector.add(
+        a,
+        vector.scale(d, head-len)
+      )
+    }
+    let b = vector.add(
+      a,
+      vector.scale(
+        d,
+        len - if double {2 * head-len} else {head-len}
+      )
+    )
     let c = vector.add(b, vector.scale(n, h4))
     let e = vector.add(c, vector.scale(n, -height))
     let f = vector.add(e, vector.scale(n, h4))
-    let g = vector.add(a, vector.scale(n, -h2))
+    let g = vector.sub(a, vector.scale(n, h2))
     let pts = (
       a, b, c, p2, e, f, g
     )
+    if double {
+      let h = vector.sub(g, vector.scale(n, h4))
+      let i = vector.add(a, vector.scale(n, h4))
+      pts += (h, p1, i)
+    }
     
     draw.line(
       ..pts,
@@ -278,11 +303,7 @@
   let h2 = height / 2
   let h4 = height / 4
   let angle-range = end-angle - start-angle
-  let arrow-angle = if angle-range < 0deg {
-    calc.min(-1deg, angle-range * 0.1)
-  } else {
-    calc.max(1deg, angle-range * 0.1)
-  }
+  // Angle for a length of h/2
   let arrow-angle = (h2 / radius) * (180deg / calc.pi)
   if angle-range < 0deg {
     arrow-angle *= -1
@@ -292,6 +313,7 @@
     let mid-angle = (angle-range - arrow-angle) / 2 + start-angle
     let radius-int = radius - h4
     let radius-ext = radius + h4
+    let post-start-angle = start-angle + arrow-angle
 
     /*
          c     re2
@@ -300,14 +322,28 @@
     g-m2-f/    ri
          e     ri2
     */
+
+    /*
+      i    c     re2
+     /a-m1-b\    re
+    p1     p2  r
+     \g-m2-f/    ri
+      h    e     ri2
+    */
     let p1 = (start-angle, radius)
-    let a = (start-angle, radius-ext)
+    let a = (
+      if double {post-start-angle} else {start-angle},
+      radius-ext
+    )
     let m1 = (mid-angle, radius-ext)
     let b = (pre-end-angle, radius-ext)
     let p2 = (end-angle, radius)
     let f = (pre-end-angle, radius-int)
     let m2 = (mid-angle, radius-int)
-    let g = (start-angle, radius-int)
+    let g = (
+      if double {post-start-angle} else {start-angle},
+      radius-int
+    )
     
     let dx = calc.cos(end-angle)
     let dy = calc.sin(end-angle)
@@ -319,6 +355,19 @@
         draw.arc-through(a, m1, b)
         draw.line((), c, p2, e, f)
         draw.arc-through((), m2, g)
+        if double {
+          let dx = calc.cos(start-angle)
+          let dy = calc.sin(start-angle)
+          let h = (
+            rel: (-dx * h4, -dy * h4),
+            to: g
+          )
+          let i = (
+            rel: (dx * h4, dy * h4),
+            to: a
+          )
+          draw.line((), h, p1, i)
+        }
       },
       stroke: stroke,
       fill: fill,
