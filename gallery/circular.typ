@@ -17,8 +17,6 @@
   smartart.cycle.basic(
     steps,
     step-style: colors,
-    step-shape: "block",
-    arrow-shape: "thick",
     equal-width: true,
     name: "chart",
   )

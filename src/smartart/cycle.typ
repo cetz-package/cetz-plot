@@ -5,7 +5,6 @@
 #let cycle-basic-default-style = (
   stroke: auto,
   fill: auto,
-  spacing: 0.2em,
   steps: (
     stroke: none,
     fill: none,
@@ -23,6 +22,65 @@
   )
 )
 
+/// Draw a basic cycle chart, describing cyclic steps
+///
+/// #example(```
+/// let steps = ([Improvise], [Adapt], [Overcome])
+/// let colors = (red, orange, green).map(c => c.lighten(40%))
+///
+/// smartart.cycle.basic(
+///   steps,
+///   step-style: colors
+/// )
+/// ```)
+///
+/// = Styling
+/// *Root* `cycle-basic` \
+/// #show-parameter-block("steps.radius", ("number", "length"), [
+///   Corner radius of the steps boxes.], default: 0.2em)
+/// #show-parameter-block("steps.padding", ("number", "length"), [
+///   Inner padding of the steps boxes.], default: 0.6em)
+/// #show-parameter-block("steps.max-width", ("number", "length"), [
+///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.shape", ("str", "none"), [
+///   Shape of the steps boxes. One of `"rect"`, `"circle"` or `none`], default: "rect")
+/// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
+///   Fill color of the steps boxes.], default: none)
+/// #show-parameter-block("steps.stroke", ("stroke", "none"), [
+///   Stroke color of the steps boxes.], default: none)
+/// #show-parameter-block("arrows.thickness", ("number", "length"), [
+///   Thickness of arrows.], default: 1em)
+/// #show-parameter-block("arrows.double", ("boolean"), [
+///   Whether arrows are uni- or bi-directional.], default: false)
+/// #show-parameter-block("arrows.curved", ("boolean"), [
+///   Whether arrows are curved or straight.], default: false)
+/// #show-parameter-block("arrows.fill", ("string", "color", "gradient", "pattern", "none"), [
+///   Fill color of the arrows. If set to "steps", the arrows will be filled with a color in between those of the neighboring steps.], default: "steps")
+/// #show-parameter-block("arrows.stroke", ("stroke", "none"), [
+///   Stroke used for the arrows.], default: none)
+/// 
+/// - steps (array): Array of steps (`<content>` or `<str>`)
+/// - arrow-style (function, array, gradient): Arrow style of the following types:
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each arrow the style at the arrows
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the arrows
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the smartarts style.
+/// - step-style (function, array, gradient): Step style of the following types:
+///   - function: A function of the form `index => style` that must return a style dictionary.
+///     This can be a `palette` function.
+///   - array: An array of style dictionaries or fill colors of at least one item. For each step the style at the steps
+///     index modulo the arrays length gets used.
+///   - gradient: A gradient that gets sampled for each data item using the steps
+///     index divided by the number of steps as position on the gradient.
+///   If one of stroke or fill is not in the style dictionary, it is taken from the smartarts style.
+/// - equal-width (boolean): If true, all steps will be sized to have the same width
+/// - equal-height (boolean): If true, all steps will be sized to have the same height
+/// - ccw (boolean): If true, steps are laid out counter-clockwise. If false, they're placed clockwise. The center of the cycle is always placed at (0, 0)
+/// - radius (number, length): The radius of the cycle
+/// - offset-angle (angle): Offset of the starting angle
 #let basic(
   steps,
   arrow-style: auto,
@@ -44,8 +102,6 @@
       root: "cycle-basic",
       base: cycle-basic-default-style,
     )
-
-    let spacing = resolve-number(ctx, style.spacing)
 
     let step-style-at = _get-style-at-func(step-style)
     let arrow-style-at = _get-style-at-func(arrow-style)

@@ -90,6 +90,8 @@
 ///   Inner padding of the steps boxes.], default: 0.6em)
 /// #show-parameter-block("steps.max-width", ("number", "length"), [
 ///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.shape", ("str", "none"), [
+///   Shape of the steps boxes. One of `"rect"`, `"circle"` or `none`], default: "rect")
 /// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
 ///   Fill color of the steps boxes.], default: none)
 /// #show-parameter-block("steps.stroke", ("stroke", "none"), [
@@ -98,6 +100,8 @@
 ///   Width / length of arrows.], default: 1.2em)
 /// #show-parameter-block("arrows.height", ("number", "length"), [
 ///   Height of arrows.], default: 1em)
+/// #show-parameter-block("arrows.double", ("boolean"), [
+///   Whether arrows are uni- or bi-directional.], default: false)
 /// #show-parameter-block("arrows.fill", ("string", "color", "gradient", "pattern", "none"), [
 ///   Fill color of the arrows. If set to "steps", the arrows will be filled with a color in between those of the neighboring steps.], default: "steps")
 /// #show-parameter-block("arrows.stroke", ("stroke", "none"), [
@@ -421,6 +425,8 @@
 ///   Inner padding of the steps boxes.], default: 0.6em)
 /// #show-parameter-block("steps.max-width", ("number", "length"), [
 ///   Maximum width of the steps boxes.], default: 5em)
+/// #show-parameter-block("steps.shape", ("str", "none"), [
+///   Shape of the steps boxes. One of `"rect"`, `"circle"` or `none`], default: "rect")
 /// #show-parameter-block("steps.fill", ("color", "gradient", "pattern", "none"), [
 ///   Fill color of the steps boxes.], default: none)
 /// #show-parameter-block("steps.stroke", ("stroke", "none"), [
@@ -429,6 +435,8 @@
 ///   Width / length of arrows.], default: 1.2em)
 /// #show-parameter-block("arrows.height", ("number", "length"), [
 ///   Height of arrows.], default: 1em)
+/// #show-parameter-block("arrows.double", ("boolean"), [
+///   Whether arrows are uni- or bi-directional.], default: false)
 /// #show-parameter-block("layout.max-stride", ("number"), [
 ///   Maximum number of steps before turning, i.e. making a zigzag.], default: 3)
 /// #show-parameter-block("layout.flow", ("array"), [
