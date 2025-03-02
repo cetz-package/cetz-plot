@@ -77,26 +77,7 @@
       }
       let step-name = "step-" + str(i)
 
-      let padding = resolve-number(ctx, step-style.padding)
-      let rect-radius = resolve-number(ctx, step-style.radius)
-
-      let tl = (
-        rel: (-w / 2 - padding, h / 2 + padding),
-        to: pos
-      )
-      let br = (
-        rel: (w + padding * 2, -h - padding * 2),
-        to: tl
-      )
-
-      draw.rect(
-        tl, br,
-        name: step-name,
-        stroke: step-style.stroke,
-        fill: step-style.fill,
-        radius: rect-radius
-      )
-      _draw-step-content(step, step-name, w * ctx.length)
+      _draw-step(ctx, step, pos, step-style, step-name, w, h)
     }
 
     for i in range(steps.len()) {

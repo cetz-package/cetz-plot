@@ -10,13 +10,15 @@
     fill: none,
     radius: 0.2em,
     padding: 0.6em,
-    max-width: 5em
+    max-width: 5em,
+    shape: "rect"
   ),
   arrows: (
     stroke: none,
     fill: "steps",
     height: 1em,
-    width: 1.2em
+    width: 1.2em,
+    double: false
   )
 )
 
@@ -29,13 +31,15 @@
     fill: none,
     radius: 0.2em,
     padding: 0.6em,
-    max-width: 5em
+    max-width: 5em,
+    shape: "rect"
   ),
   arrows: (
     stroke: none,
     fill: "steps",
     height: 1em,
-    width: 1.2em
+    width: 1.2em,
+    double: false
   ),
   layout: (
     max-stride: 3,
@@ -191,7 +195,10 @@
       }
       let step-name = "step-" + str(i)
 
-      _draw-step(ctx, step, pos, dir, step-style, step-name, w, h)
+      _draw-step(
+        ctx, step, pos, step-style, step-name, w, h,
+        dir: if i == 0 {none} else {dir}
+      )
 
       if i != steps.len() - 1 {
         let arrow-style = style.arrows + arrow-style-at(i)
@@ -579,7 +586,8 @@
       }
 
       _draw-step(
-        ctx, step, pos, dir, step-style, step-name, w, h
+        ctx, step, pos, step-style, step-name, w, h,
+        dir: if i == 0 {none} else {dir}
       )
     }
   })

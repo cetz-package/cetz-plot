@@ -262,7 +262,57 @@
   )
 }
 
-#let _draw-step(ctx, step, pos, dir, style, name, w, h) = {
+#let _draw-step-frame(ctx, center, style, name, w, h) = {
+  let padding = resolve-number(ctx, style.padding)
+  let radius = resolve-number(ctx, style.radius)
+
+  if style.shape == "rect" {
+    let tl = (
+      rel: (-w / 2 - padding, h / 2 + padding),
+      to: center
+    )
+    let br = (
+      rel: (w / 2 + padding, -h / 2 - padding),
+      to: center
+    )
+
+    draw.rect(
+      tl, br,
+      name: name,
+      stroke: style.stroke,
+      fill: style.fill,
+      radius: radius
+    )
+  } else if style.shape == "circle" {
+    let w2 = w + padding * 2
+    let h2 = h + padding * 2
+    draw.circle(
+      center,
+      name: name,
+      radius: calc.sqrt(w2 * w2 + h2 * h2) / 2,
+      stroke: style.stroke,
+      fill: style.fill
+    )
+  } else if style.shape == none {
+    let tl = (
+      rel: (-w / 2 - padding, h / 2 + padding),
+      to: center
+    )
+    let br = (
+      rel: (w / 2 + padding, -h / 2 - padding),
+      to: center
+    )
+    draw.hide(draw.rect(
+      tl, br,
+      name: name,
+      stroke: none,
+      fill: none
+    ))
+  }
+}
+
+#let _draw-step(ctx, step, pos, style, name, w, h, dir: none) = {
+  /*
   let padding = resolve-number(ctx, style.padding)
   let radius = resolve-number(ctx, style.radius)
 
@@ -286,7 +336,20 @@
     stroke: style.stroke,
     fill: style.fill,
     radius: radius
-  )
+  )*/
+  if dir != none {
+    let padding = resolve-number(ctx, style.padding)
+    pos = (
+      rel: (
+        ltr: (w / 2 + padding, 0),
+        rtl: (-w / 2 - padding, 0),
+        btt: (0, h / 2 + padding),
+        ttb: (0, -h / 2 - padding),
+      ).at(_dir-to-str(dir)),
+      to: pos
+    )
+  }
+  _draw-step-frame(ctx, pos, style, name, w, h)
   _draw-step-content(step, name, w * ctx.length)
 }
 
@@ -310,9 +373,11 @@
   }
   draw.group(name: name, ctx => {
     let pre-end-angle = end-angle - arrow-angle
-    let mid-angle = (angle-range - arrow-angle) / 2 + start-angle
+    let mid-angle = start-angle + angle-range / 2
     let radius-int = radius - h4
     let radius-ext = radius + h4
+    let radius-int2 = radius - h2
+    let radius-ext2 = radius + h2
     let post-start-angle = start-angle + arrow-angle
 
     /*
@@ -345,10 +410,8 @@
       radius-int
     )
     
-    let dx = calc.cos(end-angle)
-    let dy = calc.sin(end-angle)
-    let c = (rel: (dx * h4, dy * h4), to: b)
-    let e = (rel: (-dx * h4, -dy * h4), to: f)
+    let c = (pre-end-angle, radius-ext2)
+    let e = (pre-end-angle, radius-int2)
     
     draw.merge-path(
       {
@@ -356,16 +419,8 @@
         draw.line((), c, p2, e, f)
         draw.arc-through((), m2, g)
         if double {
-          let dx = calc.cos(start-angle)
-          let dy = calc.sin(start-angle)
-          let h = (
-            rel: (-dx * h4, -dy * h4),
-            to: g
-          )
-          let i = (
-            rel: (dx * h4, dy * h4),
-            to: a
-          )
+          let h = (post-start-angle, radius-int2)
+          let i = (post-start-angle, radius-ext2)
           draw.line((), h, p1, i)
         }
       },
@@ -374,10 +429,12 @@
       close: true
     )
 
-    let center = (angle-range / 2 + start-angle, radius)
+    let center = (mid-angle, radius)
     draw.anchor("start", p1)
     draw.anchor("end", p2)
     draw.anchor("center", center)
+    draw.anchor("center-ext", (mid-angle, radius-ext))
+    draw.anchor("center-int", (mid-angle, radius-int))
     draw.anchor("default", center)
   })
 }
