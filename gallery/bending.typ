@@ -1,4 +1,4 @@
-#import "@preview/cetz:0.3.1" as cetz: draw
+#import "@preview/cetz:0.3.2" as cetz: draw
 #import "/src/lib.typ": smartart
 
 #set page(width: auto, height: auto, margin: .5cm)
