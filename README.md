@@ -54,8 +54,8 @@ For information, see the [manual (stable)](https://github.com/cetz-package/cetz-
 
 To use this package, simply add the following code to your document:
 ```
-#import "@preview/cetz:0.3.1"
-#import "@preview/cetz-plot:0.1.0": plot, chart
+#import "@preview/cetz:0.3.2"
+#import "@preview/cetz-plot:0.1.1": plot, chart
 
 #cetz.canvas({
   // Your plot/chart code goes here
@@ -77,4 +77,4 @@ To install `just` on your system, use your systems package manager. On Windows, 
 
 This package comes with some unit tests under the `tests` directory.
 To run all tests you can run the `just test` target. You need to have
-[`typst-test`](https://github.com/tingerrr/typst-test/) in your `PATH`: `cargo install typst-test --git https://github.com/tingerrr/typst-test`.
+[`tytanic`](https://github.com/tingerrr/tytanic/) in your `PATH`: `cargo install tytanic --git https://github.com/tingerrr/tytanic`.

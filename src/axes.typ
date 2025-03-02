@@ -269,8 +269,13 @@
 #let value-on-axis(axis, v) = {
   if v == none { return }
   let (min, max) = (axis.min, axis.max)
-  let dt = max - min; if dt == 0 { dt = 1 }
+  if axis.mode == "log" {
+    min = calc.log(min)
+    max = calc.log(max)
+    v = calc.log(v)
+  }
 
+  let dt = max - min; if dt == 0 { dt = 1 }
   return (v - min) / dt
 }
 

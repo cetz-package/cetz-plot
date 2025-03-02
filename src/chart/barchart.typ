@@ -17,11 +17,15 @@
 /// they represent.
 ///
 /// = Styling
+/// Can be applied with `cetz.draw.set-style(barchart: (bar-width: 1))`.
+///
 /// *Root*: `barchart`.
 /// #show-parameter-block("bar-width", "float", default: .8, [
 ///   Width of a single bar (basic) or a cluster of bars (clustered) in the plot.])
 /// #show-parameter-block("y-inset", "float", default: 1, [
 ///   Distance of the plot data to the plot's edges on the y-axis of the plot.])
+/// #show-parameter-block("cluster-gap", "float", default: 0, [
+///   Spacing between bars insides a cluster.])
 /// You can use any `plot` or `axes` related style keys, too.
 ///
 /// The `barchart` function is a wrapper of the `plot` API. Arguments passed

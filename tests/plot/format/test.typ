@@ -37,3 +37,15 @@
     plot.add(data)
   })
 })
+
+#test-case({
+  plot.plot(
+    size: (8, 4),
+    x-min: -2e18,
+    x-max: +2e18,
+    x-tick-step: 1e18,
+    y-format: none,
+    x-format: plot.formats.sci, {
+    plot.add(data)
+  })
+})

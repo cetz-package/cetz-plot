@@ -128,7 +128,7 @@
     0
   }
 
-  let ee = calc.pow(10, calc.abs(exponent + 1))
+  let ee = calc.pow(10.0, calc.abs(exponent + 1))
   if exponent > 0 {
     value = value / ee * 10
   } else if exponent < 0 {

@@ -1,5 +1,5 @@
-#import "@preview/cetz:0.3.1": canvas, draw
-#import "@preview/cetz-plot:0.1.0": chart
+#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": chart
 
 #set page(width: auto, height: auto, margin: .5cm)
 
@@ -13,12 +13,11 @@
 )
 
 #canvas({
-  draw.set-style(legend: (fill: white))
+  draw.set-style(legend: (fill: white), barchart: (bar-width: .8, cluster-gap: 0))
   chart.barchart(mode: "clustered",
                  size: (9, auto),
                  label-key: 0,
                  value-key: (..range(1, 5)),
-                 bar-width: .8,
                  x-tick-step: 2.5,
                  data2,
                  labels: ([Low], [Medium], [High], [Very high]),
