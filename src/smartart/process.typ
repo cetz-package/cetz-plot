@@ -257,11 +257,11 @@
 /// #show-parameter-block("spacing", ("number", "length"), [
 ///   Gap between steps.], default: 0.2em)
 /// #show-parameter-block("start-cap", ("string"), [
-///   Cap at the start of the process (first step). See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+///   Cap at the start of the process (first step). See @@CHEVRON-CAPS for possible values.], default: ">")
 /// #show-parameter-block("mid-cap", ("string"), [
-///   Cap between steps. See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+///   Cap between steps. See @@CHEVRON-CAPS for possible values.], default: ">")
 /// #show-parameter-block("end-cap", ("string"), [
-///   Cap at the end of the process (last step). See #link(label("CHEVRON-CAPS()"))[`CHEVRON-CAPS`] for possible values.], default: ">")
+///   Cap at the end of the process (last step). See @@CHEVRON-CAPS for possible values.], default: ">")
 /// #show-parameter-block("start-in-cap", ("boolean"), [
 ///   If true, the content of the first step is shifted inside the start cap (useful with "(" or "<").], default: false)
 /// #show-parameter-block("end-in-cap", ("boolean"), [
