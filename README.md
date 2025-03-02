@@ -43,6 +43,15 @@ CeTZ-Plot requires CeTZ version ≥ 0.3.1!
   <td>Pyramid</td>
   <td colspan="2">Process</td>
 </tr>
+<tr>
+  <td>
+    <a href="gallery/circular.typ">
+      <img src="gallery/circular.png" width="250px">
+    </a>
+  </td>
+</tr><tr>
+  <td>Cycle</td>
+</tr>
 </table>
 
 *Click on the example image to jump to the code.*
