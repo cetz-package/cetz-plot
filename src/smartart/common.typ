@@ -206,7 +206,7 @@
   return (sizes, largest-width, highest-height)
 }
 
-#let _get-style-at-func(style) = {
+#let _get-style-at-func(style, n-steps) = {
   if type(style) == function {
     style
   } else if type(style) == array {
@@ -219,7 +219,7 @@
       }
     }
   } else if type(style) == gradient {
-    i => (fill: style.sample(i / (steps.len() - 1) * 100%))
+    i => (fill: style.sample(i / (n-steps - 1) * 100%))
   } else {
     i => (:)
   }

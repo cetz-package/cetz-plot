@@ -103,8 +103,9 @@
       base: cycle-basic-default-style,
     )
 
-    let step-style-at = _get-style-at-func(step-style)
-    let arrow-style-at = _get-style-at-func(arrow-style)
+    let n-steps = steps.len()
+    let step-style-at = _get-style-at-func(step-style, n-steps)
+    let arrow-style-at = _get-style-at-func(arrow-style, n-steps)
 
     let (
       sizes,
@@ -112,7 +113,7 @@
       highest-height
     ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
-    let angle-step = 360deg / steps.len()
+    let angle-step = 360deg / n-steps
     if not ccw {
       angle-step *= -1
     }
@@ -136,7 +137,7 @@
       _draw-step(ctx, step, pos, step-style, step-name, w, h)
     }
 
-    for i in range(steps.len()) {
+    for i in range(n-steps) {
       let angle = angle-step * i + 90deg + offset-angle
 
       let arrow-style = style.arrows + arrow-style-at(i)
@@ -186,7 +187,7 @@
       )
       draw.intersections(
         "j-" + str(i),
-        "step-" + str(calc.rem(i + 1, steps.len())),
+        "step-" + str(calc.rem(i + 1, n-steps)),
         "arc-" + str(i)
       )
 

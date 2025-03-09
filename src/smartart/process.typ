@@ -149,8 +149,9 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = _get-style-at-func(step-style)
-    let arrow-style-at = _get-style-at-func(arrow-style)
+    let n-steps = steps.len()
+    let step-style-at = _get-style-at-func(step-style, n-steps)
+    let arrow-style-at = _get-style-at-func(arrow-style, n-steps)
 
     let (
       sizes,
@@ -204,7 +205,7 @@
         dir: if i == 0 {none} else {dir}
       )
 
-      if i != steps.len() - 1 {
+      if i != n-steps - 1 {
         let arrow-style = style.arrows + arrow-style-at(i)
         let arrow-stroke = arrow-style.stroke
         let arrow-fill = arrow-style.fill
@@ -308,7 +309,8 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = _get-style-at-func(step-style)
+    let n-steps = steps.len()
+    let step-style-at = _get-style-at-func(step-style, n-steps)
 
     let (
       sizes,
@@ -357,7 +359,7 @@
 
       let cap-s = if i == 0 { style.start-cap }
                   else { style.middle-cap }
-      let cap-e = if i == steps.len() - 1 { style.end-cap }
+      let cap-e = if i == n-steps - 1 { style.end-cap }
                   else { style.middle-cap }
 
       let pos = if i == 0 {
@@ -389,7 +391,7 @@
         cap-e,
         step-style.cap-ratio,
         i == 0 and style.start-in-cap,
-        (i == steps.len() - 1) and style.end-in-cap,
+        (i == n-steps - 1) and style.end-in-cap,
         name: step-name
       )
       _draw-step-content(step, step-name, w * ctx.length)
@@ -484,9 +486,10 @@
       base: process-bending-default-style,
     )
 
+    let n-steps = steps.len()
     let stride = style.layout.max-stride
     if stride == none {
-      stride = steps.len()
+      stride = n-steps
     }
     let (flow-primary, flow-secondary) = style.layout.flow
     assert(
@@ -507,8 +510,8 @@
 
     let spacing = resolve-number(ctx, style.spacing)
 
-    let step-style-at = _get-style-at-func(step-style)
-    let arrow-style-at = _get-style-at-func(arrow-style)
+    let step-style-at = _get-style-at-func(step-style, n-steps)
+    let arrow-style-at = _get-style-at-func(arrow-style, n-steps)
 
     let (
       sizes,
