@@ -39,7 +39,7 @@ CeTZ-Plot is a simple plotting library for use with CeTZ.
 
 This is the minimal starting point:
 #pad(left: 1em)[```typ
-#import "@preview/cetz:0.3.2"
+#import "@preview/cetz:0.3.4"
 #import "@preview/cetz-plot:0.1.1"
 #cetz.canvas({
   import cetz.draw: *
@@ -88,3 +88,14 @@ plot.plot(size: (5, 4), axis-style: "school-book", y-tick-step: none, {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }
 
+= SmartArt
+
+#doc-style.parse-show-module("/src/smartart/common.typ")
+
+== Process
+
+#doc-style.parse-show-module("/src/smartart/process.typ")
+
+== Cycle
+
+#doc-style.parse-show-module("/src/smartart/cycle.typ")

@@ -32,21 +32,23 @@
 
   set heading(level: style-args.first-heading-level + 2)
 
-  block(breakable: style-args.break-param-descriptions, {
-    heading("Parameters", level: style-args.first-heading-level + 2)
-    (style-args.style.show-parameter-list)(fn, style-args.style.show-type)
-  })
+  if fn.args.len() != 0 {
+    block(breakable: style-args.break-param-descriptions, {
+      heading("Parameters", level: style-args.first-heading-level + 2)
+      (style-args.style.show-parameter-list)(fn, style-args.style.show-type)
+    })
 
-  for (name, info) in fn.args {
-    let types = info.at("types", default: ())
-    let description = info.at("description", default: "")
-    if description == [] and style-args.omit-empty-param-descriptions { continue }
-    (style-args.style.show-parameter-block)(
-      name, types, description, 
-      style-args,
-      show-default: "default" in info, 
-      default: info.at("default", default: none),
-    )
+    for (name, info) in fn.args {
+      let types = info.at("types", default: ())
+      let description = info.at("description", default: "")
+      if description == [] and style-args.omit-empty-param-descriptions { continue }
+      (style-args.style.show-parameter-block)(
+        name, types, description, 
+        style-args,
+        show-default: "default" in info, 
+        default: info.at("default", default: none),
+      )
+    }
   }
 
   if parameter-index != none {

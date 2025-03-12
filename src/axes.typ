@@ -555,7 +555,7 @@
   draw.group(name: name, (ctx => {
     let transform = ctx.transform
 
-    ctx.transform = matrix.ident()
+    ctx.transform = matrix.ident(4)
     let (ctx, drawables, bounds) = process.many(ctx, util.resolve-body(ctx, body))
 
     ctx.transform = transform
