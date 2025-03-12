@@ -39,7 +39,7 @@ CeTZ-Plot is a simple plotting library for use with CeTZ.
 
 This is the minimal starting point:
 #pad(left: 1em)[```typ
-#import "@preview/cetz:0.3.2"
+#import "@preview/cetz:0.3.4"
 #import "@preview/cetz-plot:0.1.1"
 #cetz.canvas({
   import cetz.draw: *

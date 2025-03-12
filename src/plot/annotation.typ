@@ -52,7 +52,7 @@
     return (x, y)
   }
 
-  ctx.transform = matrix.ident()
+  ctx.transform = matrix.ident(4)
   let (ctx: ctx, bounds: bounds, drawables: _) = process.many(ctx, annotation.body)
   if bounds == none {
     return (x, y)
