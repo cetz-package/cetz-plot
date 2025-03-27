@@ -15,6 +15,7 @@
 #import "/src/plot/violin.typ": add-violin
 #import "/src/plot/formats.typ"
 #import plot-legend: add-legend
+#import "/src/plot/regression.typ": add-trend
 
 #let default-colors = (blue, red, green, yellow, black)
 
