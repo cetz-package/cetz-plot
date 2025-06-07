@@ -25,8 +25,13 @@ jobs:
           crate: tytanic
           git: https://github.com/tingerrr/tytanic.git
       - run: |
+          rustup target add wasm32-unknown-unknown
+          CETZ=$(mktemp -d)
           mkdir -p ~/.local/share/typst/packages/preview/cetz
-          git clone --depth 1 --branch release-0.4.0 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.4.0
+          git clone --depth 1 --branch release-0.4.0 https://github.com/cetz-package/cetz.git "$CETZ"
+          cd "$CETZ"
+          git submodule update --init --recursive
+          just install @preview
       - uses: typst-community/setup-typst@v3
         with:
           typst-version: '0.13.1'
