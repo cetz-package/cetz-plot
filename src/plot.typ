@@ -32,18 +32,16 @@
 /// `plot.add` or other plotting functions. The plot environment supports different
 /// axis styles to draw, see its parameter `axis-style:`.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1), (2,.5), (4,3)))
 /// })
-/// ```)
+/// ```
 ///
 /// To draw elements insides a plot, using the plots coordinate system, use
 /// the `plot.annotate(..)` function.
 ///
-/// = parameters
-///
-/// = Options
+/// === Options
 ///
 /// You can use the following options to customize each axis of the plot. You must pass them as named arguments prefixed by the axis name followed by a dash (`-`) they should target. Example: `x-min: 0`, `y-ticks: (..)` or `x2-label: [..]`.
 ///
@@ -58,14 +56,14 @@
 ///   depending on the other axis orientation (see `horizontal`).
 ///   This can be useful to force one axis to grow or shrink with another one.
 ///   You can only "lock" two axes of different orientations.
-///   #example(```
+///   ```cexample
 ///   plot.plot(size: (2,1), x-tick-step: 1, y-tick-step: 1,
 ///             x-equal: "y",
 ///   {
 ///     plot.add(domain: (0, 2 * calc.pi),
 ///       t => (calc.cos(t), calc.sin(t)))
 ///   })
-///   ```)
+///   ```
 /// ])
 /// #show-parameter-block("horizontal", ("bool"), default: "axis name dependant", [
 ///   If true, the axis is considered an axis that gets drawn horizontally, vertically otherwise.
@@ -83,7 +81,7 @@
 ///   an array of `<float>` values or an array of `(<float>, <content>)` tuples for
 ///   setting custom tick mark labels per mark.
 ///
-///   #example(```
+///   ```cexample
 ///   plot.plot(x-tick-step: none, y-tick-step: none,
 ///             x-min: 0, x-max: 4,
 ///             x-ticks: (1, 2, 3),
@@ -92,7 +90,7 @@
 ///   {
 ///     plot.add(((0,0),))
 ///   })
-///   ```)
+///   ```
 ///
 ///   Examples: `(1, 2, 3)` or `((1, [One]), (2, [Two]), (3, [Three]))`])
 /// #show-parameter-block("format", ("none", "string", "function"), default: "float", [
@@ -101,7 +99,7 @@
 ///   / float: Floating point formatting rounded to two digits after the point (see `decimals`)
 ///   / sci: Scientific formatting with $times 10^n$ used as exponet syntax
 ///
-///   #example(```
+///   ```cexample
 ///   let formatter(v) = if v != 0 {$ #{v/calc.pi} pi $} else {$ 0 $}
 ///   plot.plot(x-tick-step: calc.pi, y-tick-step: none,
 ///             x-min: 0, x-max: 2 * calc.pi,
@@ -109,7 +107,7 @@
 ///   {
 ///     plot.add(((0,0),))
 ///   })
-///   ```)
+///   ```
 /// ])
 /// #show-parameter-block("decimals", ("int"), default: "2", [
 ///   Number of decimals digits to display for tick labels, if the format is set
@@ -125,14 +123,14 @@
 ///   to `"minor"`, show grid lines for minor ticks only.
 ///   The value `"both"` enables grid lines for both, major- and minor ticks.
 ///
-///   #example(```
+///   ```cexample
 ///   plot.plot(x-tick-step: 1, y-tick-step: 1,
 ///             y-minor-tick-step: .2,
 ///             x-min: 0, x-max: 2, x-grid: true,
 ///             y-min: 0, y-max: 2, y-grid: "both", {
 ///     plot.add(((0,0),))
 ///   })
-///   ```)
+///   ```
 /// ])
 /// #show-parameter-block("break", ("bool"), default: "false", [
 ///   If true, add a "sawtooth" at the start or end of the axis line, depending
@@ -155,7 +153,7 @@
 ///               and the x axis at the bottom (at `y.min`)
 ///   / `none`: Draw no axes (and no ticks).
 ///
-///   #example(```
+///   ```cexample-vertical
 ///   let opts = (x-tick-step: none, y-tick-step: none, size: (2,1))
 ///   let data = plot.add(((-1,-1), (1,1),), mark: "o")
 ///
@@ -164,7 +162,7 @@
 ///     content(((0,-1), "-|", "plot.south"), repr(name))
 ///     set-origin((3.5,0))
 ///   }
-///   ```, vertical: true)
+///   ```
 /// - plot-style (style,function): Styling to use for drawing plot graphs.
 ///   This style gets inherited by all plots and supports `palette` functions.
 ///   The following style keys are supported:
@@ -526,7 +524,7 @@
 /// This function is similar to `draw.anchor` but it takes an additional
 /// axis tuple to specify which axis coordinate system to use.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), name: "plot",
 ///           x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1), (2,.5), (4,3)))
@@ -535,7 +533,7 @@
 ///
 /// line("plot.pt", ((), "|-", (0,1.5)), mark: (start: ">"), name: "line")
 /// content("line.end", [Here], anchor: "south", padding: .1)
-/// ```)
+/// ```
 ///
 /// - name (string): Anchor name
 /// - position (tuple): Tuple of x and y values.

@@ -241,7 +241,7 @@
 
 /// Add a contour plot of a sampled function or a matrix.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add-contour(x-domain: (-3, 3), y-domain: (-3, 3),
 ///     style: (fill: rgb(50,50,250,50)),
@@ -250,7 +250,7 @@
 ///     z: (2.5, 2, 1), // Z values to find contours for
 ///     (x, y) => calc.sqrt(x * x + y * y))
 /// })
-/// ```)
+/// ```
 ///
 /// - data (array, function): A function of the signature `(x, y) => z`
 ///   or an array of arrays of floats (a matrix) where the first

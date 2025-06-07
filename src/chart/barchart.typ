@@ -16,7 +16,7 @@
 /// rectangular bars that grow from left to right, proportional to the values
 /// they represent.
 ///
-/// = Styling
+/// === Styling
 /// Can be applied with `cetz.draw.set-style(barchart: (bar-width: 1))`.
 ///
 /// *Root*: `barchart`.

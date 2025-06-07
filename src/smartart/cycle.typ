@@ -24,17 +24,18 @@
 
 /// Draw a basic cycle chart, describing cyclic steps
 ///
-/// #example(```
+/// ```cexample
 /// let steps = ([Improvise], [Adapt], [Overcome])
 /// let colors = (red, orange, green).map(c => c.lighten(40%))
 ///
 /// smartart.cycle.basic(
 ///   steps,
-///   step-style: colors
+///   step-style: colors,
+///   steps: (max-width: 5cm)
 /// )
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `cycle-basic` \
 /// #show-parameter-block("steps.radius", ("number", "length"), [
 ///   Corner radius of the steps boxes.], default: 0.2em)

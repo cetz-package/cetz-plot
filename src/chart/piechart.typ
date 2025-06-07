@@ -89,7 +89,7 @@
 
 /// Draw a pie- or donut-chart
 ///
-/// #example(```
+/// ```cexample
 /// let data = (24, 31, 18, 21, 23, 18, 27, 17, 26, 13)
 /// let colors = gradient.linear(red, blue, green, yellow)
 ///
@@ -99,9 +99,9 @@
 ///   slice-style: colors,
 ///   inner-radius: .5,
 ///   outer-label: (content: "%",))
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `piechart` \
 /// #show-parameter-block("radius", ("number"), [
 ///   Outer radius of the chart.], default: 1)
@@ -157,7 +157,7 @@
 /// #show-parameter-block("legend.label", ("none","string","function"), [
 ///   See `outer-label.content`. The legend gets shown if this key is set != none.], default: "LABEL")
 ///
-/// = Anchors
+/// === Anchors
 ///   The chart places one anchor per item at the radius of it's slice that
 ///   gets named `"item-<index>"` (outer radius) and `"item-<index>-inner"` (inner radius),
 ///   where index is the index of the sclice data in `data`.

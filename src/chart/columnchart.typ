@@ -16,7 +16,7 @@
 /// rectangular bars that grow from bottom to top, proportional to the values
 /// they represent.
 ///
-/// = Styling
+/// === Styling
 /// *Root*: `columnchart`.
 /// #show-parameter-block("bar-width", "float", default: .8, [
 ///   Width of a single bar (basic) or a cluster of bars (clustered) in the plot.])

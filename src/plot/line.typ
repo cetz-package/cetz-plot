@@ -168,7 +168,7 @@
 ///   / `"epsilon" <float>`: Linearization slope epsilon for
 ///      use with `"linear"`, defaults to 0.
 ///
-///   #example(```
+///   ```cexample-vertical
 ///   let points(offset: 0) = ((0,0), (1,1), (2,0), (3,1), (4,0)).map(((x,y)) => {
 ///     (x,y + offset * 1.5)
 ///   })
@@ -180,7 +180,7 @@
 ///     plot.add(points(offset: 1), line: "spline")
 ///     plot.add(points(offset: 0), line: "linear")
 ///   })
-///   ```, vertical: true)
+///   ```
 ///
 /// - style (style): Style to use, can be used with a `palette` function
 /// - axes (axes): Name of the axes to use for plotting. Reversing the axes
@@ -191,7 +191,7 @@
 /// - data (array,function): Array of 2D data points (numeric) or a function
 ///   of the form `x => y`, where `x` is a value in `domain`
 ///   and `y` must be numeric or a 2D vector (for parametric functions).
-///   #example(```
+///   ```cexample
 ///   plot.plot(size: (2, 2), axis-style: none, {
 ///     // Using an array of points:
 ///     plot.add(((0,0), (calc.pi/2,1),
@@ -199,7 +199,7 @@
 ///     // Sampling a function:
 ///     plot.add(domain: (0, 2*calc.pi), calc.sin)
 ///   })
-///   ```)
+///   ```
 /// - label (none,content): Legend label to show for this plot.
 #let add(domain: auto,
          hypograph: false,
@@ -269,13 +269,13 @@
 /// Add horizontal lines at one or more y-values. Every lines start and end points
 /// are at their axis bounds.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(domain: (0, 4*calc.pi), calc.sin)
 ///   // Add 3 horizontal lines
 ///   plot.add-hline(-.5, 0, .5)
 /// })
-/// ```)
+/// ```
 ///
 /// - ..y (float): Y axis value(s) to add a line at
 /// - min (auto,float): X axis minimum value or auto to take the axis minimum
@@ -330,13 +330,13 @@
 /// Add vertical lines at one or more x-values. Every lines start and end points
 /// are at their axis bounds.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(domain: (0, 2*calc.pi), calc.sin)
 ///   // Add 3 vertical lines
 ///   plot.add-vline(calc.pi/2, calc.pi, 3*calc.pi/2)
 /// })
-/// ```)
+/// ```
 ///
 /// - ..x (float): X axis values to add a line at
 /// - min (auto,float): Y axis minimum value or auto to take the axis minimum
@@ -396,13 +396,13 @@
 ///
 /// This can be used to display an error-band of a function.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add-fill-between(domain: (0, 2*calc.pi),
 ///     calc.sin, // First function/data
 ///     calc.cos) // Second function/data
 /// })
-/// ```)
+/// ```
 ///
 /// - domain (domain): Domain of both `data-a` and `data-b`. The domain is used for
 ///   sampling functions only and has no effect on data arrays.

@@ -11,14 +11,14 @@
 
 /// Add one or more box or whisker plots.
 ///
-/// #example(```
+/// ```cexample
 /// chart.boxwhisker(size: (2,2), label-key: none,
 ///   y-min: 0, y-max: 70, y-tick-step: 20,
 ///   (x: 1, min: 15, max: 60,
 ///    q1: 25, q2: 35, q3: 50))
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `boxwhisker`
 /// #show-parameter-block("box-width", "float", default: .75, [
 ///   The width of the box. Since boxes are placed 1 unit next to each other,

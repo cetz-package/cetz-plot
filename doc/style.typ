@@ -1,7 +1,6 @@
-#import "example.typ": example
 #import "/src/lib.typ"
 
-#import "@preview/tidy:0.3.0"
+#import "@preview/tidy:0.4.3"
 #import "@preview/t4t:0.3.2": is
 
 #let show-function(fn, style-args) = {
@@ -84,11 +83,11 @@
     tidy.parse-module(
       read(path),
       scope: (
-        example: example,
         show-parameter-block: show-parameter-block,
         cetz: lib
       )
     ),
+    first-heading-level: 1,
     show-outline: false,
     sort-functions: none,
   )

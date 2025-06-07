@@ -3,15 +3,18 @@
 #import "/doc/example.typ": example
 #import "/doc/style.typ" as doc-style
 #import "/src/lib.typ": *
-#import "@preview/tidy:0.3.0"
+#import "@preview/tidy:0.4.3"
 
 
 // Usage:
-//   ```example
+//   ```cexample
 //   /* canvas drawing code */
 //   ```
-#show raw.where(lang: "example"): example
-#show raw.where(lang: "example-vertical"): example.with(vertical: true)
+//
+//   Why cexample? Because tidy thinks it has to mess
+//   with each raw block...
+#show raw.where(lang: "cexample"): example
+#show raw.where(lang: "cexample-vertical"): example.with(vertical: true)
 
 #make-title()
 
@@ -64,7 +67,7 @@ You can use style root `axes` with the following keys:
 #doc-style.parse-show-module("/src/axes.typ")
 
 === Example
-```example
+```cexample
 import cetz.draw: *
 import cetz-plot: *
 

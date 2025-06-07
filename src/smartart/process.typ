@@ -67,7 +67,7 @@
 
 /// Draw a basic process chart, describing sequencial steps
 ///
-/// #example(```
+/// ```cexample
 /// let steps = ([Improvise], [Adapt], [Overcome])
 /// let colors = (red, orange, green).map(c => c.lighten(40%))
 ///
@@ -78,9 +78,9 @@
 ///   steps: (max-width: 8em),
 ///   dir: ttb
 /// )
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `process-basic` \
 /// #show-parameter-block("spacing", ("number", "length"), [
 ///   Gap between steps and arrows.], default: 0.2em)
@@ -240,7 +240,7 @@
 
 /// Draw a chevron process chart, describing sequencial steps
 ///
-/// #example(```
+/// ```cexample
 /// let steps = ([Improvise], [Adapt], [Overcome])
 /// let colors = (red, orange, green).map(c => c.lighten(40%))
 ///
@@ -251,9 +251,9 @@
 ///   steps: (max-width: 8em, cap-ratio: 25%),
 ///   dir: btt
 /// )
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `process-chevron` \
 /// #show-parameter-block("spacing", ("number", "length"), [
 ///   Gap between steps.], default: 0.2em)
@@ -401,7 +401,7 @@
 
 /// Draw a bending process chart, describing sequencial steps in a zigzag layout
 ///
-/// #example(```
+/// ```cexample
 /// let steps = ([A], [B], [C], [D], [E], [F])
 /// let colors = (
 ///   red, orange, yellow.mix(green), green, green.mix(blue), blue
@@ -415,9 +415,9 @@
 ///     flow: (ltr, btt), max-stride: 2
 ///   )
 /// )
-/// ```)
+/// ```
 /// 
-/// = Styling
+/// === Styling
 /// *Root* `process-bending` \
 /// #show-parameter-block("spacing", ("number", "length"), [
 ///   Gap between steps and arrows.], default: 0.2em)

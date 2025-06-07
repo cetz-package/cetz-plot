@@ -36,7 +36,7 @@
 
 /// Draw a pyramid chart
 ///
-/// #example(```
+/// ```cexample
 /// let data = (
 ///   "transcendence",
 ///   "self-actualization",
@@ -58,9 +58,9 @@
 ///   data,
 ///   level-style: colors,
 ///   level-height: 0.7)
-/// ```)
+/// ```
 ///
-/// = Styling
+/// === Styling
 /// *Root* `pyramid` \
 /// #show-parameter-block("level-height", ("number"), [
 ///   Minimum level height.], default: 1)
@@ -90,7 +90,7 @@
 /// #show-parameter-block("inner-label.force-inside", ("boolean"), [
 ///   If false, labels are automatically placed outside their correspoding levels if they don't fit inside. If true, they are always placed inside.], default: false)
 ///
-/// = Anchors
+/// === Anchors
 ///   The chart places one anchor per item at the center of its level that
 ///   gets named `"levels.<index>"`, one on the middle of its left side named `"levels.<index>.west"`, and one on the right side named `"levels.<index>.east"`,
 ///   where index is the index of the level data in `data`.

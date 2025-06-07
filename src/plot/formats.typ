@@ -40,7 +40,7 @@
 
 /// Fraction tick formatter
 ///
-/// ```example
+/// ```cexample
 /// plot.plot(size: (5,1),
 ///           x-format: plot.formats.fraction,
 ///           x-tick-step: 1/5,
@@ -61,7 +61,7 @@
 
 /// Multiple of tick formatter
 ///
-/// ```example
+/// ```cexample
 /// plot.plot(size: (5,1),
 ///           x-format: plot.formats.multiple-of,
 ///           x-tick-step: calc.pi/4,
@@ -107,7 +107,7 @@
 
 /// Scientific notation tick formatter
 ///
-/// ```example
+/// ```cexample
 /// plot.plot(size: (5,1),
 ///           x-format: plot.formats.sci,
 ///           x-tick-step: 1e3,
@@ -145,7 +145,7 @@
 
 /// Rounded decimal number formatter
 ///
-/// ```example
+/// ```cexample
 /// plot.plot(size: (5,1),
 ///           x-format: plot.formats.decimal,
 ///           x-tick-step: .5,

@@ -1,4 +1,4 @@
-#let version = version(0,1,1)
+#let version = version(0,1,2)
 
 #import "/src/axes.typ"
 #import "/src/plot.typ"

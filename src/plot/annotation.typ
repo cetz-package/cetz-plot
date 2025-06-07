@@ -8,7 +8,7 @@
 /// An annotation is a sub-canvas that uses the plots coordinates specified
 /// by its x and y axis.
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(domain: (0, 2*calc.pi), calc.sin)
 ///   plot.annotate({
@@ -16,7 +16,7 @@
 ///     content((calc.pi, 0), [Here])
 ///   })
 /// })
-/// ```)
+/// ```
 ///
 /// Bounds calculation is done naively, therefore fixed size content _can_ grow
 /// out of the plot. You can adjust the padding manually to adjust for that. The
