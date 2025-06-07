@@ -560,16 +560,19 @@
 
     ctx.transform = transform
 
+    let transform-vec = transform-vec.with(size, x, y, none)
+
     drawables = drawables.map(d => {
       if "segments" in d {
-        d.segments = d.segments.map(((kind, ..pts)) => {
-          (kind, ..pts.map(pt => {
-            transform-vec(size, x, y, none, pt)
-          }))
+        d.segments = d.segments.map(((origin, closed, elements)) => {
+          elements = elements.map(((kind, ..pts)) => {
+            (kind, ..(pts.map(transform-vec)))
+          })
+          (transform-vec(origin), closed, elements)
         })
       }
       if "pos" in d {
-        d.pos = transform-vec(size, x, y, none, d.pos)
+        d.pos = transform-vec(d.pos)
       }
       return d
     })

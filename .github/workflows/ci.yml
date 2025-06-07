@@ -26,10 +26,10 @@ jobs:
           git: https://github.com/tingerrr/tytanic.git
       - run: |
           mkdir -p ~/.local/share/typst/packages/preview/cetz
-          git clone --depth 1 --branch v0.3.2 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.3.2
+          git clone --depth 1 --branch release-0.4.0 https://github.com/cetz-package/cetz.git ~/.local/share/typst/packages/preview/cetz/0.4.0
       - uses: typst-community/setup-typst@v3
         with:
-          typst-version: '0.13.0'
+          typst-version: '0.13.1'
           cache-dependency-path: src/cetz.typ
       - run: |
           just install @local
