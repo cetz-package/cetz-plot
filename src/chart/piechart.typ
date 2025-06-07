@@ -458,7 +458,7 @@
             angle = vector.add(pt, (dir.at(1), -dir.at(0)))
           }
 
-          content(pt, inner-label, angle: angle, anchor: style.inner-label.anchor)
+          on-layer(1, content(pt, inner-label, angle: angle, anchor: style.inner-label.anchor))
         }
 
         // Place item anchor
