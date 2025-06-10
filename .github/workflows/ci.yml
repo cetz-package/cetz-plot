@@ -28,7 +28,7 @@ jobs:
           rustup target add wasm32-unknown-unknown
           CETZ=$(mktemp -d)
           mkdir -p ~/.local/share/typst/packages/preview/cetz
-          git clone --depth 1 --branch release-0.4.0 https://github.com/cetz-package/cetz.git "$CETZ"
+          git clone --depth 1 --branch v0.4.0 https://github.com/cetz-package/cetz.git "$CETZ"
           cd "$CETZ"
           git submodule update --init --recursive
           just install @preview
