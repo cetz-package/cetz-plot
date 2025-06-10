@@ -216,7 +216,7 @@
 ///     The preview canvas bounds are between (0,0) and (1,1).
 ///     If set to `auto`, a straight line is drawn.
 ///
-/// ```example
+/// ```cexample
 /// plot.plot(size: (1,1), x-tick-step: none, y-tick-step: none, {
 ///   plot.add(((0,0), (1,1))) // Some data
 ///   plot.add-legend([Custom item], preview: () => {

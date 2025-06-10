@@ -2,7 +2,7 @@
 
 /// Add one or more box or whisker plots
 ///
-/// #example(```
+/// ```cexample
 /// plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
 ///   plot.add-boxwhisker((x: 1, // Location on x-axis
 ///     outliers: (7, 65, 69),        // Optional outlier values
@@ -11,7 +11,7 @@
 ///     q2: 35,                       //            Median
 ///     q3: 50))                      //            Upper
 /// })
-/// ```)
+/// ```
 ///
 /// - data (array, dictionary): dictionary or array of dictionaries containing the
 ///   needed entries to plot box and whisker plot.

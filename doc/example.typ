@@ -21,9 +21,9 @@
   let canvas-background = yellow.lighten(95%)
 
   let picture = cetz.canvas(
-    eval(
+    std.eval(
       example-preamble + source,
-      scope: example-scope
+      scope: example-scope,
     ),
     ..args
   )

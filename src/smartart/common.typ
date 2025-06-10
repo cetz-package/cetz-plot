@@ -1,14 +1,14 @@
 #import "/src/cetz.typ" as cetz: draw, coordinate, util.resolve-number, vector
 
 /// Possible chevron caps: #cetz.smartart.process.CHEVRON-CAPS
-/// #example(```
+/// ```cexample
 /// for cap in smartart.process.CHEVRON-CAPS {
 ///   smartart.process.chevron(
 ///     ([Step 1], [Step 2]), spacing: 0,
 ///     start-cap: cap, middle-cap: cap, end-cap: cap)
 ///   translate(y: -1)
 /// }
-/// ```)
+/// ```
 #let CHEVRON-CAPS = (
   "(", "<", "|", ">", ")"
 )
