@@ -125,12 +125,12 @@
         mark: "o"
       )
       plot.annotate({
-          rect((0, 1), (calc.pi, 10), fill: rgb(50,50,200,50))
-          content((2, 3), [Annotation])
+        rect((plot: (0, 1)), (plot: (calc.pi, 10)), fill: rgb(50,50,200,50), name: "r")
+        content("r.center", [Annotation])
       })
       plot.annotate({
-          rect((0, 1000), (calc.pi, 10000), fill: rgb(50,50,200,50))
-          content((2, 3000), [Annotation])
+        rect((plot: (0, 1000)), (plot: (calc.pi, 10000)), fill: rgb(50,50,200,50), name: "r")
+        content("r.center", [Annotation])
       })
     }
   )
