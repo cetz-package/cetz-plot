@@ -290,7 +290,7 @@
 
   for (name, axis) in axis-dict {
     if not "ticks" in axis { axis.ticks = () }
-    axis.label = get-axis-option(name, "label", $#name$)
+    axis.label = get-axis-option(name, "label", $italic(name)$)
 
     // Configure axis bounds
     axis.min = get-axis-option(name, "min", axis.min)
