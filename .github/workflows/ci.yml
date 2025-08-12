@@ -24,18 +24,10 @@ jobs:
         with:
           crate: tytanic
           git: https://github.com/tingerrr/tytanic.git
-      - run: |
-          rustup target add wasm32-unknown-unknown
-          CETZ=$(mktemp -d)
-          mkdir -p ~/.local/share/typst/packages/preview/cetz
-          git clone --depth 1 --branch v0.4.0 https://github.com/cetz-package/cetz.git "$CETZ"
-          cd "$CETZ"
-          git submodule update --init --recursive
-          just install @preview
-      - uses: typst-community/setup-typst@v3
+      - uses: typst-community/setup-typst@v4
         with:
           typst-version: '0.13.1'
-          cache-dependency-path: src/cetz.typ
+          zip-packages: requirements.json
       - run: |
           just install @local
           just install @preview
