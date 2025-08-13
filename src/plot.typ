@@ -297,14 +297,37 @@
 
   // Adjust axis bounds for annotations
   for a in annotations {
+    let sub-ctx = ctx
+
+    // Register a stub-resolver that just forwards coordinates
+    sub-ctx.resolve-coordinate.push((ctx, c) => {
+      if type(c) == dictionary and "plot" in c {
+        return c.plot
+      }
+      return c
+    })
+
     let (x, y) = a.axes.map(name => axis-dict.at(name))
-    (x, y) = calc-annotation-domain(ctx, x, y, a)
+    (x, y) = calc-annotation-domain(sub-ctx, x, y, a)
     axis-dict.at(a.axes.at(0)) = x
     axis-dict.at(a.axes.at(1)) = y
   }
 
   // Set axis options
   axis-dict = plot-util.setup-axes(ctx, axis-dict, options.named(), size)
+
+  // Register axis coordinate systems
+  let axis-coordinate-resolver(ctx, c) = {
+    if type(c) == dictionary and "plot" in c {
+      let pt = c.plot
+      let names = c.at("axes", default: ("x", "y"))
+      let (x, y) = names.map(name => axis-dict.at(name))
+
+      return axes.transform-vec(size, x, y, none, pt)
+    }
+    return c
+  }
+  draw.register-coordinate-resolver(axis-coordinate-resolver)
 
   // Prepare styles
   for i in range(data.len()) {
@@ -369,8 +392,7 @@
       let (x, y) = a.axes.map(name => axis-dict.at(name))
       let plot-ctx = make-ctx(x, y, size)
 
-      data-viewport(a, x, y, size, {
-        draw.anchor("default", (0, 0))
+      draw.scope({
         a.body
       })
     }
@@ -467,8 +489,7 @@
       let (x, y) = a.axes.map(name => axis-dict.at(name))
       let plot-ctx = make-ctx(x, y, size)
 
-      data-viewport(a, x, y, size, {
-        draw.anchor("default", (0, 0))
+      draw.scope({
         a.body
       })
     }
