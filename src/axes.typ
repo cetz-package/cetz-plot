@@ -204,12 +204,12 @@
       draw.move-to(start)
       if axis.min > 0 {
         add-break(false)
-        draw.line((rel: size, to: start), end, mark: style.at("mark", default: none))
+        draw.line((rel: size, to: start), end)
       } else if axis.max < 0 {
         draw.line(start, (rel: vector.scale(size, -1), to: end))
         add-break(true)
       }
-    }, stroke: style.stroke)
+    }, stroke: style.stroke, mark: style.at("mark", default: none))
   } else {
     draw.line(start, end, stroke: style.stroke, mark: style.at("mark", default: none))
   }

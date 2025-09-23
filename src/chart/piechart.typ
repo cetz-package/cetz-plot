@@ -225,7 +225,7 @@
   group(name: name, ctx => {
     anchor("default", (0,0))
 
-    let style = styles.resolve(ctx,
+    let style = styles.resolve(ctx.style,
       merge: style.named(), root: "piechart", base: default-style)
 
     let gap = style.gap
