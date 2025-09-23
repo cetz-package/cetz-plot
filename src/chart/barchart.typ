@@ -3,7 +3,7 @@
 #import "/src/plot.typ"
 
 #let barchart-default-style = (
-  axes: (tick: (length: 0), grid: (stroke: (dash: "dotted"))),
+  axes: (tick: (length: 0), grid: (stroke: (dash: "dotted", paint: gray))),
   bar-width: .8,
   cluster-gap: 0,
   error: (
