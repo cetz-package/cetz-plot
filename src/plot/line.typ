@@ -186,8 +186,24 @@
 /// - axes (axes): Name of the axes to use for plotting. Reversing the axes
 ///   means rotating the plot by 90 degrees.
 /// - mark (string): Mark symbol to place at each distinct value of the
-///   graph. Uses the `mark` style key of `style` for drawing.
-/// - mark-size (float): Mark size in cavas units
+///   graph. Uses the `mark` style key of `style` for drawing:
+///
+///   ```cexample-vertical
+///   let points(offset) = ((offset, 0), (offset, 1))
+///
+///   plot.plot(size: (12, 2), axis-style: none, {
+///     plot.add(points(0), mark: "*")  // same as "x"
+///     plot.add(points(1), mark: "square")
+///     plot.add(points(2), mark: "triangle")
+///     plot.add(points(3), mark: "o")
+///     plot.add(points(4), mark: "+")
+///     plot.add(points(5), mark: "-")
+///     plot.add(points(6), mark: "|")
+///   })
+///   ```
+///
+///
+/// - mark-size (float): Mark size in canvas units
 /// - data (array,function): Array of 2D data points (numeric) or a function
 ///   of the form `x => y`, where `x` is a value in `domain`
 ///   and `y` must be numeric or a 2D vector (for parametric functions).
