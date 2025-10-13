@@ -31,6 +31,13 @@
     draw.line(ll(pt), rr(pt), ..style)
   } else if mark == "|" {
     draw.line(tt(pt), bb(pt), ..style)
+  } else if mark == "diamond" or mark == "<>" {
+    draw.line(ll(pt), tt(pt), rr(pt), bb(pt), close: true, ..style)
+  } else if type(mark) == int and mark > 2 {
+    let pts = range(mark).map(i => (to: pt, rel: (90deg + 360deg * i / mark, size/2)))
+    draw.line(..pts, close: true, ..style)
+  } else if type(mark) == function {
+    mark(pt, size, style)
   }
 }
 

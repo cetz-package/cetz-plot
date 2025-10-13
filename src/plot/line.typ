@@ -199,7 +199,18 @@
 ///     plot.add(points(4), mark: "+")
 ///     plot.add(points(5), mark: "-")
 ///     plot.add(points(6), mark: "|")
-///   })
+///     plot.add(points(7), mark: "<>")
+///     plot.add(points(8), mark: 5)  // specify an integer to use a regular polygon.
+///
+///     // Alternatively, specify custom function:
+///     plot.add(points(9), mark: (pt, size, style) => {
+///       let top = (to: pt, rel: (0, size))
+///       let bot = (to: pt, rel: (0, -size))
+///       let left = (to: pt, rel: (-size/2, 0))
+///       let right = (to: pt, rel: (size/2, 0))
+///       cetz.draw.line(top, left, bot, right, close: true, ..style)
+///     })
+///    })
 ///   ```
 ///
 ///
