@@ -184,6 +184,20 @@
 ///   ])
 /// - fill-below (bool): If true, the filled shape of plots is drawn _below_ axes.
 /// - name (string): The plots element name to be used when referring to anchors
+/// - title (none, string, content): Plot title.
+/// - title-style (dictionary): Style for the title.
+///   #show-parameter-block("font", ("string"), default: "\"bold\"", [
+///     Font style of the title.
+///   ])
+///   #show-parameter-block("padding", ("number"), default: ".2cm", [
+///     Padding between title and plot.
+///   ])
+///   #show-parameter-block("anchor", ("string"), default: "\"south\"", [
+///     Anchor of the title content.
+///   ])
+///   #show-parameter-block("offset", ("pair"), default: "(0,0)", [
+///     Offset vector for fine-tuning the title position.
+///   ])
 /// - legend (none, auto, coordinate): The position the legend will be drawn at. See plot-legends for information about legends. If set to `<auto>`, the legend's "default-placement" styling will be used. If set to a `<coordinate>`, it will be taken as relative to the plot's origin.
 /// - legend-anchor (auto, string): Anchor of the legend group to use as its origin.
 ///   If set to `auto` and `lengend` is one of the predefined legend anchors, the
@@ -197,6 +211,8 @@
           plot-style: default-plot-style,
           mark-style: default-mark-style,
           fill-below: true,
+          title: none,
+          title-style: (:),
           legend: auto,
           legend-anchor: auto,
           legend-style: (:),
@@ -426,6 +442,25 @@
         size: size,
         axis-dict.x,
         axis-dict.y,)
+    }
+
+    // Draw Title
+    if title != none {
+       // Styles
+       let title-style = styles.resolve(ctx.style,
+          base: (
+            font: "bold",
+            padding: .2cm,
+            anchor: "south",
+            offset: (0, 0)
+          ), merge: title-style, root: "plot.title")
+       
+       let (w, h) = size
+       let padding = util.resolve-number(ctx, title-style.padding)
+       let pos = (w / 2, h + padding)
+       pos = vector.add(pos, title-style.offset)
+
+       draw.content(pos, title, anchor: title-style.anchor)
     }
 
     // Stroke + Mark data
