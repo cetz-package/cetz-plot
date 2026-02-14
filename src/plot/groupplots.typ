@@ -16,7 +16,7 @@ import "/src/cetz.typ"
 /// - title (none, string, content): Global title for the group of plots.
 /// - sublabels (none, string): Numbering pattern for sublabels (e.g., "(a)").
 /// - ..options (any): Default options passed to every plot.
-/// - ..cont (any): Alternating options (dictionary) and plot content (body).
+/// - ..cont (any): Alternating plot options (dictionary) and plot content (body).
 ///
 /// == Example
 ///
