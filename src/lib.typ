@@ -4,3 +4,7 @@
 #import "/src/plot.typ"
 #import "/src/chart.typ"
 #import "/src/smartart.typ"
+
+// Expose groupplots
+#import "/src/plot/groupplots.typ": groupplots
+
