@@ -21,8 +21,8 @@
 #set terms(indent: 1em)
 #set par(justify: true)
 #set heading(numbering: (..num) => if num.pos().len() < 4 {
-    numbering("1.1", ..num)
-  })
+  numbering("1.1", ..num)
+})
 #show link: set text(blue)
 
 // Outline
@@ -58,7 +58,17 @@ module imported into the namespace.
 
 #doc-style.parse-show-module("/src/plot.typ")
 
-#for m in ("line", "bar", "boxwhisker", "contour", "errorbar", "annotation", "formats", "violin", "legend") {
+#for m in (
+  "line",
+  "bar",
+  "boxwhisker",
+  "contour",
+  "errorbar",
+  "annotation",
+  "formats",
+  "violin",
+  "legend",
+) {
   doc-style.parse-show-module("/src/plot/" + m + ".typ")
 }
 
@@ -87,7 +97,14 @@ plot.plot(size: (5, 4), axis-style: "school-book", y-tick-step: none, {
 = Chart
 
 #doc-style.parse-show-module("/src/chart.typ")
-#for m in ("barchart", "boxwhisker", "columnchart", "piechart", "pyramid") {
+#for m in (
+  "barchart",
+  "boxwhisker",
+  "columnchart",
+  "piechart",
+  "radarchart",
+  "pyramid",
+) {
   doc-style.parse-show-module("/src/chart/" + m + ".typ")
 }
 
