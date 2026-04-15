@@ -138,7 +138,7 @@
     draw.anchor("default", (0, 0))
 
     let style = styles.resolve(
-      ctx,
+      ctx.style,
       merge: style.named(),
       root: "pyramid",
       base: default-style

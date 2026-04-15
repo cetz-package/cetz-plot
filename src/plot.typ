@@ -202,7 +202,7 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
-  draw.assert-version(version(0, 4, 0))
+  draw.assert-version(version(0, 4, 2))
 
   // Create plot context object
   let make-ctx(x, y, size) = {

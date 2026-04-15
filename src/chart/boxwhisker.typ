@@ -3,7 +3,7 @@
 #import "/src/plot.typ"
 
 #let boxwhisker-default-style = (
-  axes: (tick: (length: 0), grid: (stroke: (dash: "dotted"))),
+  axes: (tick: (length: 0), grid: (stroke: (dash: "dotted", paint: gray))),
   box-width: 0.75,
   whisker-width: 0.5,
   mark-size: 0.15,

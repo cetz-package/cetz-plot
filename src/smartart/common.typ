@@ -373,7 +373,7 @@
   }
   draw.group(name: name, ctx => {
     let pre-end-angle = end-angle - arrow-angle
-    let mid-angle = start-angle + angle-range / 2
+    let mid-angle = start-angle + (angle-range - arrow-angle) / 2
     let radius-int = radius - h4
     let radius-ext = radius + h4
     let radius-int2 = radius - h2

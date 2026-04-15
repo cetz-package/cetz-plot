@@ -2,7 +2,7 @@
 
 CeTZ-Plot is a library that adds plots and charts to [CeTZ](https://github.com/cetz-package/cetz), a library for drawing with [Typst](https://typst.app).
 
-CeTZ-Plot requires CeTZ version ≥ 0.4.0!
+CeTZ-Plot requires CeTZ version ≥ 0.4.2!
 
 ## Examples
 <!-- img width is set so the table gets evenly spaced by GitHubs css -->
@@ -63,8 +63,8 @@ For information, see the [manual (stable)](https://github.com/cetz-package/cetz-
 
 To use this package, simply add the following code to your document:
 ```
-#import "@preview/cetz:0.4.0"
-#import "@preview/cetz-plot:0.1.2": plot, chart
+#import "@preview/cetz:0.4.2"
+#import "@preview/cetz-plot:0.1.3": plot, chart
 
 #cetz.canvas({
   // Your plot/chart code goes here
