@@ -126,6 +126,8 @@
         (steps.len() - 1) * step-angles <= 360deg,
         message: "Sum of step angles is greater than 360°"
       )
+      let angles = (step-angles,) * (steps.len() - 1)
+      angles + (360deg - angles.sum(default: 0deg),)
     } else if type(step-angles) == array {
       assert(
         step-angles.len() == n-steps - 1,
