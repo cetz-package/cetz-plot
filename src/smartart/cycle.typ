@@ -82,6 +82,10 @@
 /// - ccw (boolean): If true, steps are laid out counter-clockwise. If false, they're placed clockwise. The center of the cycle is always placed at (0, 0)
 /// - radius (number, length): The radius of the cycle
 /// - offset-angle (angle): Offset of the starting angle
+/// - step-angles (none,angle,array): Angles between the steps.
+///   - none: Steps are spaced evenly.
+///   - angle: Space between the steps, with the last angle (between the last step and the first one) completing the full circle.
+///   - array: An array of angles between the steps. For n steps, the array must contain n-1 angles. The last angle is automatically computed to complete the full circle.
 #let basic(
   steps,
   arrow-style: auto,
@@ -149,7 +153,7 @@
       )
       step-angles + (360deg - step-angles.sum(default: 0deg),)
     } else {
-      panic("step-angles must be an angle, an array or null, got " + repr(type(step-angles)))
+      panic("step-angles must be an angle, an array or none, got " + repr(type(step-angles)))
     }
     if not ccw {
       step-angles = step-angles.map(x => x * -1)
