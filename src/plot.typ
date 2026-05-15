@@ -202,7 +202,7 @@
           legend-style: (:),
           ..options
           ) = draw.group(name: name, ctx => {
-  draw.assert-version(version(0, 4, 2))
+  draw.assert-version(version(0, 5, 0), max: version(0, 6, 0))
 
   // Create plot context object
   let make-ctx(x, y, size) = {
@@ -233,7 +233,14 @@
     if y.horizontal {
       (x, y) = (y, x)
       body = draw.set-ctx(ctx => {
-        ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
+        let ((x0, x1, x2, x3),
+             (y0, y1, y2, y3),
+             (z0, z1, z2, z3),
+             (w0, w1, w2, w3)) = ctx.transform
+        ctx.transform = ((x1, x0, x2, x3),
+                         (y1, y0, y2, y3),
+                         (z1, z0, z2, z3),
+                         (w1, w0, w2, w3))
         return ctx
       }) + body
     }
@@ -451,7 +458,14 @@
         draw.scope({
           if y.horizontal {
             draw.set-ctx(ctx => {
-              ctx.transform = matrix.swap-cols(ctx.transform, 0, 1)
+              let ((x0, x1, x2, x3),
+                   (y0, y1, y2, y3),
+                   (z0, z1, z2, z3),
+                   (w0, w1, w2, w3)) = ctx.transform
+              ctx.transform = ((x1, x0, x2, x3),
+                               (y1, y0, y2, y3),
+                               (z1, z0, z2, z3),
+                               (w1, w0, w2, w3))
               return ctx
             })
           }

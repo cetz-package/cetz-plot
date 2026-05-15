@@ -1,6 +1,4 @@
 #import "/src/cetz.typ": draw, styles, palette, util, vector, intersection
-#import util: circle-arclen
-
 #import "/src/plot/legend.typ"
 
 // Piechart Label Kind
@@ -342,6 +340,10 @@
         if outer-angle < 0deg {
           // TODO: Add a warning as soon as Typst is ready!
           continue
+        }
+
+        let circle-arclen(radius, angle: 90deg) = {
+          calc.abs(angle / 360deg * 2 * calc.pi * radius)
         }
 
         // A sharp item is an item that should be round but is sharp due to the gap being big
