@@ -14,9 +14,17 @@
 //       with two arguments, the z value `z1` to compare against and
 //       the z value `z2` of the data and must return a boolean: `(z1, z2) => boolean`.
 // - interpolate (bool): Enable cell interpolation for smoother lines
+// - connect-domain (bool): Treat the sample domain boundary as an exterior edge.
+//   This closes regions against the plot boundary, which is useful for fills but
+//   not for contour lines.
 // - contour-limit (int): Contour limit after which the algorithm panics
 // -> array: Array of contour point arrays
-#let find-contours(data, offset, op: auto, interpolate: true, contour-limit: 50) = {
+#let find-contours(data,
+                   offset,
+                   op: auto,
+                   interpolate: true,
+                   connect-domain: false,
+                   contour-limit: 50) = {
   assert(data != none and type(data) == array,
     message: "Data must be of type array")
   assert(type(offset) in (int, float),
@@ -58,6 +66,22 @@
   // Build a binary map that has 0 for unset and 1 for set cells
   let bin-data = data.map(r => r.map(is-set))
 
+  // Get case (0 to 15)
+  let get-case(tl, tr, bl, br) = {
+    int(tl) * 8 + int(tr) * 4 + int(br) * 2 + int(bl)
+  }
+
+  let lerp(a, b) = {
+    if a == b { return a }
+    else if a == none { return 1 }
+    else if b == none { return 0 }
+    return (offset - a) / (b - a)
+  }
+
+  let segments = ()
+  let x-range = if connect-domain { range(-1, n-cols) } else { range(0, n-cols - 1) }
+  let y-range = if connect-domain { range(-1, n-rows) } else { range(0, n-rows - 1) }
+
   // Get binary data at x, y
   let get-bin(x, y) = {
     if x >= 0 and x < n-cols and y >= 0 and y < n-rows {
@@ -74,28 +98,12 @@
     return none
   }
 
-  // Get case (0 to 15)
-  let get-case(tl, tr, bl, br) = {
-    int(tl) * 8 + int(tr) * 4 + int(br) * 2 + int(bl)
-  }
-
-  let lerp(a, b) = {
-    if a == b { return a }
-    else if a == none { return 1 }
-    else if b == none { return 0 }
-    return (offset - a) / (b - a)
-  }
-
-  // List of all found contours
-  let contours = ()
-
-  let segments = ()
-  for y in range(-1, n-rows) {
-    for x in range(-1, n-cols) {
+  for y in y-range {
+    for x in x-range {
       let tl = get-bin(x, y)
-      let tr = get-bin(x+1, y)
-      let bl = get-bin(x, y+1)
-      let br = get-bin(x+1, y+1)
+      let tr = get-bin(x + 1, y)
+      let bl = get-bin(x, y + 1)
+      let br = get-bin(x + 1, y + 1)
 
       // Corner data
       // 
@@ -105,9 +113,9 @@
       // |       |
       // sw-----se
       let nw = get-data(x, y)
-      let ne = get-data(x+1, y)
-      let se = get-data(x+1, y+1)
-      let sw = get-data(x, y+1)
+      let ne = get-data(x + 1, y)
+      let se = get-data(x + 1, y + 1)
+      let sw = get-data(x, y + 1)
 
       // Interpolated edge points
       //
@@ -204,25 +212,39 @@
   return contours
 }
 
+// Convert contour data points from sample-space to plot coordinates.
+#let _scale-contours(contours, x-min, y-min, dx, dy, z) = {
+  contours.map(contour => (
+    z: z,
+    line-data: contour.map(pt => (
+      pt.at(0) * dx + x-min,
+      pt.at(1) * dy + y-min,
+    )),
+  ))
+}
+
 // Prepare line data
 #let _prepare(self, ctx) = {
   let (x, y) = (ctx.x, ctx.y)
 
-  self.contours = self.contours.map(c => {
+  self.stroke-contours = self.stroke-contours.map(c => {
     c.stroke-paths = util.compute-stroke-paths(c.line-data, x, y)
-
-    if self.fill {
-      c.fill-paths = util.compute-fill-paths(c.line-data, x, y)
-    }
     return c
   })
+
+  if self.fill {
+    self.fill-contours = self.fill-contours.map(c => {
+      c.fill-paths = util.compute-fill-paths(c.line-data, x, y)
+      return c
+    })
+  }
 
   return self
 }
 
 // Stroke line data
 #let _stroke(self, ctx) = {
-  for c in self.contours {
+  for c in self.stroke-contours {
     for p in c.stroke-paths {
       draw.line(..p, fill: none, close: p.first() == p.last())
     }
@@ -232,7 +254,7 @@
 // Fill line data
 #let _fill(self, ctx) = {
   if not self.fill { return }
-  for c in self.contours {
+  for c in self.fill-contours {
     for p in c.fill-paths {
       draw.line(..p, stroke: none, close: p.first() == p.last())
     }
@@ -310,26 +332,26 @@
   let (y-min, y-max) = y-domain
   let dy = (y-max - y-min) / (data.len() - 1)
 
-  let contours = ()
+  let stroke-contours = ()
+  let fill-contours = ()
   let z = if type(z) == array { z } else { (z,) }
   for z in z {
-    for contour in find-contours(data, z, op: op, interpolate: interpolate, contour-limit: limit) {
-      let line-data = contour.map(pt => {
-        (pt.at(0) * dx + x-min,
-         pt.at(1) * dy + y-min)
-      })
+    stroke-contours += _scale-contours(
+      find-contours(data, z, op: op, interpolate: interpolate, contour-limit: limit),
+      x-min, y-min, dx, dy, z)
 
-      contours.push((
-        z: z,
-        line-data: line-data,
-      ))
+    if fill {
+      fill-contours += _scale-contours(
+        find-contours(data, z, op: op, interpolate: interpolate, connect-domain: true, contour-limit: limit),
+        x-min, y-min, dx, dy, z)
     }
   }
 
   return ((
     type: "contour",
     label: label,
-    contours: contours,
+    stroke-contours: stroke-contours,
+    fill-contours: fill-contours,
     axes: axes,
     x-domain: x-domain,
     y-domain: y-domain,
