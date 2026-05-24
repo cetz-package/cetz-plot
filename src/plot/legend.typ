@@ -170,7 +170,7 @@
 
           // Draw item preview
           let draw-preview = if preview == auto { draw-generic-preview } else { preview }
-          scope({
+          group({ // BUG: scope in group seems to be bugged, we use group instead
             set-viewport(preview-a, preview-b, bounds: (1, 1, 0))
             (draw-preview)(item)
           })
