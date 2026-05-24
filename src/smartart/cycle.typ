@@ -82,6 +82,10 @@
 /// - ccw (boolean): If true, steps are laid out counter-clockwise. If false, they're placed clockwise. The center of the cycle is always placed at (0, 0)
 /// - radius (number, length): The radius of the cycle
 /// - offset-angle (angle): Offset of the starting angle
+/// - step-angles (none,angle,array): Angles between the steps.
+///   - none: Steps are spaced evenly.
+///   - angle: Space between the steps, with the last angle (between the last step and the first one) completing the full circle.
+///   - array: An array of angles between the steps. For n steps, the array must contain n-1 angles. The last angle is automatically computed to complete the full circle.
 #let basic(
   steps,
   arrow-style: auto,
@@ -92,7 +96,8 @@
   radius: 2,
   offset-angle: 0deg,
   name: none,
-  ..style
+  step-angles: none,
+  ..style,
 ) = {
   draw.group(name: name, ctx => {
     draw.anchor("default", (0, 0))
@@ -111,17 +116,58 @@
     let (
       sizes,
       largest-width,
-      highest-height
+      highest-height,
     ) = _get-steps-sizes(steps, ctx, style, step-style-at)
 
-    let angle-step = 360deg / n-steps
+    let step-angles = if step-angles == none {
+      steps.map(_ => 360deg / n-steps)
+    } else if type(step-angles) == angle {
+      assert(
+        step-angles >= 0deg,
+        message: "step-angles must be positive, use the ccw parameter to change the direction"
+      )
+      assert(
+        (steps.len() - 1) * step-angles <= 360deg,
+        message: "Sum of step angles is greater than 360°"
+      )
+      let angles = (step-angles,) * (steps.len() - 1)
+      angles + (360deg - angles.sum(default: 0deg),)
+    } else if type(step-angles) == array {
+      assert(
+        step-angles.len() == n-steps - 1,
+        message: "There must be one less step angle as there are steps. Expected " + str(n-steps - 1) + ", got " + str(step-angles.len())
+      )
+      for step-angle in step-angles {
+        assert(
+          step-angle >= 0deg,
+          message: "step-angles must be positive, use the ccw parameter to change the direction"
+        )
+        assert(
+          type(step-angle) == angle,
+          message: "All values in step-angles must be angles"
+        )
+      }
+      assert(
+        step-angles.sum(default: 0deg) <= 360deg,
+        message: "Sum of step angles is greater than 360°"
+      )
+      step-angles + (360deg - step-angles.sum(default: 0deg),)
+    } else {
+      panic("step-angles must be an angle, an array or none, got " + repr(type(step-angles)))
+    }
     if not ccw {
-      angle-step *= -1
+      step-angles = step-angles.map(x => x * -1)
     }
 
+    let angle-at = i => (
+      step-angles.slice(0, i)
+                 .sum(default: 0deg)
+      + 90deg
+      + offset-angle
+    )
+
     for (i, step) in steps.enumerate() {
-      let angle = angle-step * i + 90deg + offset-angle
-      let pos = (angle, radius)
+      let pos = (angle-at(i), radius)
 
       let step-style = style.steps + step-style-at(i)
       let padding = resolve-number(ctx, step-style.padding)
@@ -139,8 +185,7 @@
     }
 
     for i in range(n-steps) {
-      let angle = angle-step * i + 90deg + offset-angle
-
+      let angle = angle-at(i)
       let arrow-style = style.arrows + arrow-style-at(i)
       let arrow-stroke = arrow-style.stroke
       let arrow-fill = arrow-style.fill
@@ -152,6 +197,7 @@
         arrow-fill = gradient.linear(s1.fill, s2.fill).sample(50%)
       }
 
+      let angle-step = step-angles.at(i)
       let start-angle = angle + angle-step * 0.2
       let end-angle = angle + angle-step * 0.8
 
@@ -179,17 +225,17 @@
       }
       draw.hide(draw.arc-through(
         ..pts,
-        name: "arc-" + str(i)
+        name: "arc-" + str(i),
       ))
       draw.intersections(
         "i-" + str(i),
         "step-" + str(i),
-        "arc-" + str(i)
+        "arc-" + str(i),
       )
       draw.intersections(
         "j-" + str(i),
         "step-" + str(calc.rem(i + 1, n-steps)),
-        "arc-" + str(i)
+        "arc-" + str(i),
       )
 
       draw.get-ctx(ctx => {
@@ -231,9 +277,9 @@
               (end-angle, radius),
               stroke: arrow-stroke,
               mark: marks,
-              name: arrow-name
+              name: arrow-name,
             )
-          
+
           // Thick arrow
           } else {
             _draw-arc-arrow(
@@ -244,29 +290,31 @@
               arrow-fill,
               arrow-stroke,
               double: arrow-style.double,
-              name: arrow-name
+              name: arrow-name,
             )
           }
-        
+
         // Straight
         } else {
           let p1 = (start-angle, radius)
           let p2 = (end-angle, radius)
           if arrow-thickness == none {
             draw.line(
-              p1, p2,
+              p1,
+              p2,
               stroke: arrow-stroke,
               mark: marks,
-              name: arrow-name
+              name: arrow-name,
             )
           } else {
             _draw-arrow(
-              p1, p2,
+              p1,
+              p2,
               arrow-thickness,
               arrow-fill,
               arrow-stroke,
               double: arrow-style.double,
-              name: arrow-name
+              name: arrow-name,
             )
           }
         }

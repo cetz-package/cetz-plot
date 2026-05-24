@@ -220,3 +220,22 @@
   (angle: 15deg, ccw: true),
   (angle: -20deg, ccw: true),
 ))
+
+#let steps = ([A], [B], [C])
+
+#test-case(args => {
+  defaults()
+  smartart.cycle.basic(
+    steps,
+    step-style: none,
+    step-angles: args.step-angles,
+    ccw: args.ccw
+  )
+}, args: (
+  (step-angles: none, ccw: false),
+  (step-angles: none, ccw: true),
+  (step-angles: 60deg, ccw: false),
+  (step-angles: 60deg, ccw: true),
+  (step-angles: (60deg, 120deg), ccw: false),
+  (step-angles: (60deg, 120deg), ccw: true),
+))
