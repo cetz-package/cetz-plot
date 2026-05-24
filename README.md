@@ -10,17 +10,17 @@ CeTZ-Plot requires CeTZ version ≥ 0.5.0!
 <tr>
   <td>
     <a href="gallery/line.typ">
-      <img src="gallery/line.png" width="250px">
+      <img src="gallery/line.png" width="250px" alt="Line plot example">
     </a>
   </td>
   <td>
     <a href="gallery/piechart.typ">
-      <img src="gallery/piechart.png" width="250px">
+      <img src="gallery/piechart.png" width="250px" alt="Piechart example">
     </a>
   </td>
   <td>
     <a href="gallery/barchart.typ">
-      <img src="gallery/barchart.png" width="250px">
+      <img src="gallery/barchart.png" width="250px" alt="Barchart example">
     </a>
   </td>
 </tr><tr>
@@ -31,12 +31,12 @@ CeTZ-Plot requires CeTZ version ≥ 0.5.0!
 <tr>
   <td>
     <a href="gallery/pyramid.typ">
-      <img src="gallery/pyramid.png" width="250px">
+      <img src="gallery/pyramid.png" width="250px" alt="Stacked pyramid chart example">
     </a>
   </td>
   <td colspan="2">
     <a href="gallery/process.typ">
-      <img src="gallery/process.png" width="500px">
+      <img src="gallery/process.png" width="500px" alt="Process chart example">
     </a>
   </td>
 </tr><tr>
@@ -46,7 +46,7 @@ CeTZ-Plot requires CeTZ version ≥ 0.5.0!
 <tr>
   <td>
     <a href="gallery/circular.typ">
-      <img src="gallery/circular.png" width="250px">
+      <img src="gallery/circular.png" width="250px" alt="Circular process chart example">
     </a>
   </td>
 </tr><tr>
