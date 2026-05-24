@@ -1,14 +1,14 @@
 #import "/src/lib.typ"
 
 #import "@preview/tidy:0.4.3"
-#import "@preview/t4t:0.3.2": is
+#import "@preview/t4t:0.3.2": is as is_
 
 #let show-function(fn, style-args) = {
   [
     #heading(fn.name, level: style-args.first-heading-level + 1)
     #label(style-args.label-prefix + fn.name + "()")
   ]
-  let description = if is.sequence(fn.description) {
+  let description = if is_.sequence(fn.description) {
     fn.description.children
   } else {
     (fn.description,)
